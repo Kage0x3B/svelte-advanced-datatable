@@ -6,7 +6,7 @@ export interface PaginatedListRequest<T extends DataRecord = DataRecord> {
 	amount: number;
 	orderBy?: {
 		column: keyof T & string;
-		order: 'ASC' | 'DESC';
+		order: 'asc' | 'desc';
 	};
 	rawSearchQuery?: string;
 	searchQuery?: ParsedSearchQuery;

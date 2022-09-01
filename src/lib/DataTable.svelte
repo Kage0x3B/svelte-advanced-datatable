@@ -5,7 +5,7 @@
 	import SearchField from '$lib/SearchField.svelte';
 	import { onMount, setContext } from 'svelte';
 	import type { Readable, Writable } from 'svelte/store';
-	import { readable, writable } from 'svelte/store';
+	import { writable } from 'svelte/store';
 	import { fade } from 'svelte/transition';
 	import { Icon, Spinner } from 'sveltestrap';
 	import DataRow from './DataRow.svelte';
@@ -14,25 +14,26 @@
 	import DataTablePagination from './DataTablePagination.svelte';
 	import type { ForcedSearchQuery } from './searchParser/ForcedSearchQuery.js';
 	import type { DataRecord } from './types/DataRecord.js';
-	import type { DataTableConfig } from './types/DataTableConfig.js';
+	import type { DataTableConfig, FullDataTableConfig } from './types/DataTableConfig.js';
 	import type { MessageFormatter } from './types/MessageFormatter.js';
 	import type { PaginatedListRequest } from './types/PaginatedListRequest.js';
 	import type { PaginatedListResponse } from './types/PaginatedListResponse.js';
 	import type { ParsedSearchQuery } from './types/ParsedSearchQuery.js';
 	import type { SortDirection } from './types/SortDirection.js';
-	import { DATATABLE_CONFIG } from './util/ContextKey.js';
+	import { DATATABLE_CONFIG, DATATABLE_MESSAGE_FORMATTER } from './util/ContextKey.js';
+	import { mergeDataTableConfigDefaults } from './util/dataTableConfigUtil.js';
 	import { buildColumnPropertyData } from './util/dataTableUtil.js';
-	import { mergeDataTableConfigDefaults } from './util/defaultDataTableConfig.js';
 	import { clamp, isStore, wrapPossibleStore } from './util/generalUtil.js';
-
+	import { createMessageFormatter } from './util/messageFormatterUtil.js';
 
 	let configExport: DataTableConfig;
 	export { configExport as config };
 
-	const config: DataTableConfig = mergeDataTableConfigDefaults<DataRecord>(configExport);
+	const config: FullDataTableConfig = mergeDataTableConfigDefaults<DataRecord>(configExport);
 	setContext(DATATABLE_CONFIG, config);
+	const format: Readable<MessageFormatter> = createMessageFormatter<DataRecord>(config);
+	setContext(DATATABLE_MESSAGE_FORMATTER, format);
 
-	const format: Readable<MessageFormatter> = readable((id, values) => id + JSON.stringify(values));
 	export let striped = false;
 	export let highlight = false;
 	export let centered = false;

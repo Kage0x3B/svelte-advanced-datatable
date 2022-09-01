@@ -1,8 +1,9 @@
 <script lang='ts'>
 	import type { MessageFormatter } from '$lib/types/MessageFormatter.js';
 	import { preventEvent } from '$lib/util/generalUtil.ts';
+	import { getContext } from 'svelte';
 	import type { Readable } from 'svelte/store';
-	import { readable } from 'svelte/store';
+	import { DATATABLE_MESSAGE_FORMATTER } from './util/ContextKey.js';
 
 	let className = '';
 	export { className as class };
@@ -13,7 +14,7 @@
 	export let ariaTranslationKey = '';
 	export let href = '';
 
-	const format: Readable<MessageFormatter> = readable((id, values) => id + JSON.stringify(values));
+	const format: Readable<MessageFormatter> = getContext(DATATABLE_MESSAGE_FORMATTER);
 
 	$: classes = `${className} page-link`;
 

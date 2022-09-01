@@ -75,14 +75,14 @@ function sortData<T extends DataRecord>({
 			const n1 = Number(a[key]);
 			const n2 = Number(b[key]);
 
-			return orderBy.order === 'ASC' ? n1 - n2 : n2 - n1;
+			return orderBy.order === 'asc' ? n1 - n2 : n2 - n1;
 		});
 	} else {
 		return data.sort((a, b) => {
 			const s1 = String(a[key]);
 			const s2 = String(b[key]);
 
-			return orderBy.order === 'ASC' ? s1.localeCompare(s2) : s2.localeCompare(s1);
+			return orderBy.order === 'asc' ? s1.localeCompare(s2) : s2.localeCompare(s1);
 		});
 	}
 }

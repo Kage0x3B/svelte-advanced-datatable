@@ -1,13 +1,14 @@
 <script lang='ts'>
 	import { ComponentType } from '$lib/dataComponent/ComponentType.js';
 	import type { MaybePromise } from '$lib/types';
+	import { getContext } from 'svelte';
 	import type { Readable } from 'svelte/store';
-	import { readable } from 'svelte/store';
 	import { slide } from 'svelte/transition';
 	import { Badge, Icon } from 'sveltestrap';
 	import type { ComponentTypeProperties } from './dataComponent/ComponentType.js';
 	import type { DataRecord } from './types/DataRecord.js';
 	import type { MessageFormatter } from './types/MessageFormatter.js';
+	import { DATATABLE_MESSAGE_FORMATTER } from './util/ContextKey.js';
 	import { isDateTime } from './util/generalUtil.js';
 
 	export let dataTableType: string;
@@ -21,7 +22,7 @@
 	export let item: DataRecord;
 	export let open: (index: number) => void;
 
-	const format: Readable<MessageFormatter> = readable((id, values) => id + JSON.stringify(values));
+	const format: Readable<MessageFormatter> = getContext(DATATABLE_MESSAGE_FORMATTER);
 
 	const isExpandable = !!modalComponent;
 
