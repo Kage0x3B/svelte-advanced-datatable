@@ -39,8 +39,7 @@ library.
 
 To use the component, pass the config object with all required properties to it:
 
-```sveltehtml
-
+```html
 <script lang='ts'>
 	import type { DataTableConfig } from 'svelte-advanced-datatable';
 	import { ComponentType, FetchApiDataSource } from 'svelte-advanced-datatable';
