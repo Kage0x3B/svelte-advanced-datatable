@@ -1,6 +1,6 @@
 <script>
 	import { Collapse, Icon, Nav, Navbar, NavbarBrand, NavbarToggler, NavItem, NavLink } from 'sveltestrap';
-	import BootstrapStyles from '../lib/BootstrapStyles.svelte';
+	import BootstrapStyles from '../util/BootstrapStyles.svelte';
 
 	let isNavbarOpen = false;
 
@@ -18,6 +18,9 @@
 		<Nav class='ms-auto' navbar>
 			<NavItem>
 				<NavLink href='/docs'>Documentation</NavLink>
+			</NavItem>
+			<NavItem>
+				<NavLink href='/api-docs'>API Reference</NavLink>
 			</NavItem>
 			<NavItem class='d-flex align-items-center mx-3'>
 				<NavLink href='https://github.com/Kage0x3B/svelte-advanced-datatable' class='p-0'>

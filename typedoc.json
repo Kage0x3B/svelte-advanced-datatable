@@ -1,7 +1,15 @@
 {
 	"$schema": "https://typedoc.org/schema.json",
-	"entryPoints": ["./src/lib/index.ts", "./src/lib/sveltestrap/index.ts", "./src/lib/internal/index.ts", "./src/lib/searchParser/index.ts"],
+	"entryPoints": [
+		"./src/lib/index.ts",
+		"./src/lib/sveltestrap/index.ts",
+		"./src/lib/internal/index.ts",
+		"./src/lib/searchParser/index.ts"
+	],
 	"out": "./src/routes/(docs)/api-docs/files",
-	"plugin": ["typedoc-plugin-markdown"],
-	"excludePrivate": true
+	"json": "./src/routes/(docs)/api-docs/files/api-docs-meta.json",
+	"name": "Svelte Advanced Datatable",
+	"excludePrivate": true,
+	"readme": "none",
+	"githubPages": false
 }

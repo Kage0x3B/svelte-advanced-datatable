@@ -1,6 +1,6 @@
 <script lang='ts'>
 	import { Col, Container, Nav, NavItem, NavLink, Row } from 'sveltestrap';
-	import BootstrapStyles from '../../lib/BootstrapStyles.svelte';
+	import BootstrapStyles from '../../util/BootstrapStyles.svelte';
 </script>
 
 <BootstrapStyles />

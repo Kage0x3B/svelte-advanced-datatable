@@ -5,7 +5,10 @@ import preprocess from 'svelte-preprocess';
 const config = {
 	preprocess: preprocess(),
 	kit: {
-		adapter: adapter()
+		adapter: adapter(),
+		prerender: {
+			default: true
+		}
 	},
 	package: {
 		exports: (filepath) => {
