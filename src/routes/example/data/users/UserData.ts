@@ -1,4 +1,4 @@
-import type { DataRecord } from '$lib/types/DataRecord.js';
+import type { DataRecord } from '../../../../lib/types/DataRecord.js';
 
 export interface UserData extends DataRecord {
 	id: number;

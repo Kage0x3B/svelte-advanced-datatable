@@ -1,4 +1,4 @@
-import type { ParsedSearchQuery } from '../types/ParsedSearchQuery.js';
+import type { ParsedSearchQuery } from './ParsedSearchQuery.js';
 
 export interface ISearchParser<SearchCategory extends string = string, SearchFilterType extends string = string> {
 	/**

@@ -1,4 +1,4 @@
-import type { SearchFilter } from './SearchFilter.js';
+import type { SearchFilter } from '../types/SearchFilter.js';
 
 export interface ParsedSearchQuery<SearchCategory extends string = string, SearchFilterType extends string = string> {
 	/**

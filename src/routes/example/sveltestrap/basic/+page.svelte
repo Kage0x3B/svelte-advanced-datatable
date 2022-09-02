@@ -4,7 +4,7 @@
 	import { FetchApiDataSource } from '$lib/dataSource/FetchApiDataSource.js';
 	import { DataTable } from '$lib/sveltestrap/index.js';
 	import type { DataTableConfig } from '$lib/types/DataTableConfig.js';
-	import type { UserData } from '../../../example-data/users/UserData.js';
+	import type { UserData } from '../../data/users/UserData.js';
 	import HiddenPasswordCellComponent from '../util/HiddenPasswordCellComponent.svelte';
 
 	const config: DataTableConfig<UserData> = {

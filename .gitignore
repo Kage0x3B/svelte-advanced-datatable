@@ -7,6 +7,10 @@ node_modules
 .env.*
 !.env.example
 
+# Automatically generated documentation
+src/routes/(docs)/api-docs/files/**
+
+
 # Created by https://www.toptal.com/developers/gitignore/api/webstorm
 # Edit at https://www.toptal.com/developers/gitignore?templates=webstorm
 

@@ -1,16 +1,21 @@
-import type { Readable } from 'svelte/store';
+import type { Readable, Unsubscriber } from 'svelte/store';
 import { readable } from 'svelte/store';
 import type { DataRecord } from '../types/DataRecord.js';
 import type { FullDataTableConfig, MessageConfig } from '../types/DataTableConfig.js';
 import type { InterpolationValues, MessageFormatter } from '../types/MessageFormatter.js';
+import type { SvelteI18nMessageFormatter } from '../types/SvelteI18nTypes.js';
 
 export function createMessageFormatter<T extends DataRecord>(
 	dataTableConfig: FullDataTableConfig<T>
 ): Readable<MessageFormatter> {
 	if (dataTableConfig.messageFormatterType === 'config') {
 		return readable(createConfigMessageFormatter(dataTableConfig, dataTableConfig.messageConfig));
+	} else if (dataTableConfig.messageFormatterType === 'svelte-i18n') {
+		return createSvelteI18nMessageFormatter(dataTableConfig);
 	} else {
-		throw new Error('Svelte-i18n message formatter is not implemented yet');
+		throw new Error(
+			`Invalid message formatter type ${dataTableConfig.messageFormatterType} in datatable ${dataTableConfig.type}`
+		);
 	}
 }
 
@@ -75,4 +80,45 @@ function indexObject(object: DataRecord, deepKey: string): string | undefined {
 
 function replaceMessageVariables(message: string, values: InterpolationValues): string {
 	return message.replace(/{(\w+)}/g, (_, key) => String(values[key]));
+}
+
+function createSvelteI18nMessageFormatter<T extends DataRecord>(
+	dataTableConfig: FullDataTableConfig<T>
+): Readable<MessageFormatter> {
+	return readable<MessageFormatter>(
+		() => '',
+		(set) => {
+			let svelteI18nUnsubscriber: Unsubscriber | undefined;
+
+			(async () => {
+				const { format } = await import('svelte-i18n');
+
+				svelteI18nUnsubscriber = format.subscribe(
+					(value) => {
+						set(buildInternalSvelteI18nFormatter(dataTableConfig, value));
+					},
+					() => {
+						set(() => '');
+					}
+				);
+			})();
+
+			return () => {
+				svelteI18nUnsubscriber && svelteI18nUnsubscriber();
+			};
+		}
+	);
+}
+
+function buildInternalSvelteI18nFormatter<T extends DataRecord>(
+	dataTableConfig: FullDataTableConfig<T>,
+	format: SvelteI18nMessageFormatter
+): MessageFormatter {
+	return (messageId, options) => {
+		return format({
+			id: `${dataTableConfig.messageFormatterPrefix ?? ''}${messageId}`,
+			values: options?.values,
+			default: options?.default
+		});
+	};
 }

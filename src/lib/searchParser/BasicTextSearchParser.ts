@@ -1,4 +1,4 @@
-import type { ParsedSearchQuery } from '../types/ParsedSearchQuery.js';
+import type { ParsedSearchQuery } from './ParsedSearchQuery.js';
 import { AbstractSearchParser } from './AbstractSearchParser.js';
 
 export class BasicTextSearchParser extends AbstractSearchParser {

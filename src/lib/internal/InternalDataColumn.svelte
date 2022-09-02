@@ -1,13 +1,13 @@
 <script lang='ts'>
-	import { ComponentType } from '$lib/dataComponent/ComponentType.js';
-	import { isDateTime } from '$lib/util/generalUtil.js';
+	import { ComponentType } from '../dataComponent/ComponentType.js';
+	import { isDateTime } from '../util/generalUtil.js';
 	import type { SvelteComponentTyped } from 'svelte';
 	import { getContext } from 'svelte';
 	import type { Readable } from 'svelte/store';
-	import type { DataRecord } from './types/DataRecord.js';
-	import type { FullDataTableConfig } from './types/DataTableConfig.js';
-	import type { MessageFormatter } from './types/MessageFormatter.js';
-	import { DATATABLE_CONFIG, DATATABLE_MESSAGE_FORMATTER } from './util/ContextKey.js';
+	import type { DataRecord } from '../types/DataRecord.js';
+	import type { FullDataTableConfig } from '../types/DataTableConfig.js';
+	import type { MessageFormatter } from '../types/MessageFormatter.js';
+	import { DATATABLE_CONFIG, DATATABLE_MESSAGE_FORMATTER } from '../util/ContextKey.js';
 
 	const config: FullDataTableConfig = getContext(DATATABLE_CONFIG);
 	const format: Readable<MessageFormatter> = getContext(DATATABLE_MESSAGE_FORMATTER);
@@ -26,7 +26,7 @@
 {:else if colProps.type === ComponentType.STRING || colProps.type === ComponentType.NUMBER}
 	{#if typeof item[key] !== undefined && item[key] !== null && item[key] !== "null"}
 		{$format(`dataTable.${config.type}.${key}.format`, {
-			default: item[key],
+			default: String(item[key]),
 			values: { value: item[key] }
 		})}
 	{/if}

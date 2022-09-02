@@ -1,5 +1,5 @@
 import type { DataRecord } from './DataRecord.js';
-import type { ParsedSearchQuery } from './ParsedSearchQuery.js';
+import type { ParsedSearchQuery } from '../searchParser/ParsedSearchQuery.js';
 
 export interface PaginatedListRequest<T extends DataRecord = DataRecord> {
 	start: number;

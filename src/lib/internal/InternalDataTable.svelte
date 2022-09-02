@@ -5,17 +5,17 @@
 	import { getContext, onMount } from 'svelte';
 	import type { Writable } from 'svelte/store';
 	import { writable } from 'svelte/store';
-	import type { QueryObserver } from './dataSource/QueryObserver.js';
-	import { buildErrorQueryObserver, buildLoadingQueryObserver, buildSuccessQueryObserver } from './dataSource/QueryObserver.js';
-	import type { ForcedSearchQuery } from './searchParser/ForcedSearchQuery.js';
-	import type { FullDataTableConfig } from './types/DataTableConfig.js';
-	import type { PaginatedListRequest } from './types/PaginatedListRequest.js';
-	import type { PaginatedListResponse } from './types/PaginatedListResponse.js';
-	import type { ParsedSearchQuery } from './types/ParsedSearchQuery.js';
-	import type { SortDirection } from './types/SortDirection.js';
-	import { DATATABLE_CONFIG } from './util/ContextKey.js';
-	import { buildColumnPropertyData } from './util/dataTableUtil.js';
-	import { isStore, wrapPossibleStore } from './util/generalUtil.js';
+	import type { QueryObserver } from '../dataSource/QueryObserver.js';
+	import { buildErrorQueryObserver, buildLoadingQueryObserver, buildSuccessQueryObserver } from '../dataSource/QueryObserver.js';
+	import type { ForcedSearchQuery } from '../searchParser/ForcedSearchQuery.js';
+	import type { FullDataTableConfig } from '../types/DataTableConfig.js';
+	import type { PaginatedListRequest } from '../types/PaginatedListRequest.js';
+	import type { PaginatedListResponse } from '../types/PaginatedListResponse.js';
+	import type { ParsedSearchQuery } from '../searchParser/ParsedSearchQuery.js';
+	import type { SortDirection } from '../types/SortDirection.js';
+	import { DATATABLE_CONFIG } from '../util/ContextKey.js';
+	import { buildColumnPropertyData } from '../util/dataTableUtil.js';
+	import { isStore, wrapPossibleStore } from '../util/generalUtil.js';
 
 	const config: FullDataTableConfig = getContext(DATATABLE_CONFIG);
 
@@ -140,4 +140,4 @@
 	});
 </script>
 
-<slot queryObserver={$dataQueryObserver} columnProperties={internalColumnProperties} {itemAmount} {pageAmount} {items} {sortDirection} {toggleSorting} {sortColumnKey} {currentOpenIndex} highlightedItemId={$highlightedItemId} />
+<slot queryObserver={$dataQueryObserver} columnProperties={internalColumnProperties} {itemAmount} {pageAmount} {items} {sortDirection} {toggleSorting} {sortColumnKey} {open} {currentOpenIndex} highlightedItemId={$highlightedItemId} />

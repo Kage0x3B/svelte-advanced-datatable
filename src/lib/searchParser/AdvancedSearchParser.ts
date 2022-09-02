@@ -1,13 +1,13 @@
-import type { ParsedSearchQuery } from '../types/ParsedSearchQuery.js';
+import type { ParsedSearchQuery } from './ParsedSearchQuery.js';
 import type { SearchFilter } from '../types/SearchFilter.js';
 import { AbstractSearchParser } from './AbstractSearchParser.js';
 import { SearchError } from './SearchError.js';
 
-type QueryPartParser<SearchCategory extends string = string, SearchFilterType extends string = string> = (
+export type QueryPartParser<SearchCategory extends string = string, SearchFilterType extends string = string> = (
 	queryPart: string
 ) => { searchCategory?: SearchCategory; searchFilter?: SearchFilter<SearchFilterType> } | false;
 
-type AliasMap<T extends string = string> = Record<T, string[]>;
+export type AliasMap<T extends string = string> = Record<T, string[]>;
 
 export class AdvancedSearchParser<
 	SearchCategory extends string = string,

@@ -1,7 +1,7 @@
-import type { DataRecord } from '$lib/types/DataRecord.js';
-import type { PaginatedListRequest } from '$lib/types/PaginatedListRequest.js';
-import type { PaginatedListResponse } from '$lib/types/PaginatedListResponse.js';
-import type { ParsedSearchQuery } from '$lib/types/ParsedSearchQuery.js';
+import type { DataRecord } from '../../../lib/types/DataRecord.js';
+import type { PaginatedListRequest } from '../../../lib/types/PaginatedListRequest.js';
+import type { PaginatedListResponse } from '../../../lib/types/PaginatedListResponse.js';
+import type { ParsedSearchQuery } from '../../../lib/searchParser/ParsedSearchQuery.js';
 import { faker } from '@faker-js/faker';
 import type { RequestEvent } from '@sveltejs/kit';
 import { json } from '@sveltejs/kit';

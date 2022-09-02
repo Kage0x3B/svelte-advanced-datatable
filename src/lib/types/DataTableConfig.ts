@@ -58,6 +58,11 @@ export interface DataTableConfig<T extends DataRecord = DataRecord> {
 
 	messageFormatterType?: 'config' | 'svelte-i18n';
 
+	/**
+	 * Prefix for every message id. Only applies to external message formatters such as the svelte-i18n formatter.
+	 */
+	messageFormatterPrefix?: string;
+
 	messageConfig?: MessageConfig<T>;
 
 	additionalMessageFormatter?: MessageFormatter;

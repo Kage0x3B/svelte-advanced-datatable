@@ -1,5 +1,5 @@
 <script lang='ts'>
-	import InternalDataTable from '$lib/InternalDataTable.svelte';
+	import InternalDataTable from '$lib/internal/InternalDataTable.svelte';
 	import { setContext } from 'svelte';
 	import type { Readable } from 'svelte/store';
 	import { fade } from 'svelte/transition';
@@ -7,7 +7,7 @@
 	import type { DataRecord } from '../types/DataRecord.js';
 	import type { DataTableConfig, FullDataTableConfig } from '../types/DataTableConfig.js';
 	import type { MessageFormatter } from '../types/MessageFormatter.js';
-	import type { ParsedSearchQuery } from '../types/ParsedSearchQuery.js';
+	import type { ParsedSearchQuery } from '../searchParser/ParsedSearchQuery.js';
 	import { DATATABLE_CONFIG, DATATABLE_MESSAGE_FORMATTER } from '../util/ContextKey.js';
 	import { mergeDataTableConfigDefaults } from '../util/dataTableConfigUtil.js';
 	import { clamp } from '../util/generalUtil.js';
@@ -35,7 +35,7 @@
 	let searchQuery: ParsedSearchQuery | undefined;
 </script>
 
-<InternalDataTable let:queryObserver let:columnProperties let:itemAmount let:pageAmount let:items let:sortDirection let:toggleSorting let:sortColumnKey let:currentOpenIndex let:highlightedItemId {searchInput} {searchQuery} {currentPage}>
+<InternalDataTable let:queryObserver let:columnProperties let:itemAmount let:pageAmount let:items let:sortDirection let:toggleSorting let:sortColumnKey let:currentOpenIndex let:open let:highlightedItemId {searchInput} {searchQuery} {currentPage}>
 	<div class='d-flex justify-content-between align-items-center mb-3'>
 		<div class='d-flex flex-row align-items-center'>
 			<slot name='header-first' />
@@ -90,7 +90,7 @@
 			</thead>
 			<tbody>
 				{#each items as item, index (item[config.dataUniquePropertyKey])}
-					<DataRow {item} modalComponent={config.modalComponent} {index}
+					<DataRow {item} {index}
 						openIndex={currentOpenIndex} {open} onClick={config.onItemClick}
 						highlighted={highlightedItemId === item[config.dataUniquePropertyKey]} />
 				{/each}

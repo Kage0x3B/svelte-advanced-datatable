@@ -18,6 +18,7 @@ const defaultConfig: Partial<DataTableConfig> = {
 	showBottomPagination: true,
 	itemsPerPage: 50,
 	messageFormatterType: 'config',
+	messageFormatterPrefix: '',
 	messageConfig: {
 		pagination: {
 			previous: 'Previous',

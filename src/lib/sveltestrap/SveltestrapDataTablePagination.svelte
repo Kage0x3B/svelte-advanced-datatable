@@ -1,7 +1,7 @@
 <script>
 	import { Pagination, PaginationItem } from 'sveltestrap';
 	import PaginationLink from './SveltestrapPaginationLink.svelte';
-	import InternalDataTablePagination from '$lib/InternalDataTablePagination.svelte';
+	import InternalDataTablePagination from '$lib/internal/InternalDataTablePagination.svelte';
 
 	export let pageAmount;
 	export let maxDisplayedItems = 5;

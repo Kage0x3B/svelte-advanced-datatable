@@ -1,0 +1,7 @@
+{
+	"$schema": "https://typedoc.org/schema.json",
+	"entryPoints": ["./src/lib/index.ts", "./src/lib/sveltestrap/index.ts", "./src/lib/internal/index.ts", "./src/lib/searchParser/index.ts"],
+	"out": "./src/routes/(docs)/api-docs/files",
+	"plugin": ["typedoc-plugin-markdown"],
+	"excludePrivate": true
+}

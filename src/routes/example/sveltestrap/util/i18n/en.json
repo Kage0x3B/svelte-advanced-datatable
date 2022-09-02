@@ -1,0 +1,42 @@
+{
+	"search": {
+		"placeholder": "Search",
+		"ariaLabel": "Search"
+	},
+	"pagination": {
+		"previous": "Previous",
+		"next": "Next",
+		"first": "First",
+		"last": "Last"
+	},
+	"dataTable": {
+		"userData": {
+			"id": {
+				"label": "Id"
+			},
+			"userName": {
+				"label": "Username",
+				"format": "@{value}"
+			},
+			"firstName": {
+				"label": "First Name"
+			},
+			"lastName": {
+				"label": "Last Name"
+			},
+			"mailAddress": {
+				"label": "E-Mail Address"
+			},
+			"password": {
+				"label": "Password"
+			},
+			"gender": {
+				"label": "Gender",
+				"enumValue": {
+					"male": "Male",
+					"female": "Female"
+				}
+			}
+		}
+	}
+}

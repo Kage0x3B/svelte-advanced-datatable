@@ -1,6 +1,6 @@
 <script lang='ts'>
-	import InternalDataColumn from '$lib/InternalDataColumn.svelte';
-	import InternalDataRow from '$lib/InternalDataRow.svelte';
+	import InternalDataColumn from '../internal/InternalDataColumn.svelte';
+	import InternalDataRow from '../internal/InternalDataRow.svelte';
 	import SveltestrapBadgeWrapper from '$lib/sveltestrap/SveltestrapBadgeWrapper.svelte';
 	import SveltestrapIconWrapper from '$lib/sveltestrap/SveltestrapIconWrapper.svelte';
 	import type { MaybePromise } from '$lib/types';
@@ -17,14 +17,13 @@
 	export let highlighted: boolean;
 
 	export let onClick: (<T>(item: T) => MaybePromise<void>) | undefined;
-	export let modalComponent;
 	export let item: DataRecord;
 	export let open: (index: number) => void;
 
-	export let toggle: () => void = () => undefined;
+	let toggle: () => void | undefined;
 </script>
 
-<InternalDataRow let:isOpen let:rowOnClick bind:toggle {index} {openIndex} {onClick} {modalComponent} {item} {open}>
+<InternalDataRow let:isOpen let:rowOnClick bind:toggle {index} {openIndex} {onClick} {item} {open}>
 	{#if isOpen}
 		<tr class='margin-row top'>
 			<td colspan={config.columnProperties.length} transition:slide|local></td>
@@ -47,7 +46,7 @@
 		<tr class='datatable-modal-container'>
 			<td colspan={Object.keys(config.columnProperties).length} transition:slide|local>
 				<div class='datatable-modal' transition:slide|local>
-					<svelte:component this={modalComponent} {item} {toggle} />
+					<svelte:component this={config.modalComponent} {item} {toggle} />
 				</div>
 			</td>
 		</tr>

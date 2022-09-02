@@ -18,8 +18,6 @@ export enum ComponentType {
     DATE = 'date'
 }
 
-export type TextColor = 'primary' | 'secondary' | 'success' | 'info' | 'warning' | 'danger' | 'light' | 'dark';
-
 export type ComponentTypeProperties = RequiredTypeProperty<BooleanComponentTypeProperties
     | NumberComponentTypeProperties
     | StringComponentTypeProperties

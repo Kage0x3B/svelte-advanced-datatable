@@ -1,4 +1,4 @@
-import type { ParsedSearchQuery } from '../types/ParsedSearchQuery.js';
+import type { ParsedSearchQuery } from './ParsedSearchQuery.js';
 import type { ISearchParser } from './ISearchParser.js';
 
 export abstract class AbstractSearchParser<SearchCategory extends string = string, SFT extends string = string>
