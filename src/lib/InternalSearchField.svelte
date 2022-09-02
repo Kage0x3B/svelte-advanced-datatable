@@ -1,21 +1,22 @@
 <script lang='ts'>
+	import { getContext } from 'svelte';
+	import type { FullDataTableConfig } from './types/DataTableConfig.js';
 	import type { ParsedSearchQuery } from './types/ParsedSearchQuery.js';
+	import { DATATABLE_CONFIG } from './util/ContextKey.js';
 	import { debounce } from './util/generalUtil.js';
 
 	export let searchInput = '';
 	export let searchQuery: ParsedSearchQuery | undefined;
-	let inputElement: HTMLInputElement;
+	export let inputElement: HTMLInputElement;
+
+	const config: FullDataTableConfig = getContext(DATATABLE_CONFIG);
 
 	const updateSearch = debounce<[string]>((searchInput) => _updateSearch(searchInput), 200);
 	$: updateSearch(searchInput);
 
 	function _updateSearch(searchInput) {
 		try {
-			//TODO
-			//searchQuery = parseSearchQuery(searchInput);
-
-			//if ($searchQuery && ($listeningSearchHandlers > 0 || $searchQuery.forceGlobalSearch)) {
-			//}
+			searchQuery = config.searchParser.parseSearchQuery(searchInput);
 		} catch (err) {
 			console.log(err);
 
@@ -39,7 +40,4 @@
 
 <svelte:window on:keydown={handleKeydown} />
 
-<div class='form-inline my-lg-0 me-2'>
-	<input aria-label='Suche' bind:this={inputElement} bind:value={searchInput} class='form-control search-box'
-		placeholder='Suche' type='search'>
-</div>
+<slot />

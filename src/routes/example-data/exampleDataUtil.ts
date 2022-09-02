@@ -68,12 +68,14 @@ function sortData<T extends DataRecord>({
 
 	const key = orderBy.column;
 
-	const exampleValue = data.find((item) => typeof item[key] !== 'undefined' && item[key] !== null);
+	const exampleEntry = data.find((item) => typeof item[key] !== 'undefined' && item[key] !== null);
+	const exampleValue = exampleEntry ? String(exampleEntry[key]) : '';
+	const isNumber = !isNaN(exampleValue as unknown as number) && !isNaN(parseFloat(exampleValue));
 
-	if (typeof exampleValue === 'number') {
+	if (isNumber) {
 		return data.sort((a, b) => {
-			const n1 = Number(a[key]);
-			const n2 = Number(b[key]);
+			const n1 = parseFloat(String(a[key]));
+			const n2 = parseFloat(String(b[key]));
 
 			return orderBy.order === 'asc' ? n1 - n2 : n2 - n1;
 		});

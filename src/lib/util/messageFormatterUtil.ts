@@ -21,17 +21,17 @@ function createConfigMessageFormatter<T extends DataRecord>(
 	const missingMessageIds = new Set<string>();
 
 	return (messageId, options = {}) => {
-		const prefix = `dataTable.${dataTableConfig.type}.`;
-		if (messageId.startsWith(prefix)) {
-			messageId = messageId.substring(prefix.length);
-		}
-
 		if (dataTableConfig.additionalMessageFormatter) {
 			const additionalFormatterResult = dataTableConfig.additionalMessageFormatter(messageId, options);
 
 			if (additionalFormatterResult) {
 				return additionalFormatterResult;
 			}
+		}
+
+		const prefix = `dataTable.${dataTableConfig.type}.`;
+		if (messageId.startsWith(prefix)) {
+			messageId = messageId.substring(prefix.length);
 		}
 
 		const rawMessage = indexObject(messageConfig, messageId);

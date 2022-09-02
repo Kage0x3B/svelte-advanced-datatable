@@ -1,9 +1,10 @@
 import { ComponentType } from '../dataComponent/ComponentType.js';
+import { BasicTextSearchParser } from '../searchParser/BasicTextSearchParser.js';
 import type { DataRecord } from '../types/DataRecord.js';
-import type { DataTableConfig, FullDataTableConfig } from '../types/DataTableConfig.js';
+import type { DataTableConfig, FullDataTableConfig, MessageConfig } from '../types/DataTableConfig.js';
 import { hasOwnProperty } from './generalUtil.js';
 
-const defaultConfig = {
+const defaultConfig: Partial<DataTableConfig> = {
 	modalComponent: undefined,
 	onItemClick: undefined,
 	forcedSearchQuery: undefined,
@@ -15,7 +16,6 @@ const defaultConfig = {
 	showPagination: true,
 	showTopPagination: true,
 	showBottomPagination: true,
-	showSearch: true,
 	itemsPerPage: 50,
 	messageFormatterType: 'config',
 	messageConfig: {
@@ -24,9 +24,15 @@ const defaultConfig = {
 			next: 'Next',
 			first: 'First',
 			last: 'Last'
+		},
+		search: {
+			placeholder: 'Search',
+			ariaLabel: 'Search'
 		}
-	}
-} as DataTableConfig;
+	} as MessageConfig,
+	showSearch: true,
+	searchParser: new BasicTextSearchParser()
+};
 
 export function mergeDataTableConfigDefaults<T extends DataRecord>(config: DataTableConfig<T>): FullDataTableConfig<T> {
 	const showPagination = config.showPagination ?? defaultConfig.showPagination;

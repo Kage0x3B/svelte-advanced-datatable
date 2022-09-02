@@ -1,1 +1,1 @@
-<a href='/datatable-test/sveltestrap'>Sveltestrap test</a>
+<a href='/datatable-test/sveltestrap/basic'>Sveltestrap test</a>

@@ -3,6 +3,7 @@ import type { Readable } from 'svelte/store';
 import type { TableColumnConfig } from '../dataComponent/ComponentType.js';
 import type { IDataSource } from '../dataSource/IDataSource.js';
 import type { ForcedSearchQuery } from '../searchParser/ForcedSearchQuery.js';
+import type { ISearchParser } from '../searchParser/ISearchParser.js';
 import type { DataRecord } from './DataRecord.js';
 import type { MessageFormatter } from './MessageFormatter.js';
 import type { SortDirection } from './SortDirection.js';
@@ -21,6 +22,10 @@ export type MessageConfig<T extends DataRecord = DataRecord> = Record<keyof T, C
 		next: string;
 		first: string;
 		last: string;
+	};
+	search?: {
+		placeholder: string;
+		ariaLabel: string;
 	};
 };
 
@@ -49,8 +54,6 @@ export interface DataTableConfig<T extends DataRecord = DataRecord> {
 
 	showBottomPagination?: boolean;
 
-	showSearch?: boolean;
-
 	itemsPerPage?: number;
 
 	messageFormatterType?: 'config' | 'svelte-i18n';
@@ -58,6 +61,10 @@ export interface DataTableConfig<T extends DataRecord = DataRecord> {
 	messageConfig?: MessageConfig<T>;
 
 	additionalMessageFormatter?: MessageFormatter;
+
+	showSearch?: boolean;
+
+	searchParser?: ISearchParser;
 }
 
 export type FullDataTableConfig<T extends DataRecord = DataRecord> = Required<DataTableConfig<T>>;

@@ -1,11 +1,11 @@
 <script lang='ts'>
-	import DataTable from '$lib/DataTable.svelte';
+	import { ComponentType } from '$lib/dataComponent/ComponentType.js';
+	import type { EnumComponentTypeProperties } from '$lib/dataComponent/EnumComponentTypeProperties.js';
+	import { FetchApiDataSource } from '$lib/dataSource/FetchApiDataSource.js';
+	import { DataTable } from '$lib/sveltestrap/index.js';
 	import type { DataTableConfig } from '$lib/types/DataTableConfig.js';
-	import { Col, Container, Row, Styles } from 'sveltestrap';
-	import { ComponentType } from '../../../lib/dataComponent/ComponentType.js';
-	import type { EnumComponentTypeProperties } from '../../../lib/dataComponent/EnumComponentTypeProperties.js';
-	import { FetchApiDataSource } from '../../../lib/dataSource/FetchApiDataSource.js';
-	import type { UserData } from '../../example-data/users/UserData.js';
+	import type { UserData } from '../../../example-data/users/UserData.js';
+	import HiddenPasswordCellComponent from '../util/HiddenPasswordCellComponent.svelte';
 
 	const config: DataTableConfig<UserData> = {
 		type: 'userData',
@@ -26,8 +26,9 @@
 				type: ComponentType.STRING
 			},
 			password: {
-				type: ComponentType.STRING,
-				sortable: false
+				type: ComponentType.CUSTOM,
+				sortable: false,
+				component: HiddenPasswordCellComponent
 			},
 			gender: {
 				type: ComponentType.ENUM,
@@ -72,15 +73,7 @@
 	};
 </script>
 
-<Container>
-	<Row>
-		<Col xs='12' class='py-5'>
-			<DataTable {config}
-				highlight
-				hoverable responsive
-				striped />
-		</Col>
-	</Row>
-</Container>
-
-<Styles />
+<DataTable {config}
+	highlight
+	hoverable responsive
+	striped />
