@@ -1,11 +1,12 @@
 <script lang='ts'>
 	import { page } from '$app/stores';
+	import { SvelteComponentTyped } from 'svelte';
 	import { Col, Container, Row } from 'sveltestrap';
-	import ApiReferenceBreadcrumbs from '../util/ApiReferenceBreadcrumbs.svelte';
+	import ApiReferenceBreadcrumbs from './util/ApiReferenceBreadcrumbs.svelte';
 
 	export let data: {
 		title: string;
-		pageContent: string;
+		pageContent: SvelteComponentTyped;
 	};
 </script>
 
@@ -17,7 +18,7 @@
 	<Row>
 		<Col>
 			<ApiReferenceBreadcrumbs currentPath={$page.params.slug} indexName='Svelte Advanced Datatable' baseUrl='/api-reference' />
-			{@html data.pageContent}
+			<svelte:component this={data.pageContent} />
 		</Col>
 	</Row>
 </Container>

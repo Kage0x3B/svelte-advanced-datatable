@@ -8,7 +8,7 @@ node_modules
 !.env.example
 
 # Automatically generated documentation
-src/routes/(docs)/api-reference/files/**
+src/routes/(docs)/(api-reference)/api-reference/**
 
 
 # Created by https://www.toptal.com/developers/gitignore/api/webstorm

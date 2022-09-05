@@ -1,9 +1,16 @@
 import adapter from '@sveltejs/adapter-auto';
 import preprocess from 'svelte-preprocess';
+import { mdsvex } from 'mdsvex';
 
 /** @type {import('@sveltejs/kit').Config} */
 const config = {
-	preprocess: preprocess(),
+	extensions: ['.svelte', '.md'],
+	preprocess: [
+		preprocess(),
+		mdsvex({
+			extensions: ['.md']
+		})
+	],
 	kit: {
 		adapter: adapter(),
 		prerender: {
@@ -11,9 +18,7 @@ const config = {
 		}
 	},
 	package: {
-		exports: (filepath) => {
-			return filepath.endsWith('index.ts');
-		}
+		exports: (filepath) => filepath.endsWith('index.ts')
 	}
 };
 

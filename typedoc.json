@@ -6,8 +6,8 @@
 		"./src/lib/internal/index.ts",
 		"./src/lib/searchParser/index.ts"
 	],
-	"out": "./src/routes/(docs)/api-reference/files",
-	"json": "./src/routes/(docs)/api-reference/files/api-reference-meta.json",
+	"out": "./src/routes/(docs)/(api-reference)/api-reference",
+	"json": "./src/routes/(docs)/(api-reference)/api-reference/api-reference-meta.json",
 	"name": "Svelte Advanced Datatable",
 	"excludePrivate": true,
 	"excludeProtected": true,
