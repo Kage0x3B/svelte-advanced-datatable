@@ -1,7 +1,11 @@
 import { Renderer } from 'marked';
-import { cleanUrl, escape } from './markdownUtil.js';
+import { cleanUrl, compactUrl, escape } from './markdownUtil.js';
 
 export class DocsMarkdownRenderer extends Renderer<string> {
+	constructor(private currentFileUrlPath: string) {
+		super();
+	}
+
 	hr(): string {
 		return `<hr class='mt-4 mb-5' />`;
 	}
@@ -58,15 +62,7 @@ export class DocsMarkdownRenderer extends Renderer<string> {
 			return text;
 		}
 
-		const mdFileExtension = href.lastIndexOf('.md');
-
-		if (mdFileExtension > 0) {
-			href = href.substring(0, mdFileExtension) + href.substring(mdFileExtension + 3);
-		}
-
-		if (!href.startsWith('/api-docs/')) {
-			href = '/api-docs/' + href;
-		}
+		href = compactUrl(this.currentFileUrlPath, href);
 
 		let out = '<a href="' + escape(href, false) + '"';
 		if (title) {

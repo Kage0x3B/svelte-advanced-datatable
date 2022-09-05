@@ -6,10 +6,14 @@
 		"./src/lib/internal/index.ts",
 		"./src/lib/searchParser/index.ts"
 	],
-	"out": "./src/routes/(docs)/api-docs/files",
-	"json": "./src/routes/(docs)/api-docs/files/api-docs-meta.json",
+	"out": "./src/routes/(docs)/api-reference/files",
+	"json": "./src/routes/(docs)/api-reference/files/api-reference-meta.json",
 	"name": "Svelte Advanced Datatable",
 	"excludePrivate": true,
+	"excludeProtected": true,
+	"excludeInternal": true,
+	"hideGenerator": true,
 	"readme": "none",
-	"githubPages": false
+	"githubPages": false,
+	"hideBreadcrumbs": true
 }

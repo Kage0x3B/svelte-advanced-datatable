@@ -14,6 +14,7 @@ specifiers:
   eslint: ^7.32.0
   eslint-config-prettier: ^8.5.0
   eslint-plugin-svelte3: ^3.4.1
+  highlight.js: ^11.6.0
   luxon: ^3.0.1
   marked: ^4.1.0
   node-sass: ^7.0.1
@@ -21,12 +22,14 @@ specifiers:
   prettier-plugin-svelte: ^2.7.0
   svelte: ^3.49.0
   svelte-check: ^2.8.1
+  svelte-highlight: ^6.2.1
   svelte-i18n: ^3.4.0
   svelte-preprocess: ^4.10.7
   sveltestrap: ^5.9.0
   tslib: ^2.4.0
   typedoc: ^0.23.13
   typedoc-plugin-markdown: ^3.13.5
+  typedoc-plugin-mdn-links: ^2.0.0
   typescript: ^4.8.2
   vite: ^3.0.9
 
@@ -44,6 +47,7 @@ devDependencies:
   eslint: 7.32.0
   eslint-config-prettier: 8.5.0_eslint@7.32.0
   eslint-plugin-svelte3: 3.4.1_k4rvtr32uzrs6rwp57u73ssa6q
+  highlight.js: 11.6.0
   luxon: 3.0.1
   marked: 4.1.0
   node-sass: 7.0.1
@@ -51,12 +55,14 @@ devDependencies:
   prettier-plugin-svelte: 2.7.0_o3ioganyptcsrh6x4hnxvjkpqi
   svelte: 3.49.0
   svelte-check: 2.8.1_ned5zac7pgtzhbhi5iddte43li
+  svelte-highlight: 6.2.1
   svelte-i18n: 3.4.0_svelte@3.49.0
   svelte-preprocess: 4.10.7_7bk6uluavsbapcirdhlmyt3pae
   sveltestrap: 5.9.0_svelte@3.49.0
   tslib: 2.4.0
   typedoc: 0.23.13_typescript@4.8.2
   typedoc-plugin-markdown: 3.13.5_typedoc@0.23.13
+  typedoc-plugin-mdn-links: 2.0.0_typedoc@0.23.13
   typescript: 4.8.2
   vite: 3.0.9
 
@@ -1748,6 +1754,11 @@ packages:
       function-bind: 1.1.1
     dev: true
 
+  /highlight.js/11.6.0:
+    resolution: {integrity: sha512-ig1eqDzJaB0pqEvlPVIpSSyMaO92bH1N2rJpLMN/nX396wTpDA4Eq0uK+7I/2XG17pFaaKE0kjV/XPeGt7Evjw==}
+    engines: {node: '>=12.0.0'}
+    dev: true
+
   /hosted-git-info/2.8.9:
     resolution: {integrity: sha512-mxIDAb9Lsm6DoOJ7xH+5+X4y1LU/4Hi50L9C5sIswK3JzULS4bwk1FvjdBgvYR4bzT4tuUQiC15FE2f5HbLvYw==}
     dev: true
@@ -3112,6 +3123,12 @@ packages:
       - sugarss
     dev: true
 
+  /svelte-highlight/6.2.1:
+    resolution: {integrity: sha512-nZoweg5atreJHAJPaB0nca+r6YhDzbEJQrtKDO2mR/muEzsRKxMeSF3Q8BV0Au+T2jMWGBPwlBzA/tqv9yG9UQ==}
+    dependencies:
+      highlight.js: 11.6.0
+    dev: true
+
   /svelte-hmr/0.14.12_svelte@3.49.0:
     resolution: {integrity: sha512-4QSW/VvXuqVcFZ+RhxiR8/newmwOCTlbYIezvkeN6302YFRE8cXy0naamHcjz8Y9Ce3ITTZtrHrIL0AGfyo61w==}
     engines: {node: ^12.20 || ^14.13.1 || >= 16}
@@ -3344,6 +3361,14 @@ packages:
       typedoc: '>=0.23.0'
     dependencies:
       handlebars: 4.7.7
+      typedoc: 0.23.13_typescript@4.8.2
+    dev: true
+
+  /typedoc-plugin-mdn-links/2.0.0_typedoc@0.23.13:
+    resolution: {integrity: sha512-IGLuelXPOenGdmklr5DHgPPf/MfZj7aEYCxCMtPN8C1D0lA7w0YLahd0jhDDcOMU7zL1EPcM5pPnhZHltDhqGQ==}
+    peerDependencies:
+      typedoc: 0.22.x || 0.23.x
+    dependencies:
       typedoc: 0.23.13_typescript@4.8.2
     dev: true
 

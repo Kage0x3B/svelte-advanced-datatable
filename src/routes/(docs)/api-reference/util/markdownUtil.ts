@@ -1,26 +1,114 @@
 import fs from 'fs/promises';
 import { marked } from 'marked';
+import { resolve } from 'url';
+import { apiReferenceCategories } from './apiReferenceMeta.js';
 import { DocsMarkdownRenderer } from './DocsMarkdownRenderer.js';
 
-export async function buildMarkdown(options: { baseUrl: string; filePath: string }): Promise<
+export function parseSlug(slug: string): string {
+	if (!slug) {
+		return 'README';
+	}
+
+	let resultingPath = '';
+
+	const pathParts = slug.split('/');
+
+	if (pathParts.length === 3) {
+		resultingPath = `${pathParts[0]}/${pathParts[1]}.${pathParts[2]}`;
+	}
+
+	if (pathParts.length === 2) {
+		if (apiReferenceCategories.includes(pathParts[1])) {
+			resultingPath = `${pathParts[0]}/${pathParts[1]}`;
+		} else {
+			resultingPath = `${pathParts[0]}/index.${pathParts[1]}`;
+		}
+	}
+
+	if (pathParts.length === 1) {
+		resultingPath = `${pathParts[0]}/index`;
+	}
+
+	return resultingPath;
+}
+
+const uriProtocolRegex = /^(?:https?|mailto|data):/i;
+
+export function compactUrl(currentFileUrlPath: string, url: string): string {
+	if (!uriProtocolRegex.test(url)) {
+		const parsedUrl = parseUrl(resolve(currentFileUrlPath, url));
+
+		url =
+			(parsedUrl.path.endsWith('/index')
+				? parsedUrl.path.substring(0, parsedUrl.path.length - 6)
+				: parsedUrl.path) + '/';
+		url += ['index', 'readme'].includes(parsedUrl.fileName.toLowerCase()) ? '' : parsedUrl.fileName;
+
+		if (parsedUrl.fileExtension !== '.md') {
+			url += parsedUrl.fileExtension;
+		}
+
+		url += parsedUrl.hash;
+	}
+
+	return url;
+}
+
+function parseUrl(url: string): { path: string; fileName: string; fileExtension: string; hash: string } {
+	let path = url.substring(0, url.lastIndexOf('/'));
+	const filePart = url.substring(url.lastIndexOf('/'), url.includes('#') ? url.indexOf('#') : url.length);
+	let fileName = filePart.substring(1, filePart.lastIndexOf('.'));
+	const fileExtension = filePart.substring(filePart.lastIndexOf('.'));
+	const hash = url.includes('#') ? url.substring(url.indexOf('#')) : '';
+
+	if (fileName.includes('.')) {
+		path += '/' + fileName.substring(0, fileName.indexOf('.'));
+		fileName = fileName.substring(fileName.indexOf('.') + 1);
+	}
+
+	return {
+		path,
+		fileName,
+		fileExtension,
+		hash
+	};
+}
+
+export async function buildMarkdown(filePath: string): Promise<
 	| {
+			title: string;
 			pageContent: string;
 	  }
 	| undefined
 > {
 	try {
-		const markdownContent = await fs.readFile(options.filePath, 'utf-8');
+		const currentFileUrlPath =
+			'/api-reference/' +
+			filePath.substring(filePath.indexOf('/api-reference/files/') + '/api-reference/files/'.length);
+
+		const markdownContent = await fs.readFile(filePath, 'utf-8');
+		const title = extractTitle(markdownContent);
 		const pageContent = marked(markdownContent, {
-			renderer: new DocsMarkdownRenderer()
+			renderer: new DocsMarkdownRenderer(currentFileUrlPath)
 		});
 
 		return {
+			title,
 			pageContent
 		};
 	} catch (err) {
 		console.log(err);
+
 		return undefined;
 	}
+}
+
+const titleMarkdownRegex = /^\s*#\s*((?:Class|Module|Interface|Enumeration):\s*\w+)/;
+
+function extractTitle(markdownContent: string): string {
+	const title = titleMarkdownRegex.exec(markdownContent);
+
+	return title?.length && title?.length >= 2 ? title[1] : 'Api Reference';
 }
 
 const escapeTest = /[&<>"']/;
@@ -119,11 +207,7 @@ export function resolveUrl(base: string, href: string): string {
 const nonWordAndColonTest = /[^\w:]/g;
 const originIndependentUrl = /^$|^[a-z][a-z0-9+.-]*:|^[?#]/i;
 
-export function cleanUrl(
-	sanitize: boolean | undefined,
-	base: string | null,
-	href: string | null
-): string | null {
+export function cleanUrl(sanitize: boolean | undefined, base: string | null, href: string | null): string | null {
 	href ??= '';
 
 	if (sanitize) {
@@ -135,7 +219,11 @@ export function cleanUrl(
 			return null;
 		}
 
-		if (protocol.indexOf('javascript:') === 0 || protocol.indexOf('vbscript:') === 0 || protocol.indexOf('data:') === 0) {
+		if (
+			protocol.indexOf('javascript:') === 0 ||
+			protocol.indexOf('vbscript:') === 0 ||
+			protocol.indexOf('data:') === 0
+		) {
 			return null;
 		}
 	}
