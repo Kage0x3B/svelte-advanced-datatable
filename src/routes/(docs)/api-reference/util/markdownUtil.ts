@@ -1,6 +1,6 @@
-import fs from 'fs/promises';
+import fs from 'node:fs/promises';
 import { marked } from 'marked';
-import { resolve } from 'url';
+import { resolve } from 'node:url';
 import { apiReferenceCategories } from './apiReferenceMeta.js';
 import { DocsMarkdownRenderer } from './DocsMarkdownRenderer.js';
 

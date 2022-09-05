@@ -1,5 +1,5 @@
 import { error } from '@sveltejs/kit';
-import path from 'path';
+import path from 'node:path';
 import { buildMarkdown, parseSlug } from '../util/markdownUtil.js';
 
 export async function load({ params }: { params: { slug: string } }): Promise<{ title: string; pageContent: string }> {
