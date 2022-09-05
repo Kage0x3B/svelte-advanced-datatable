@@ -1,4 +1,4 @@
-import fs from 'node:fs/promises';
+import * as fs from 'fs';
 import { marked } from 'marked';
 import { resolve } from 'node:url';
 import { apiReferenceCategories } from './apiReferenceMeta.js';
@@ -86,7 +86,7 @@ export async function buildMarkdown(filePath: string): Promise<
 			'/api-reference/' +
 			filePath.substring(filePath.indexOf('/api-reference/files/') + '/api-reference/files/'.length);
 
-		const markdownContent = await fs.readFile(filePath, 'utf-8');
+		const markdownContent = fs.readFileSync(filePath, 'utf-8');
 		const title = extractTitle(markdownContent);
 		const pageContent = marked(markdownContent, {
 			renderer: new DocsMarkdownRenderer(currentFileUrlPath)
