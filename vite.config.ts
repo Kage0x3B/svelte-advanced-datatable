@@ -5,7 +5,10 @@ const config: UserConfig = {
 	plugins: [sveltekit()],
 	optimizeDeps: {
 		include: ['highlight.js', 'highlight.js/lib/core'],
-		exclude: ['node:fs/promises', 'node:path', 'node:url']
+		exclude: ['node:fs/promises', 'node:path', 'node:url'],
+		esbuildOptions: {
+			platform: 'node'
+		}
 	}
 };
 
