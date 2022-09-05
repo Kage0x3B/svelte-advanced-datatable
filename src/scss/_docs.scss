@@ -1,0 +1,21 @@
+.docs-sidebar {
+    .nav-item {
+        font-weight: 500;
+
+        a {
+            color: lighten($dark, 10%);
+
+            &:hover {
+                color: $primary;
+            }
+
+            &:active {
+                color: darken($primary, 10%);
+            }
+        }
+
+        a.active {
+            color: $primary;
+        }
+    }
+}
