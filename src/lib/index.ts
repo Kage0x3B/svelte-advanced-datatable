@@ -12,7 +12,7 @@ export type { GenericComponentTypeProperties } from './dataComponent/GenericComp
 export type { NumberComponentTypeProperties } from './dataComponent/NumberComponentTypeProperties.js';
 export type { StringComponentTypeProperties } from './dataComponent/StringComponentTypeProperties.js';
 
-export type { FetchApiDataSource } from './dataSource/FetchApiDataSource.js';
+export { FetchApiDataSource } from './dataSource/FetchApiDataSource.js';
 export type { IDataSource } from './dataSource/IDataSource.js';
 export type { QueryObserver } from './dataSource/QueryObserver.js';
 
