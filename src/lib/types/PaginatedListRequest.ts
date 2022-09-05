@@ -1,6 +1,9 @@
+import type { ParsedSearchQuery } from '../searchParser/index.js';
 import type { DataRecord } from './DataRecord.js';
-import type { ParsedSearchQuery } from '../searchParser/ParsedSearchQuery.js';
 
+/**
+ * Request data which is sent by the datatable when it is first loaded or the used changed the page, searched or sorted a column
+ */
 export interface PaginatedListRequest<T extends DataRecord = DataRecord> {
 	start: number;
 	amount: number;

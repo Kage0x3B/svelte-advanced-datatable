@@ -32,7 +32,7 @@
 	<tr class='datatable-row' class:expanded={isOpen} class:highlighted on:click={rowOnClick}>
 		{#if item}
 			{#each Object.entries(config.columnProperties) as [key, colProp]}
-				{#if !colProp.cellHidden && !colProp.hidden}
+				{#if !colProp.hidden}
 					<td>
 						<InternalDataColumn IconComponent={SveltestrapIconWrapper} BadgeComponent={SveltestrapBadgeWrapper} {item} {key} />
 					</td>

@@ -4,10 +4,10 @@
 	import type { Readable } from 'svelte/store';
 	import { fade } from 'svelte/transition';
 	import { Icon, Spinner } from 'sveltestrap';
+	import type { ParsedSearchQuery } from '../searchParser/ParsedSearchQuery.js';
 	import type { DataRecord } from '../types/DataRecord.js';
 	import type { DataTableConfig, FullDataTableConfig } from '../types/DataTableConfig.js';
 	import type { MessageFormatter } from '../types/MessageFormatter.js';
-	import type { ParsedSearchQuery } from '../searchParser/ParsedSearchQuery.js';
 	import { DATATABLE_CONFIG, DATATABLE_MESSAGE_FORMATTER } from '../util/ContextKey.js';
 	import { mergeDataTableConfigDefaults } from '../util/dataTableConfigUtil.js';
 	import { clamp } from '../util/generalUtil.js';
@@ -71,7 +71,7 @@
 			<thead>
 				<tr>
 					{#each Object.entries(columnProperties) as [key, colProp], i}
-						{#if !colProp.cellHidden && !colProp.hidden}
+						{#if !colProp.hidden}
 							<th on:click={() => colProp.sortable && toggleSorting(key)}>
 								{$format(`dataTable.${config.type}.${key}.label`)}
 								{#if colProp.sortable && items.length > 1}

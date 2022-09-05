@@ -67,7 +67,7 @@ function validateMessageConfig(config: FullDataTableConfig): void {
 	for (const columnKey of Object.keys(config.columnProperties)) {
 		const columnConfig = config.columnProperties[columnKey];
 
-		if (columnConfig.cellHidden) {
+		if (columnConfig.hidden) {
 			continue;
 		}
 

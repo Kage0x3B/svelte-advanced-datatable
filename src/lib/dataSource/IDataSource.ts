@@ -12,7 +12,13 @@ export interface IDataSource<T extends DataRecord = DataRecord> {
 	 */
 	requestData(data: PaginatedListRequest<T>): Promise<PaginatedListResponse<T>> | Writable<QueryObserver>;
 
+	/**
+	 * Called by the datatable svelte component when it is mounted
+	 */
 	onMount?(): void;
 
+	/**
+	 * Hooks into SvelteKits {@link https://kit.svelte.dev/docs/modules#$app-navigation-afternavigate afterNavigate hook}
+	 */
 	afterNavigate?(): void;
 }
