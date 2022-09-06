@@ -1,6 +1,6 @@
 <script lang='ts'>
 	import { Breadcrumb, BreadcrumbItem } from 'sveltestrap';
-	import { apiReferenceCategories } from './apiReferenceMeta.js';
+	import { apiReferenceCategories } from '../../../(docs)/old/util/apiReferenceMeta.js';
 
 	export let currentPath: string;
 	export let baseUrl = '/';
@@ -15,6 +15,7 @@
 	$: breadcrumbs = buildBreadcrumbs(currentPath);
 
 	function buildBreadcrumbs(currentPath: string): BreadcrumbData[] {
+		currentPath = currentPath.startsWith(baseUrl) ? currentPath.substring(baseUrl.length) : currentPath;
 		const pathParts = currentPath.split('/');
 
 		const breadcrumbs: BreadcrumbData[] = [{

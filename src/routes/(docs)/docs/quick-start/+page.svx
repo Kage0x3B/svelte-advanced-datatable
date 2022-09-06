@@ -1,0 +1,42 @@
+# Quick Start
+
+The data
+
+```typescript
+interface UserData {
+	id: number;
+	userName: string;
+}
+```
+
+```html
+<script lang='ts'>
+	import type { DataTableConfig } from 'svelte-advanced-datatable';
+	import { ComponentType, FetchApiDataSource } from 'svelte-advanced-datatable';
+	import { DataTable } from 'svelte-advanced-datatable/sveltestrap';
+
+	const config: DataTableConfig<UserData> = {
+		type: 'userData',
+		columnProperties: {
+			id: {
+				type: ComponentType.NUMBER
+			},
+			userName: {
+				type: ComponentType.STRING
+			}
+		},
+		dataSource: new FetchApiDataSource('/api/users/list'),
+		dataUniquePropertyKey: 'id',
+		messageConfig: {
+			id: {
+				label: 'Id'
+			},
+			userName: {
+				label: 'Username'
+			}
+		}
+	};
+
+</script>
+<DataTable {config} />
+```

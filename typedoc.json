@@ -15,5 +15,6 @@
 	"hideGenerator": true,
 	"readme": "none",
 	"githubPages": false,
-	"hideBreadcrumbs": true
+	"hideBreadcrumbs": true,
+	"publicPath": "/api-reference/"
 }

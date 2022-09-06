@@ -6,6 +6,7 @@ specifiers:
   '@sveltejs/adapter-auto': 1.0.0-next.66
   '@sveltejs/kit': 1.0.0-next.444
   '@sveltejs/package': 1.0.0-next.1
+  '@types/github-slugger': ^1.3.0
   '@types/luxon': ^3.0.0
   '@types/marked': ^4.0.6
   '@typescript-eslint/eslint-plugin': ^4.33.0
@@ -14,6 +15,7 @@ specifiers:
   eslint: ^7.32.0
   eslint-config-prettier: ^8.5.0
   eslint-plugin-svelte3: ^3.4.1
+  github-slugger: ^1.4.0
   highlight.js: ^11.6.0
   luxon: ^3.0.1
   marked: ^4.1.0
@@ -40,6 +42,7 @@ devDependencies:
   '@sveltejs/adapter-auto': 1.0.0-next.66
   '@sveltejs/kit': 1.0.0-next.444_svelte@3.49.0+vite@3.0.9
   '@sveltejs/package': 1.0.0-next.1_k5n4uipe6734vn7334tf7n5ml4
+  '@types/github-slugger': 1.3.0
   '@types/luxon': 3.0.0
   '@types/marked': 4.0.6
   '@typescript-eslint/eslint-plugin': 4.33.0_mhw7s7g7fa36tpmw5rkmjqvi6q
@@ -48,6 +51,7 @@ devDependencies:
   eslint: 7.32.0
   eslint-config-prettier: 8.5.0_eslint@7.32.0
   eslint-plugin-svelte3: 3.4.1_k4rvtr32uzrs6rwp57u73ssa6q
+  github-slugger: 1.4.0
   highlight.js: 11.6.0
   luxon: 3.0.1
   marked: 4.1.0
@@ -385,6 +389,10 @@ packages:
   /@tootallnate/once/1.1.2:
     resolution: {integrity: sha512-RbzJvlNzmRq5c3O09UipeuXno4tA1FE6ikOjxZK0tuxVv3412l64l5t1W5pj4+rJq9vpkm/kwiR07aZXnsKPxw==}
     engines: {node: '>= 6'}
+    dev: true
+
+  /@types/github-slugger/1.3.0:
+    resolution: {integrity: sha512-J/rMZa7RqiH/rT29TEVZO4nBoDP9XJOjnbbIofg7GQKs4JIduEO3WLpte+6WeUz/TcrXKlY+bM7FYrp8yFB+3g==}
     dev: true
 
   /@types/json-schema/7.0.11:
@@ -1636,6 +1644,10 @@ packages:
     resolution: {integrity: sha512-0fzj9JxOLfJ+XGLhR8ze3unN0KZCgZwiSSDz168VERjK8Wl8kVSdcu2kspd4s4wtAa1y/qrVRiAA0WclVsu0ng==}
     dependencies:
       assert-plus: 1.0.0
+    dev: true
+
+  /github-slugger/1.4.0:
+    resolution: {integrity: sha512-w0dzqw/nt51xMVmlaV1+JRzN+oCa1KfcgGEWhxUG16wbdA+Xnt/yoFO8Z8x/V82ZcZ0wy6ln9QDup5avbhiDhQ==}
     dev: true
 
   /glob-parent/5.1.2:
