@@ -1,6 +1,6 @@
 <script lang='ts'>
 	import { Breadcrumb, BreadcrumbItem } from 'sveltestrap';
-	import { apiReferenceCategories } from '../../../(docs)/old/util/apiReferenceMeta.js';
+	import { apiReferenceCategories } from '../../apiReferenceMeta.js';
 
 	export let currentPath: string;
 	export let baseUrl = '/';
