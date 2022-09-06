@@ -37,10 +37,6 @@ function processDirectoryFiles(directoryPath) {
 			processDirectoryFiles(path.join(directoryPath, file.name));
 		}
 	}
-	console.log('Moved files, new folder files:');
-	for (const fullFileName of fs.readdirSync(directoryPath, { encoding: 'utf-8' })) {
-		console.log(fullFileName);
-	}
 }
 
 const escapeReplace = /[&<'{]|\\>/g;
@@ -97,10 +93,6 @@ function fixRelativeUrls(markdownContent) {
 
 		fixedUrl += parsedUrl.hash;
 
-		if (parsedUrl.path.includes('.')) {
-			console.log(url, '->', parsedUrl, '->', fixedUrl);
-		}
-
 		return `](${fixedUrl})`;
 	});
 }
@@ -145,3 +137,5 @@ function processMarkdownFile(filePath) {
 }
 
 processDirectoryFiles(docFilePath);
+
+console.info(`Processed typedoc markdown files in directory ${docFilePath}`);
