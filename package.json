@@ -49,5 +49,21 @@
 		"typescript": "^4.8.2",
 		"vite": "^3.0.9"
 	},
-	"type": "module"
+	"type": "module",
+	"peerDependencies": {
+		"sveltestrap": "5.x",
+		"@sveltestack/svelte-query": "1.x",
+		"svelte-i18n": "3.x"
+	},
+	"peerDependenciesMeta": {
+		"sveltestrap": {
+			"optional": false
+		},
+		"@sveltestack/svelte-query": {
+			"optional": true
+		},
+		"svelte-i18n": {
+			"optional": true
+		}
+	}
 }

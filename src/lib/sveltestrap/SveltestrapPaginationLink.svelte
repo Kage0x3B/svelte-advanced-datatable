@@ -37,9 +37,9 @@
 
 <a {...$$restProps} class={classes} {href} on:click on:dragstart={preventEvent}>
 	{#if previous || first}
-		<span aria-hidden='true'><slot>{caretCharacter}</slot></span>&nbsp;<span class='sr-only d-none d-xl-inline'>{$format(`pagination.${type}`)}</span>
+		<span aria-hidden='true'><slot>{caretCharacter}</slot></span><span class='sr-only d-none d-xl-inline'>&nbsp;{$format(`pagination.${type}`)}</span>
 	{:else if next || last}
-		<span class='sr-only d-none d-xl-inline'>{$format(`pagination.${type}`)}</span>&nbsp;<span aria-hidden='true'><slot>{caretCharacter}</slot></span>
+		<span class='sr-only d-none d-xl-inline'>{$format(`pagination.${type}`)}&nbsp;</span><span aria-hidden='true'><slot>{caretCharacter}</slot></span>
 	{:else}
 		<slot />
 	{/if}

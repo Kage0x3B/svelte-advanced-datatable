@@ -2,7 +2,7 @@
 	import { sveltestrapColorMap, sveltestrapIconNameMap } from './sveltestrapWrappedComponentPropertyMap.js';
 	import { mapValue } from '$lib/util/generalUtil.js';
 	import { Icon } from 'sveltestrap';
-	import type { WrappedComponentColor, WrappedIconName } from '../types/WrappedComponentProperty.js';
+	import type { WrappedComponentColor, WrappedIconName } from '../dataComponent/WrappedComponentProperty.js';
 
 	export let name: WrappedIconName;
 	export let color: WrappedComponentColor;

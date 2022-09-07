@@ -1,3 +1,13 @@
-export type WrappedIconName = 'check' | 'cross';
+export enum WrappedIconName {
+	check = 'check',
+	cross = 'cross'
+}
 
-export type WrappedComponentColor = 'red' | 'green' | 'blue' | 'gray' | 'dark' | 'light';
+export enum WrappedComponentColor {
+	red = 'red',
+	green = 'green',
+	blue = 'blue',
+	gray = 'gray',
+	dark = 'dark',
+	light = 'light'
+}

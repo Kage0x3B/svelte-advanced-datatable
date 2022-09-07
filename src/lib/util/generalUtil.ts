@@ -1,6 +1,10 @@
 import type { DateTime } from 'luxon';
 import type { Readable } from 'svelte/store';
 import { readable } from 'svelte/store';
+import type { ApiFunction } from '../types/ApiFunction.js';
+import type { DataRecord } from '../types/DataRecord.js';
+import type { PaginatedListRequest } from '../types/PaginatedListRequest.js';
+import type { PaginatedListResponse } from '../types/PaginatedListResponse.js';
 
 // eslint-disable-next-line @typescript-eslint/ban-types
 export function hasOwnProperty<X extends {}, Y extends PropertyKey>(obj: X, prop: Y): obj is X & Record<Y, unknown> {
@@ -68,4 +72,35 @@ export function mapValue<Key extends string, Value extends string>(
 			return undefined;
 		}
 	}
+}
+
+export function wrapFetchToThrow<T extends DataRecord = DataRecord>(
+	func: (data: PaginatedListRequest<T>) => Promise<Response>
+): ApiFunction<T> {
+	return async (request) => {
+		const { ok, json } = await func(request);
+
+		let resData: DataRecord | undefined = undefined;
+
+		try {
+			resData = await json();
+			// eslint-disable-next-line no-empty
+		} catch (ignored) {}
+
+		if (ok && typeof resData !== 'undefined') {
+			return resData as unknown as PaginatedListResponse<T>;
+		} else {
+			const errorMessage =
+				typeof resData !== 'undefined' && hasOwnProperty(resData, 'message')
+					? String(resData.message)
+					: 'Unknown network error';
+			const error = new Error(errorMessage);
+
+			if (resData) {
+				Object.assign(error, resData);
+			}
+
+			throw error;
+		}
+	};
 }

@@ -1,4 +1,4 @@
-import type { WrappedComponentColor, WrappedIconName } from '../types/WrappedComponentProperty.js';
+import type { WrappedComponentColor, WrappedIconName } from '../dataComponent/WrappedComponentProperty.js';
 
 export const sveltestrapIconNameMap: Record<WrappedIconName, string> = {
 	check: 'check',

@@ -11,11 +11,23 @@ export type { EnumComponentTypeProperties } from './dataComponent/EnumComponentT
 export type { GenericComponentTypeProperties } from './dataComponent/GenericComponentTypeProperties.js';
 export type { NumberComponentTypeProperties } from './dataComponent/NumberComponentTypeProperties.js';
 export type { StringComponentTypeProperties } from './dataComponent/StringComponentTypeProperties.js';
+export { WrappedIconName, WrappedComponentColor } from './dataComponent/WrappedComponentProperty.js';
 
+export { AbstractDataSource } from './dataSource/AbstractDataSource.js';
+export { ApiFunctionDataSource } from './dataSource/ApiFunctionDataSource.js';
 export { FetchApiDataSource } from './dataSource/FetchApiDataSource.js';
 export type { IDataSource } from './dataSource/IDataSource.js';
+export { LocalDataSource } from './dataSource/LocalDataSource.js';
+export type { LocalDataSourceOptions } from './dataSource/LocalDataSource.js';
 export type { QueryObserver } from './dataSource/QueryObserver.js';
+export { SvelteQueryDataSource } from './dataSource/SvelteQueryDataSource.js';
+export type {
+	DataTableQueryKey,
+	DataTableUseQueryOptions,
+	DataTableUseQueryStoreResult
+} from './dataSource/SvelteQueryDataSource.js';
 
+export type { ApiFunction } from './types/ApiFunction.js';
 export type { DataRecord } from './types/DataRecord.js';
 export type { DataTableConfig, MessageConfig, ColumnMessageConfig } from './types/DataTableConfig.js';
 export type { MessageFormatter, InterpolationValues } from './types/MessageFormatter.js';
@@ -25,3 +37,4 @@ export type { SearchFilter } from './types/SearchFilter.js';
 export type { SortDirection } from './types/SortDirection.js';
 
 export type { DATATABLE_CONFIG, DATATABLE_MESSAGE_FORMATTER } from './util/ContextKey.js';
+export { wrapFetchToThrow } from './util/generalUtil.js';

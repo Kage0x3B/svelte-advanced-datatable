@@ -1,4 +1,4 @@
-import type { WrappedComponentColor } from '../types/WrappedComponentProperty.js';
+import type { WrappedComponentColor } from './WrappedComponentProperty.js';
 import type { ComponentType } from './ComponentType.js';
 import type { GenericComponentTypeProperties } from './GenericComponentTypeProperties.js';
 

@@ -3,19 +3,17 @@
 	import { afterNavigate, goto } from '$app/navigation';
 	import { page } from '$app/stores';
 	import { getContext, onMount } from 'svelte';
-	import type { Writable } from 'svelte/store';
-	import { writable } from 'svelte/store';
+	import type { Readable } from 'svelte/store';
 	import type { QueryObserver } from '../dataSource/QueryObserver.js';
-	import { buildErrorQueryObserver, buildLoadingQueryObserver, buildSuccessQueryObserver } from '../dataSource/QueryObserver.js';
+	import type { ParsedSearchQuery } from '../searchParser';
 	import type { ForcedSearchQuery } from '../searchParser/ForcedSearchQuery.js';
 	import type { FullDataTableConfig } from '../types/DataTableConfig.js';
 	import type { PaginatedListRequest } from '../types/PaginatedListRequest.js';
 	import type { PaginatedListResponse } from '../types/PaginatedListResponse.js';
-	import type { ParsedSearchQuery } from '../searchParser/ParsedSearchQuery.js';
 	import type { SortDirection } from '../types/SortDirection.js';
 	import { DATATABLE_CONFIG } from '../util/ContextKey.js';
 	import { buildColumnPropertyData } from '../util/dataTableUtil.js';
-	import { isStore, wrapPossibleStore } from '../util/generalUtil.js';
+	import { wrapPossibleStore } from '../util/generalUtil.js';
 
 	const config: FullDataTableConfig = getContext(DATATABLE_CONFIG);
 
@@ -34,7 +32,11 @@
 
 	const dataSource = wrapPossibleStore(config.dataSource);
 	const highlightedItemId = wrapPossibleStore(config.highlightedItemId);
-	let dataQueryObserver: Writable<QueryObserver> = writable(buildLoadingQueryObserver());
+	let dataQueryObserver: Readable<QueryObserver>;
+	$: if ($dataSource) {
+		$dataSource.init && $dataSource.init(config);
+		dataQueryObserver = $dataSource.getQueryObserver();
+	}
 
 	$: refresh(currentPage, config.itemsPerPage, sortColumnKey, sortDirection, config.forcedSearchQuery, searchQuery);
 	$: $dataQueryObserver.isSuccess && updateData($dataQueryObserver.data);
@@ -81,17 +83,7 @@
 			}
 		};
 
-		const response = $dataSource.requestData(requestData);
-
-		if (isStore(response)) {
-			dataQueryObserver = response;
-		} else {
-			$dataQueryObserver = buildLoadingQueryObserver();
-
-			response
-				.then(data => $dataQueryObserver = buildSuccessQueryObserver(data))
-				.catch(err => $dataQueryObserver = buildErrorQueryObserver(err as Error));
-		}
+		$dataSource.requestData(requestData);
 	}
 
 	function toggleSorting(columnKey) {
