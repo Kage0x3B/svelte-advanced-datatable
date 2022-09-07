@@ -17,7 +17,9 @@ const config = {
 		})
 	],
 	kit: {
-		adapter: adapter(),
+		adapter: adapter({
+			fallback: 'spa.html'
+		}),
 		prerender: {
 			default: true
 		}
