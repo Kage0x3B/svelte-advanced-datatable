@@ -13,7 +13,7 @@ const defaultConfig: Partial<DataTableConfig> = {
 		columnKey: undefined,
 		direction: false
 	},
-	showPagination: true,
+	enablePagination: true,
 	showTopPagination: true,
 	showBottomPagination: true,
 	itemsPerPage: 50,
@@ -31,13 +31,13 @@ const defaultConfig: Partial<DataTableConfig> = {
 			ariaLabel: 'Search'
 		}
 	} as MessageConfig,
-	showSearch: true,
+	enableSearch: true,
 	searchParser: new BasicTextSearchParser()
 };
 
 export function mergeDataTableConfigDefaults<T extends DataRecord>(config: DataTableConfig<T>): FullDataTableConfig<T> {
-	const showPagination = config.showPagination ?? defaultConfig.showPagination;
-	const itemsPerPage = config.itemsPerPage ?? (showPagination ? defaultConfig.itemsPerPage : Number.MAX_SAFE_INTEGER);
+	const enablePagination = config.enablePagination ?? defaultConfig.enablePagination;
+	const itemsPerPage = config.itemsPerPage ?? (enablePagination ? defaultConfig.itemsPerPage : Number.MAX_SAFE_INTEGER);
 
 	const fullConfig = {
 		...defaultConfig,

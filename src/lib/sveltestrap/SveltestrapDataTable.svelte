@@ -39,7 +39,7 @@
 	<div class='d-flex justify-content-between align-items-center mb-3'>
 		<div class='d-flex flex-row align-items-center'>
 			<slot name='header-first' />
-			{#if config.showSearch}
+			{#if config.enableSearch}
 				<div class='me-3'>
 					<SearchField bind:searchInput bind:searchQuery />
 				</div>
@@ -52,7 +52,7 @@
 			{/if}
 			<slot name='header-middle' />
 		</div>
-		{#if config.showPagination && config.showTopPagination}
+		{#if config.enablePagination && config.showTopPagination}
 			<div class='d-flex flex-row justify-content-center flex-wrap'>
 				<div class='d-flex align-items-center'>
 					{#if itemAmount >= 0}
@@ -97,7 +97,7 @@
 			</tbody>
 		</table>
 	</div>
-	{#if items.length > 10 && config.showPagination}
+	{#if items.length > 10 && config.enablePagination && config.showBottomPagination}
 		<div class='d-flex justify-content-between align-items-center' transition:fade|local={{duration: 200}}>
 			<div>
 				{#if queryObserver.isLoading}

@@ -113,12 +113,12 @@
 		await goto(`?${searchParams.toString()}`, { replaceState: true, keepfocus: true });
 	}
 
-	$: browser && config.showSearch && updateNavigation($page.url.searchParams, searchInput);
+	$: browser && config.enableSearch && updateNavigation($page.url.searchParams, searchInput);
 
 	const open = (index: number) => currentOpenIndex = items.length <= 1 ? 0 : index;
 
 	onMount(() => {
-		if (config.showSearch && $page.url.searchParams.has('query')) {
+		if (config.enableSearch && $page.url.searchParams.has('query')) {
 			searchInput = decodeURIComponent($page.url.searchParams.get('query'));
 		}
 

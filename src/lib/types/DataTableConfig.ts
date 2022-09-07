@@ -127,7 +127,7 @@ export interface DataTableConfig<T extends DataRecord = DataRecord> {
 	/**
 	 * Whether to show the search textbox
 	 */
-	showSearch?: boolean;
+	enableSearch?: boolean;
 
 	/**
 	 * Which search parser to use to parse the users search text into search filters, categories and more
