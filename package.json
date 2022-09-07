@@ -47,13 +47,14 @@
 		"typedoc-plugin-markdown": "^3.13.5",
 		"typedoc-plugin-mdn-links": "^2.0.0",
 		"typescript": "^4.8.2",
+		"unist-builder": "^3.0.0",
 		"vite": "^3.0.9"
 	},
 	"type": "module",
 	"peerDependencies": {
-		"sveltestrap": "5.x",
 		"@sveltestack/svelte-query": "1.x",
-		"svelte-i18n": "3.x"
+		"svelte-i18n": "3.x",
+		"sveltestrap": "5.x"
 	},
 	"peerDependenciesMeta": {
 		"sveltestrap": {
