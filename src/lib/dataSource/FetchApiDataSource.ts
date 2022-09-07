@@ -14,7 +14,7 @@ export class FetchApiDataSource<T extends DataRecord = DataRecord> extends Abstr
 	 * The endpoint will receive HTTP POST requests with a json body consisting of an {@link PaginatedListRequest}.
 	 * Your server has to answer with a {@link PaginatedListResponse} json body.
 	 * @param url a url to your api endpoint, for example `/api/users/list`
-	 * @param options request init options which get passed directly to fetch
+	 * @param options [request init options](https://developer.mozilla.org/en-US/docs/Web/API/fetch#options) which get passed directly to fetch
 	 */
 	constructor(private url: string, private options: RequestInit = {}) {
 		super();

@@ -44,17 +44,17 @@ export enum ComponentType {
 	 */
 	ENUM = 'enum',
 	/**
-	 * Custom type to render a table column with a custom svelte component.
-	 *
-	 * @see {@link CustomComponentTypeProperties}
-	 */
-	CUSTOM = 'custom',
-	/**
 	 * Date type supporting the normal JavaScript {@link Date} as well as {@link https://moment.github.io/luxon luxon DateTime}
 	 *
 	 * @see {@link DateComponentTypeProperties}
 	 */
-	DATE = 'date'
+	DATE = 'date',
+	/**
+	 * Custom type to render a table column with a custom svelte component
+	 *
+	 * @see {@link CustomComponentTypeProperties}
+	 */
+	CUSTOM = 'custom'
 }
 
 export type ComponentTypeProperties = RequiredTypeProperty<
