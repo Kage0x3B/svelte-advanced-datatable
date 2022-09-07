@@ -1,18 +1,8 @@
 <script lang='ts'>
 	import type { DataTableConfig } from '$lib';
-	import { ComponentType } from '$lib';
+	import { ComponentType, SvelteQueryDataSource, wrapFetchToThrow } from '$lib';
 	import { DataTable } from '$lib/sveltestrap';
-	import { useQuery } from '@sveltestack/svelte-query';
-	import { SvelteQueryDataSource } from '$lib/dataSource/SvelteQueryDataSource.js';
-
-	interface UserData {
-		id: number;
-		userName: string;
-	}
-
-	const userQuery = useQuery('userData', data => fetch('/example-data/', {
-		body: JSON.stringify(data)
-	}));
+	import type { UserData } from '../../util/UserData.js';
 
 	const config: DataTableConfig<UserData> = {
 		type: 'userData',
@@ -24,7 +14,7 @@
 				type: ComponentType.STRING
 			}
 		},
-		dataSource: new SvelteQueryDataSource(),
+		dataSource: new SvelteQueryDataSource(wrapFetchToThrow(() => fetch('/example-data/users.json'))),
 		dataUniquePropertyKey: 'id',
 		messageConfig: {
 			id: {

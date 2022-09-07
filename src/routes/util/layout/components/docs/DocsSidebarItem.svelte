@@ -10,13 +10,14 @@
 	export let matchActiveRegex: RegExp | undefined = undefined;
 	export let matchActiveExact = href === '/';
 
+	$: fullHref = docsBaseUrl + href?.toLowerCase();
 	$: currentPath = $page.url.pathname.toLowerCase();
-	$: active = matchActiveRegex ? matchActiveRegex!.test(currentPath) : matchActiveExact ? currentPath === href?.toLowerCase() : currentPath.startsWith(href?.toLowerCase());
+	$: active = !!href && (matchActiveRegex ? matchActiveRegex!.test(currentPath) : matchActiveExact ? currentPath === fullHref : currentPath.startsWith(fullHref));
 </script>
 
 <NavItem class=''>
 	{#if href}
-		<NavLink class='p-3 pb-0' href='{docsBaseUrl}{href}'>
+		<NavLink class='p-3 pb-0' href={fullHref} {active}>
 			<slot />
 		</NavLink>
 	{:else if heading}
