@@ -1,8 +1,12 @@
+---
+title: Quick Start
+---
+
 <script>
 	import ExampleTable from '../../../../util/ExampleTable.svelte';
 </script>
 
-# Quick start
+# Quick Start
 
 Suppose you want to show a list of all of your users in a table. For this first example, the user only has an `id` and a `userName` field:
 

@@ -1,5 +1,4 @@
 <script context='module' lang='ts'>
-	import GithubSlugger from 'github-slugger';
 	import MarkdownH1 from './components/heading/MarkdownH1.svelte';
 	import MarkdownH2 from './components/heading/MarkdownH2.svelte';
 	import MarkdownH3 from './components/heading/MarkdownH3.svelte';
@@ -13,15 +12,13 @@
 	import MarkdownTable from './components/MarkdownTable.svelte';
 	import MarkdownUnorderedList from './components/MarkdownUnorderedList.svelte';
 
-	const slugger = new GithubSlugger();
-	export { slugger };
-
 	export { MarkdownH1 as h1, MarkdownH2 as h2, MarkdownH3 as h3, MarkdownH4 as h4, MarkdownH5 as h5, MarkdownH6 as h6, MarkdownUnorderedList as ul, MarkdownOrderedList as ol, MarkdownListItem as li, MarkdownLink as a, MarkdownTable as table, MarkdownHorizontalRule as hr };
 </script>
 
 <script lang='ts'>
 	import { Col, Container, Row } from 'sveltestrap';
 	import { onDestroy } from 'svelte';
+	import { slugger } from './api-reference-layout.svelte';
 	import DocsSidebar from './components/docs/DocsSidebar.svelte';
 
 	export let title = undefined;

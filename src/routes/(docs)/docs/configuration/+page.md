@@ -1,3 +1,7 @@
+---
+title: Configuration
+---
+
 # Configuration
 
 The most important part of getting your datatable ready to be used is the proper configuration.
@@ -21,7 +25,7 @@ const config: DataTableConfig<UserData> = {
 };
 ```
 
-If you use TypeScript, you can annotate your config with the [DataTableConfig](/api-reference/interfaces/DataTableConfig) type to get autocompletion tips and errors from your IDE.
+!> If you use TypeScript, you can annotate your config with the [DataTableConfig](/api-reference/interfaces/DataTableConfig) type to get autocompletion tips and errors from your IDE.
 
 ## Configuration Reference
 
@@ -32,7 +36,7 @@ The configuration has the following options:
 |:-----------------------------|:----------------------------------------------------|:--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|:----------------------------------|
 | `type`                       | `string`                                            | A unique identifier/name for this datatable. Should not contain whitespaces and non-ascii characters                                                                                  | required                          |
 | `columnProperties`           | `TableColumnConfig`                                 | An object with one key for each key in the data, containing configuration options for each table column                                                                               | required                          |
-| `dataSource`                 | `IDataSource`                                       | The data source where the datatable requests the table data from                                                                                                                      | required                          |
+| `dataSource`                 | `IDataSource`                                       | The data source where the datatable requests the table data from. See [Data Source Configuration](/docs/configuration/data-sources) for more information                              | required                          |
 | `dataUniquePropertyKey`      | `string`                                            | The key of your items unique identifier. For example a user id or a counter value which increases by one for each item, as long as it's unique for each item                          | required                          |
 | `messageFormatterType`       | `'config' ⎮ 'svelte-i18n'`                          | Whether to use the messageConfig or the svelte-i18n library to provide all strings used by the datatable                                                                              | `'config'`                        |
 | `messageFormatterPrefix`     | `string`                                            | Prefix for every message id. Only applies to external message formatters such as the svelte-i18n formatter.                                                                           | `''`                              |
@@ -47,6 +51,6 @@ The configuration has the following options:
 | `showTopPagination`          | `boolean`                                           | If the pagination component at the top of the datatable should be shown                                                                                                               | `true`                            |
 | `showBottomPagination`       | `boolean`                                           | If the pagination component at the bottom of the datatable should be shown. Notice that the bottom pagination is always hidden when less than 10 rows are shown                       | `true`                            |
 | `itemsPerPage`               | `number`                                            | Maximum amount of rows shown on one page                                                                                                                                              | `50`                              |
-| `enableSearch`                 | `boolean`                                           | Whether to show the search textbox                                                                                                                                                    | `true`                            |
+| `enableSearch`               | `boolean`                                           | Whether to show the search textbox                                                                                                                                                    | `true`                            |
 | `searchParser`               | `ISearchParser`                                     | Which search parser to use to parse the users search text into search filters, categories and more                                                                                    | `BasicSearchTextParser`           |
 

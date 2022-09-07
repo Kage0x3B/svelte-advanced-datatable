@@ -1,3 +1,7 @@
+---
+title: Installation
+---
+
 # Installation
 
 You can install Svelte Advanced Datatable with your favorite package manager

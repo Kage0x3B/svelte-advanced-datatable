@@ -19,8 +19,17 @@
 	<SidebarItem heading>
 		Configuration
 	</SidebarItem>
-	<SidebarItem href='configuration'>
+	<SidebarItem href='configuration' matchActiveExact>
 		General
+	</SidebarItem>
+	<SidebarItem href='configuration/column-config'>
+		Column Configuration
+	</SidebarItem>
+	<SidebarItem href='configuration/data-sources'>
+		Data Sources
+	</SidebarItem>
+	<SidebarItem heading>
+		Guides
 	</SidebarItem>
 </Nav>
 
