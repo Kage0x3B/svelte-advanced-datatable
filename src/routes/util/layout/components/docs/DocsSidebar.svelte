@@ -7,14 +7,20 @@
 	<SidebarItem heading>
 		Getting started
 	</SidebarItem>
-	<SidebarItem href='overview'>
+	<SidebarItem href='getting-started' matchActiveExact>
 		Overview
 	</SidebarItem>
-	<SidebarItem href='installation'>
+	<SidebarItem href='getting-started/installation'>
 		Installation
 	</SidebarItem>
-	<SidebarItem href='quick-start'>
+	<SidebarItem href='getting-started/quick-start'>
 		Quick Start
+	</SidebarItem>
+	<SidebarItem heading>
+		Configuration
+	</SidebarItem>
+	<SidebarItem href='configuration'>
+		General
 	</SidebarItem>
 </Nav>
 

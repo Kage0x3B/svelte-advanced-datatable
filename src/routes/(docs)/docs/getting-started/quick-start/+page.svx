@@ -1,5 +1,5 @@
 <script>
-	import ExampleTable from '../../../util/ExampleTable.svelte';
+	import ExampleTable from '../../../../util/ExampleTable.svelte';
 </script>
 
 # Quick start
@@ -28,10 +28,14 @@ Add the DataTable component as well as the accompanying config to your page:
 <script lang='ts'>
 	import type { DataTableConfig } from 'svelte-advanced-datatable';
 	import { ComponentType, LocalDataSource } from 'svelte-advanced-datatable';
+	// Notice that the DataTable component is imported from the /sveltestrap package to support Sveltestrap UI components
 	import { DataTable } from 'svelte-advanced-datatable/sveltestrap';
 
+	// Config for our datatable
 	const config: DataTableConfig<UserData> = {
+		// Give it a name/identifier, required internally to manage multiple datatables on one page
 		type: 'userData',
+		// Configure what type the data in each of the table columns has
 		columnProperties: {
 			id: {
 				type: ComponentType.NUMBER
@@ -40,12 +44,16 @@ Add the DataTable component as well as the accompanying config to your page:
 				type: ComponentType.STRING
 			}
 		},
+		// The datatable requires one key of the object to contain a unique identifier, such as a user id.
 		dataUniquePropertyKey: 'id',
+		// Where do we get the data from? In this example we just use the contents of the exampleUserData array from above.
 		dataSource: new LocalDataSource(exampleUserData, {
 			filtering: {
+				// Enable search for these columns
 				textSearchColumns: ['userName']
 			}
 		}),
+		// Give your columns fancier names to display in the table header
 		messageConfig: {
 			id: {
 				label: 'Id'
@@ -61,9 +69,8 @@ Add the DataTable component as well as the accompanying config to your page:
 
 ```
 
-Notice that the DataTable component is imported from `svelte-advanced-datatable/sveltestrap` to support the Bootstrap design with sveltestrap components.
+This short code-snippet will already result in the following datatable:
 
-The DataTable component itself only requires one attribute, the datatable config and
 
 <ExampleTable path='sveltestrap/basic/first-example' description='This is what your resulting datatable will look like!' />
 

@@ -3,5 +3,5 @@
 	import { onMount } from 'svelte';
 
 	onMount(() =>
-		goto('/docs/overview', { replaceState: true }));
+		goto('/docs/getting-started', { replaceState: true }));
 </script>

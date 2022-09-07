@@ -13,7 +13,7 @@
 	<Collapse isOpen={isNavbarOpen} navbar expand='md' on:update={handleUpdate}>
 		<Nav class='ms-auto' navbar>
 			<NavItem>
-				<NavLink href='/docs/overview'>Documentation</NavLink>
+				<NavLink href='/docs/getting-started'>Documentation</NavLink>
 			</NavItem>
 			<NavItem>
 				<NavLink href='/api-reference'>API Reference</NavLink>
