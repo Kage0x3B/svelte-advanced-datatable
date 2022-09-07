@@ -2,8 +2,8 @@
 	import type { DataTableConfig } from '$lib';
 	import { ComponentType } from '$lib';
 	import { DataTable } from '$lib/sveltestrap';
-	import { LocalDataSource } from '../../../../lib/dataSource/LocalDataSource.js';
-	import { exampleUserList } from '../../util/UserData.js';
+	import { LocalDataSource } from '$lib/dataSource/LocalDataSource.js';
+	import { exampleUserList } from '../../../util/UserData.js';
 
 	interface UserData {
 		id: number;
@@ -20,7 +20,7 @@
 				type: ComponentType.STRING
 			}
 		},
-		dataSource: new LocalDataSource<UserData>(exampleUserList, {
+		dataSource: new LocalDataSource(exampleUserList, {
 			filtering: {
 				textSearchColumns: ['userName']
 			}

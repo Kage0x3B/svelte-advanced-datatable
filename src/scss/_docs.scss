@@ -19,3 +19,9 @@
         }
     }
 }
+
+pre[class*="language-"] {
+    margin: 1rem 0 2rem !important;
+    border: 1px solid #eee;
+    border-radius: 0.25rem;
+}

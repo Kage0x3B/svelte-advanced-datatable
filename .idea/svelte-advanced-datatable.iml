@@ -8,6 +8,7 @@
       <excludeFolder url="file://$MODULE_DIR$/.svelte-kit" />
       <excludeFolder url="file://$MODULE_DIR$/src/routes/(docs)/(api-reference)/api-reference/files" />
       <excludeFolder url="file://$MODULE_DIR$/src/routes/(docs)/(api-reference)/api-reference" />
+      <excludeFolder url="file://$MODULE_DIR$/build" />
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />

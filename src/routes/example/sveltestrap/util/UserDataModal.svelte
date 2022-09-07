@@ -1,6 +1,6 @@
 <script lang='ts'>
 	import { Alert, Col, Row } from 'sveltestrap';
-	import type { UserData } from '../../data/users/UserData.js';
+	import type { UserData } from '../../util/UserData.js';
 
 	export let item: UserData;
 	export let toggle = undefined;

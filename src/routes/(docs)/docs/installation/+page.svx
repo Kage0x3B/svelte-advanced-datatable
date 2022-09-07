@@ -1,8 +1,0 @@
-# Installation
-
-You can install Svelte Advanced Datatable with your favorite package manager
-
-```shell
-$ npm i svelte-advanced-datatable
-$ pnpm add @sveltestack/svelte-query
-```

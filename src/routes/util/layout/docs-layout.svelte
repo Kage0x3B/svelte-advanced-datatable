@@ -6,11 +6,17 @@
 	import MarkdownH4 from './components/heading/MarkdownH4.svelte';
 	import MarkdownH5 from './components/heading/MarkdownH5.svelte';
 	import MarkdownH6 from './components/heading/MarkdownH6.svelte';
+	import MarkdownHorizontalRule from './components/MarkdownHorizontalRule.svelte';
+	import MarkdownLink from './components/MarkdownLink.svelte';
+	import MarkdownListItem from './components/MarkdownListItem.svelte';
+	import MarkdownOrderedList from './components/MarkdownOrderedList.svelte';
+	import MarkdownTable from './components/MarkdownTable.svelte';
+	import MarkdownUnorderedList from './components/MarkdownUnorderedList.svelte';
 
 	const slugger = new GithubSlugger();
 	export { slugger };
 
-	export { MarkdownH1 as h1, MarkdownH2 as h2, MarkdownH3 as h3, MarkdownH4 as h4, MarkdownH5 as h5, MarkdownH6 as h6 };
+	export { MarkdownH1 as h1, MarkdownH2 as h2, MarkdownH3 as h3, MarkdownH4 as h4, MarkdownH5 as h5, MarkdownH6 as h6, MarkdownUnorderedList as ul, MarkdownOrderedList as ol, MarkdownListItem as li, MarkdownLink as a, MarkdownTable as table, MarkdownHorizontalRule as hr };
 </script>
 
 <script lang='ts'>

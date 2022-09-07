@@ -18,7 +18,10 @@
 </script>
 
 <svelte:element this={headingTag} class='markdown-heading' class:mb-5={headingLevel === 1} id={slug}>
-	<span bind:this={headingTextElement}><slot /></span> <a class='direct-link' title='Direct link to heading' href='#{slug}'>#</a>
+	<span bind:this={headingTextElement}><slot /></span>
+	{#if headingLevel > 1}
+		<a class='direct-link' title='Direct link to heading' href='#{slug}'>#</a>
+	{/if}
 </svelte:element>
 
 <style>

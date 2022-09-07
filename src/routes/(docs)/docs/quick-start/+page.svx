@@ -1,18 +1,33 @@
-# Quick Start
+<script>
+	import ExampleTable from '../../../util/ExampleTable.svelte';
+</script>
 
-The data
+# Quick start
+
+Suppose you want to show a list of all of your users in a table. For this first example, the user only has an `id` and a `userName` field:
 
 ```typescript
-interface UserData {
+type UserData = {
 	id: number;
 	userName: string;
-}
+};
+
+const exampleUserData: UserData[] = [
+	{ id: 1, userName: 'Edmund.Rolfson21' },
+	{ id: 2, userName: 'Melody34' },
+	...otherUsers
+];
 ```
+
+In this example, we will be using Bootstrap with Sveltestrap for the UI components, hardcoded data (in the example generated with faker-js)
+and no i18n library yet, all strings will be hardcoded in the config.
+
+Add the DataTable component as well as the accompanying config to your page:
 
 ```html
 <script lang='ts'>
 	import type { DataTableConfig } from 'svelte-advanced-datatable';
-	import { ComponentType, FetchApiDataSource } from 'svelte-advanced-datatable';
+	import { ComponentType, LocalDataSource } from 'svelte-advanced-datatable';
 	import { DataTable } from 'svelte-advanced-datatable/sveltestrap';
 
 	const config: DataTableConfig<UserData> = {
@@ -25,8 +40,12 @@ interface UserData {
 				type: ComponentType.STRING
 			}
 		},
-		dataSource: new FetchApiDataSource('/api/users/list'),
 		dataUniquePropertyKey: 'id',
+		dataSource: new LocalDataSource(exampleUserData, {
+			filtering: {
+				textSearchColumns: ['userName']
+			}
+		}),
 		messageConfig: {
 			id: {
 				label: 'Id'
@@ -36,7 +55,15 @@ interface UserData {
 			}
 		}
 	};
-
 </script>
+
 <DataTable {config} />
+
 ```
+
+Notice that the DataTable component is imported from `svelte-advanced-datatable/sveltestrap` to support the Bootstrap design with sveltestrap components.
+
+The DataTable component itself only requires one attribute, the datatable config and
+
+<ExampleTable path='sveltestrap/basic/first-example' description='This is what your resulting datatable will look like!' />
+

@@ -11,14 +11,13 @@ const config = {
 			extensions: ['.md', '.svx'],
 			layout: {
 				'api-reference': './src/routes/util/layout/api-reference-layout.svelte',
-				docs: './src/routes/util/layout/docs-layout.svelte'
+				docs: './src/routes/util/layout/docs-layout.svelte',
+				_: './src/routes/util/layout/docs-layout.svelte'
 			}
 		})
 	],
 	kit: {
-		adapter: adapter({
-			fallback: 'spa.html'
-		}),
+		adapter: adapter(),
 		prerender: {
 			default: true
 		}
