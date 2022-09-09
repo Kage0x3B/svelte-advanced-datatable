@@ -1,4 +1,4 @@
-# svelte-advanced-datatable
+# Svelte Advanced Datatable
 
 (Documentation is still WIP)
 
@@ -8,17 +8,17 @@
 * Data pagination
 * Sorting, searching/filtering the data
 * Compatible with the [sveltestrap](https://sveltestrap.js.org) (Bootstrap) component framework or your own UI styles by
-  implementing a few components
+implementing a few components
 * Supports [svelte-i18n](https://github.com/kaisermann/svelte-i18n) or a custom i18n library
 * Data loaded using Fetch-API or the [svelte-query](https://github.com/SvelteStack/svelte-query) library
 
 ## Quick Links
 
-* [Documentation](https://svelte-advanced-datatable.js.org), or jump directly to information on the usage with:
-    * [Bootstrap + Sveltestrap UI](https://svelte-advanced-datatable.js.org/todo)
-    * [Svelte Query as a datasource](https://svelte-advanced-datatable.js.org/todo)
-    * [svelte-i18n for localisation](https://svelte-advanced-datatable.js.org/todo)
-* [API Documentation](https://svelte-advanced-datatable.js.org)
+* [Documentation](https://svelte-advanced-datatable.pages.dev/docs), or jump directly to information on the usage with:
+  * [Bootstrap + Sveltestrap UI](https://svelte-advanced-datatable.pages.dev/docs/getting-started/quick-start)
+  * [Svelte Query as a datasource](https://svelte-advanced-datatable.pages.dev/docs/configuration/data-sources#using-svelte-query)
+  * [svelte-i18n for localisation](https://svelte-advanced-datatable.pages.dev)
+* [API Reference](https://svelte-advanced-datatable.pages.dev/api-reference)
 
 ## Usage
 
@@ -76,4 +76,4 @@ To use the component, pass the config object with all required properties to it:
 <DataTable {config} />
 ```
 
-## [View the documentation](https://svelte-advanced-datatable.js.org) for all supported config options and more examples
+## [View the documentation](https://svelte-advanced-datatable.pages.dev/docs) for all supported config options and more examples
