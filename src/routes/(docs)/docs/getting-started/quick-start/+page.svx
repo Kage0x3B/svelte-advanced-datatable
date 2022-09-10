@@ -70,7 +70,6 @@ Add the DataTable component as well as the accompanying config to your page:
 </script>
 
 <DataTable {config} />
-
 ```
 
 This short code-snippet will already result in the following datatable:

@@ -23,6 +23,16 @@ i.icon-lg {
     font-size: 3rem;
 }
 
+i.icon-footer {
+    font-size: 1.6rem;
+    color: $secondary;
+    transition: color 0.2s;
+
+    &:hover {
+        color: $dark;
+    }
+}
+
 .cursor-pointer {
     cursor: pointer;
 }

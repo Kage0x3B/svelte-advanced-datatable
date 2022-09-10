@@ -1,6 +1,9 @@
 <script lang='ts'>
+	import { page } from '$app/stores';
 	import BootstrapStyles from './util/BootstrapStyles.svelte';
 	import MainNavbar from './util/MainNavbar.svelte';
+
+	$: message = $page.status === 404 ? 'We couldn\'t find the page you were looking for!' : ($page.error?.message ?? 'An error occurred');
 </script>
 
 <BootstrapStyles />
@@ -10,9 +13,9 @@
 
 <div class='d-flex flex-column justify-content-center align-items-center'>
 	<h1 class='text-primary mb-5'>
-		404
+		{$page.status}
 	</h1>
-	<h2 class='text-gray'>We couldn't find the page you were looking for!</h2>
+	<h2 class='text-gray'>{message}</h2>
 	<h3>
 		<a href='/'>Go back to the homepage</a>
 	</h3>

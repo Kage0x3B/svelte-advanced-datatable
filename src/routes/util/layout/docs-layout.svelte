@@ -18,6 +18,7 @@
 <script lang='ts'>
 	import { Col, Container, Row } from 'sveltestrap';
 	import { onDestroy } from 'svelte';
+	import Footer from '../Footer.svelte';
 	import { slugger } from './api-reference-layout.svelte';
 	import DocsSidebar from './components/docs/DocsSidebar.svelte';
 
@@ -30,14 +31,23 @@
 	<title>{title ?? "Documentation"} - Svelte Advanced Datatable</title>
 </svelte:head>
 
+<div id='page-container'>
+	<Row noGutters class='pb-6'>
+		<Col xs='12' md='3' lg='2'>
+			<DocsSidebar />
+		</Col>
+		<Col xs='12' md='9' lg='10'>
+			<Container class='pt-4'>
+				<slot />
+			</Container>
+		</Col>
+	</Row>
+	<Footer />
+</div>
 
-<Row>
-	<Col xs='12' md='3' lg='2'>
-		<DocsSidebar />
-	</Col>
-	<Col xs='12' md='9' lg='10'>
-		<Container class='pt-4'>
-			<slot />
-		</Container>
-	</Col>
-</Row>
+<style>
+    #page-container {
+        position: relative;
+        min-height: calc(100vh - 56px);
+    }
+</style>

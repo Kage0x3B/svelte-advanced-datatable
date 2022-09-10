@@ -78,16 +78,18 @@ export function wrapFetchToThrow<T extends DataRecord = DataRecord>(
 	func: (data: PaginatedListRequest<T>) => Promise<Response>
 ): ApiFunction<T> {
 	return async (request) => {
-		const { ok, json } = await func(request);
+		const res = await func(request);
 
 		let resData: DataRecord | undefined = undefined;
 
 		try {
-			resData = await json();
+			resData = await res.json();
 			// eslint-disable-next-line no-empty
-		} catch (ignored) {}
+		} catch (err) {
+			console.error(err);
+		}
 
-		if (ok && typeof resData !== 'undefined') {
+		if (res.ok && typeof resData !== 'undefined') {
 			return resData as unknown as PaginatedListResponse<T>;
 		} else {
 			const errorMessage =

@@ -29,7 +29,19 @@
 		Data Sources
 	</SidebarItem>
 	<SidebarItem heading>
-		Guides
+		Examples
 	</SidebarItem>
+	<SidebarItem href='examples/extensive-example'>
+		Extensive Example
+	</SidebarItem>
+	<SidebarItem href='examples/modal'>
+		Modal
+	</SidebarItem>
+	<!--<SidebarItem href='examples/svelte-i18n'>
+		Svelte I18n
+	</SidebarItem>
+	<SidebarItem href='examples/svelte-query'>
+		Svelte Query
+	</SidebarItem>-->
 </Nav>
 

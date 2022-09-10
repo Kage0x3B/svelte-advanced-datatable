@@ -23,6 +23,7 @@
 	import { page } from '$app/stores';
 	import { Col, Container, Row } from 'sveltestrap';
 	import { onDestroy } from 'svelte';
+	import Footer from '../Footer.svelte';
 	import ApiReferenceBreadcrumbs from './components/ApiReferenceBreadcrumbs.svelte';
 
 	export let title = undefined;
@@ -34,12 +35,22 @@
 	<title>{title ?? "Api Reference"} - Svelte Advanced Datatable</title>
 </svelte:head>
 
-<Container class='mt-3'>
-	<Row>
-		<Col>
-			<ApiReferenceBreadcrumbs currentPath={$page.url.pathname} indexName='Svelte Advanced Datatable' baseUrl='/api-reference' />
+<div id='page-container'>
+	<Container class='pt-3 pb-6'>
+		<Row>
+			<Col>
+				<ApiReferenceBreadcrumbs currentPath={$page.url.pathname} indexName='Svelte Advanced Datatable' baseUrl='/api-reference' />
 
-			<slot />
-		</Col>
-	</Row>
-</Container>
+				<slot />
+			</Col>
+		</Row>
+	</Container>
+	<Footer />
+</div>
+
+<style>
+    #page-container {
+        position: relative;
+        min-height: calc(100vh - 56px);
+    }
+</style>

@@ -3,8 +3,8 @@
 	export let description: string;
 </script>
 
-<div class='mt-4 mb-5 w-75'>
-	<div class='ratio ratio-16x9 border border-1 rounded'>
+<div class='mt-4 mb-5'>
+	<div class='ratio ratio-21x9 border border-1 rounded'>
 		<iframe src='/example/{path}' title='Example table {path}'></iframe>
 	</div>
 

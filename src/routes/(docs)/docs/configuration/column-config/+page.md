@@ -43,3 +43,4 @@ Besides the `type` property, all component types have the following (optional) p
 | `sortable` | `boolean` | If the values in this column can be sorted by clicking on the table header.<br/>Should usually be turned off for columns using a custom component. | `true`        |
 | `hidden`   | `boolean` | Hides this table column                                                                                                                            | `false`       |
 
+?> **Work in Progress!** In the meantime, please take a look at the [Api Reference](/api-reference/interfaces/GenericComponentTypeProperties#hierarchy) for all component type properties.

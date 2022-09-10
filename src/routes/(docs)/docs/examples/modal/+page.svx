@@ -1,3 +1,17 @@
+---
+title: Quick Start
+---
+
+<script>
+	import ExampleTable from '../../../../util/ExampleTable.svelte';
+</script>
+
+# Quick Start
+
+To show a "modal" (click on any table row to show more information) in your datatable,
+create the modal component, which receives the data of the clicked row via the `item` property:
+
+```html
 <script lang='ts'>
 	import { Alert, Col, Row } from 'sveltestrap';
 	import type { UserData } from '../../util/UserData.js';
@@ -5,6 +19,7 @@
 	export let item: UserData;
 	export let toggle = undefined;
 
+	// Generate some example data etc.
 	const cacheBuster = Math.round(Math.random() * 10);
 	const lastOnlineAmount = Math.ceil(Math.random() * 60);
 	const lastOnlineUnit = Math.random() > 0.5 ? 'hours' : 'minutes';
@@ -38,3 +53,18 @@
         box-shadow: rgba(6, 24, 44, 0.4) 0 0 0 1px, rgba(6, 24, 44, 0.65) 0 4px 6px -1px, rgba(255, 255, 255, 0.08) 0 1px 0 inset;
     }
 </style>
+
+```
+
+And put the modal component into your datatable properties:
+
+```typescript
+const config: DataTableConfig<UserData> = {
+	...additionalOptions,
+	modalComponent: UserDataModal
+};
+```
+
+
+<ExampleTable path='sveltestrap/modal' description='This is what your resulting datatable will look like!' />
+

@@ -1,0 +1,138 @@
+---
+title: Extensive Example
+---
+
+<script>
+	import ExampleTable from '../../../../util/ExampleTable.svelte';
+</script>
+
+# Extensive Example
+
+The following is an extensive example, using more columns with different types and a custom column for the password field.
+
+This time, we use a more complete example data structure:
+
+```typescript
+interface UserData extends DataRecord {
+	id: number;
+	userName: string;
+	firstName: string;
+	lastName: string;
+	mailAddress: string;
+	/**
+	 * This is only example data for showcasing the datatables.
+	 * --> Never store passwords in plaintext anywhere!
+	 */
+	password: string;
+	gender: 'male' | 'female';
+}
+```
+
+As well as a custom HiddenPasswordCellComponent:
+
+```html
+<script lang='ts'>
+	import { Button, Icon } from 'sveltestrap';
+
+	export let value: string;
+
+	// Export unneeded variables to hide "created with unknown prop" warnings
+	export let key = undefined;
+	export let colProps = undefined;
+	export let item = undefined;
+
+	let isHidden = true;
+
+	function toggle(event: Event) {
+		event.stopPropagation();
+
+		isHidden = !isHidden;
+	}
+</script>
+
+{#if isHidden}
+	<Button color='danger' size='sm' on:click={toggle}>
+		<Icon name='eye-slash-fill' />
+	</Button>
+{:else}
+	<code class='bg-light p-1 rounded-2' on:click={toggle}>{value}</code>
+{/if}
+```
+
+The full datatable config is now:
+
+```typescript
+const config: DataTableConfig<UserData> = {
+	type: 'userData',
+	columnProperties: {
+		id: {
+			type: ComponentType.NUMBER
+		},
+		userName: {
+			type: ComponentType.STRING
+		},
+		firstName: {
+			type: ComponentType.STRING
+		},
+		lastName: {
+			type: ComponentType.STRING
+		},
+		mailAddress: {
+			type: ComponentType.STRING
+		},
+		password: {
+			type: ComponentType.CUSTOM,
+			sortable: false,
+			component: HiddenPasswordCellComponent
+		},
+		gender: {
+			type: ComponentType.ENUM,
+			values: ['male', 'female'],
+			enumColorKey: {
+				male: 'info',
+				female: 'danger',
+				default: 'primary',
+				unknown: 'secondary'
+			}
+		} as EnumComponentTypeProperties<'male' | 'female'>
+	},
+	dataSource: new LocalDataSource(exampleUserList, {
+		filtering: {
+			textSearchColumns: ['userName']
+		}
+	}),
+	dataUniquePropertyKey: 'id',
+	messageConfig: {
+		id: {
+			label: 'Id'
+		},
+		userName: {
+			label: 'Username'
+		},
+		firstName: {
+			label: 'First Name'
+		},
+		lastName: {
+			label: 'Last Name'
+		},
+		mailAddress: {
+			label: 'E-Mail Address'
+		},
+		password: {
+			label: 'Password'
+		},
+		gender: {
+			label: 'Gender',
+			enumValue: {
+				male: 'Male',
+				female: 'Female'
+			}
+		}
+	}
+};
+```
+
+Which results in the following datatable:
+
+<ExampleTable path='sveltestrap/basic/extensive-example' description='This is what your resulting datatable will look like!' />
+

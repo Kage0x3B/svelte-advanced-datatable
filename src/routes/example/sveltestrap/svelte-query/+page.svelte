@@ -2,7 +2,11 @@
 	import type { DataTableConfig } from '$lib';
 	import { ComponentType, SvelteQueryDataSource, wrapFetchToThrow } from '$lib';
 	import { DataTable } from '$lib/sveltestrap';
-	import type { UserData } from '../../util/UserData.js';
+
+	interface UserData {
+		id: number;
+		userName: string;
+	}
 
 	const config: DataTableConfig<UserData> = {
 		type: 'userData',
