@@ -1,6 +1,6 @@
 {
 	"name": "svelte-advanced-datatable",
-	"version": "0.1.0",
+	"version": "0.1.1",
 	"scripts": {
 		"dev": "vite dev --host",
 		"build": "svelte-kit sync && svelte-package",
@@ -66,5 +66,16 @@
 		"svelte-i18n": {
 			"optional": true
 		}
-	}
+	},
+	"homepage": "https://svelte-advanced-datatable.pages.dev",
+	"bugs": {
+		"url": "https://github.com/Kage0x3B/svelte-advanced-datatable/issues",
+		"email": "moritz.hein@live.de"
+	},
+	"author": {
+		"name": "Moritz Hein",
+		"email": "moritz.hein@live.de",
+		"url": "https://moritz.website"
+	},
+	"license": "MIT"
 }
