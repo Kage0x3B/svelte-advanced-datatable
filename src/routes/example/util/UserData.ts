@@ -1,8 +1,7 @@
 import { faker } from '@faker-js/faker';
-import type { DataRecord } from '$lib/index.js';
 import { createExampleData } from './exampleDataUtil.js';
 
-export interface UserData extends DataRecord {
+export interface UserData {
 	id: number;
 	userName: string;
 	firstName: string;

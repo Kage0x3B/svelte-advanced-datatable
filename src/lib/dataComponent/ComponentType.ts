@@ -1,5 +1,4 @@
 import type { DateTime } from 'luxon';
-import type { DataRecord } from '../types/DataRecord.js';
 import type { BooleanComponentTypeProperties } from './BooleanComponentTypeProperties.js';
 import type { CustomComponentTypeProperties } from './CustomComponentTypeProperties.js';
 import type { DateComponentTypeProperties } from './DateComponentTypeProperties.js';
@@ -81,7 +80,7 @@ export type ComponentTypeConfig<T, TP extends GenericComponentTypeProperties<T>>
 
 export type RequiredTypeProperty<T extends { type: ComponentType }> = Required<Pick<T, 'type'>> & Partial<T>;
 
-export type TableColumnConfig<T extends DataRecord = DataRecord> = Record<keyof T, ComponentTypeProperties>;
+export type TableColumnConfig<Data> = Record<keyof Data, ComponentTypeProperties>;
 
 /**
  * Config for all inbuilt component types, containing the default value the type has, as well as default and forced type properties

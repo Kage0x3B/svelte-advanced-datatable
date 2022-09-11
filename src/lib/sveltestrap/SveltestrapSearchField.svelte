@@ -1,9 +1,9 @@
 <script lang='ts'>
-	import InternalSearchField from '../internal/InternalSearchField.svelte';
 	import { getContext } from 'svelte';
 	import type { Readable } from 'svelte/store';
+	import InternalSearchField from '../internal/InternalSearchField.svelte';
+	import type { ParsedSearchQuery } from '../searchParser/index.js';
 	import type { MessageFormatter } from '../types/MessageFormatter.js';
-	import type { ParsedSearchQuery } from '../searchParser/ParsedSearchQuery.js';
 	import { DATATABLE_MESSAGE_FORMATTER } from '../util/ContextKey.js';
 
 	const format: Readable<MessageFormatter> = getContext(DATATABLE_MESSAGE_FORMATTER);

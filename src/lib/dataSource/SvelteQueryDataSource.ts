@@ -4,33 +4,32 @@ import type { UseQueryStoreResult } from '@sveltestack/svelte-query/dist/types.j
 import type { Readable } from 'svelte/store';
 import { derived } from 'svelte/store';
 import type { ApiFunction } from '../types/ApiFunction.js';
-import type { DataRecord } from '../types/DataRecord.js';
 import type { FullDataTableConfig } from '../types/DataTableConfig.js';
 import type { PaginatedListRequest } from '../types/PaginatedListRequest.js';
 import type { PaginatedListResponse } from '../types/PaginatedListResponse.js';
 import type { IDataSource } from './IDataSource.js';
 import type { QueryObserver } from './QueryObserver.js';
 
-export type DataTableUseQueryStoreResult<T extends DataRecord> = UseQueryStoreResult<
-	PaginatedListResponse<T>,
+export type DataTableUseQueryStoreResult<Data> = UseQueryStoreResult<
+	PaginatedListResponse<Data>,
 	unknown,
-	PaginatedListResponse<T>,
-	DataTableQueryKey<T>
+	PaginatedListResponse<Data>,
+	DataTableQueryKey<Data>
 >;
-export type DataTableUseQueryOptions<T extends DataRecord> = UseQueryOptions<
-	PaginatedListResponse<T>,
+export type DataTableUseQueryOptions<Data> = UseQueryOptions<
+	PaginatedListResponse<Data>,
 	unknown,
-	PaginatedListResponse<T>,
-	DataTableQueryKey<T>
+	PaginatedListResponse<Data>,
+	DataTableQueryKey<Data>
 >;
-export type DataTableQueryKey<T extends DataRecord> = [key: string, request: PaginatedListRequest<T>];
+export type DataTableQueryKey<Data> = [key: string, request: PaginatedListRequest<Data>];
 
 /**
  * Uses the Svelte Query library to fetch your paginated table data.
  */
-export class SvelteQueryDataSource<T extends DataRecord = DataRecord> implements IDataSource<T> {
-	private readonly dataQuery: DataTableUseQueryStoreResult<T>;
-	private readonly dataObserver: Readable<QueryObserver<T>>;
+export class SvelteQueryDataSource<Data> implements IDataSource<Data> {
+	private readonly dataQuery: DataTableUseQueryStoreResult<Data>;
+	private readonly dataObserver: Readable<QueryObserver<Data>>;
 	private queryKey: string | undefined;
 
 	/**
@@ -43,20 +42,20 @@ export class SvelteQueryDataSource<T extends DataRecord = DataRecord> implements
 	 *
 	 * @see {@link https://sveltequery.vercel.app/reference/useQuery}
 	 */
-	constructor(private apiFunction: ApiFunction<T>, private additionalQueryOptions: DataTableUseQueryOptions<T> = {}) {
+	constructor(private apiFunction: ApiFunction<Data>, private additionalQueryOptions: DataTableUseQueryOptions<Data> = {}) {
 		this.dataQuery = this.useNoopQuery();
-		this.dataObserver = derived(this.dataQuery, ($dataQuery) => $dataQuery as QueryObserver<T>);
+		this.dataObserver = derived(this.dataQuery, ($dataQuery) => $dataQuery as QueryObserver<Data>);
 	}
 
-	public getQueryObserver(): Readable<QueryObserver> {
+	public getQueryObserver(): Readable<QueryObserver<Data>> {
 		return this.dataObserver;
 	}
 
-	public init(config: FullDataTableConfig<T>): void {
+	public init(config: FullDataTableConfig<Data>): void {
 		this.queryKey = `dataTable-${config.type}`;
 	}
 
-	public requestData(data: PaginatedListRequest): void {
+	public requestData(data: PaginatedListRequest<Data>): void {
 		if (typeof this.queryKey === 'undefined') {
 			throw new Error('Svelte-Query data source was not properly initialized before requesting data');
 		}
@@ -68,7 +67,7 @@ export class SvelteQueryDataSource<T extends DataRecord = DataRecord> implements
 		});
 	}
 
-	public setApiFunction(apiFunction: ApiFunction<T>): void {
+	public setApiFunction(apiFunction: ApiFunction<Data>): void {
 		this.apiFunction = apiFunction;
 	}
 
@@ -76,7 +75,7 @@ export class SvelteQueryDataSource<T extends DataRecord = DataRecord> implements
 		this.dataQuery.setEnabled(enabled);
 	}
 
-	public updateQueryOptions(queryOptions: Partial<DataTableUseQueryOptions<T>>): void {
+	public updateQueryOptions(queryOptions: Partial<DataTableUseQueryOptions<Data>>): void {
 		this.additionalQueryOptions = {
 			...this.additionalQueryOptions,
 			...queryOptions
@@ -84,9 +83,9 @@ export class SvelteQueryDataSource<T extends DataRecord = DataRecord> implements
 
 		this.dataQuery.updateOptions(
 			this.additionalQueryOptions as unknown as UseQueryOptions<
-				PaginatedListResponse<T>,
+				PaginatedListResponse<Data>,
 				unknown,
-				PaginatedListResponse<T>
+				PaginatedListResponse<Data>
 			>
 		);
 	}
@@ -106,7 +105,7 @@ export class SvelteQueryDataSource<T extends DataRecord = DataRecord> implements
 		);
 	}
 
-	private wrapApiFunction(): (options: { queryKey: DataTableQueryKey<T> }) => Promise<PaginatedListResponse<T>> {
+	private wrapApiFunction(): (options: { queryKey: DataTableQueryKey<Data> }) => Promise<PaginatedListResponse<Data>> {
 		return ({ queryKey }) => {
 			return this.apiFunction(queryKey[1]);
 		};

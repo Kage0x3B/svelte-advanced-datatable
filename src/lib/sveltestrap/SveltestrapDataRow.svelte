@@ -1,23 +1,22 @@
 <script lang='ts'>
-	import InternalDataColumn from '../internal/InternalDataColumn.svelte';
-	import InternalDataRow from '../internal/InternalDataRow.svelte';
 	import SveltestrapBadgeWrapper from '$lib/sveltestrap/SveltestrapBadgeWrapper.svelte';
 	import SveltestrapIconWrapper from '$lib/sveltestrap/SveltestrapIconWrapper.svelte';
 	import type { MaybePromise } from '$lib/types';
 	import { getContext } from 'svelte';
 	import { slide } from 'svelte/transition';
-	import type { DataRecord } from '../types/DataRecord.js';
+	import InternalDataColumn from '../internal/InternalDataColumn.svelte';
+	import InternalDataRow from '../internal/InternalDataRow.svelte';
 	import type { FullDataTableConfig } from '../types/DataTableConfig.js';
 	import { DATATABLE_CONFIG } from '../util/ContextKey.js';
 
-	const config: FullDataTableConfig = getContext(DATATABLE_CONFIG);
+	const config: FullDataTableConfig<unknown> = getContext(DATATABLE_CONFIG);
 
 	export let index: number;
 	export let openIndex: number;
 	export let highlighted: boolean;
 
 	export let onClick: (<T>(item: T) => MaybePromise<void>) | undefined;
-	export let item: DataRecord;
+	export let item: unknown;
 	export let open: (index: number) => void;
 
 	let toggle: () => void | undefined;
@@ -26,7 +25,7 @@
 <InternalDataRow let:isOpen let:rowOnClick bind:toggle {index} {openIndex} {onClick} {item} {open}>
 	{#if isOpen}
 		<tr class='margin-row top'>
-			<td colspan={config.columnProperties.length} transition:slide|local></td>
+			<td colspan={Object.keys(config.columnProperties).length} transition:slide|local></td>
 		</tr>
 	{/if}
 	<tr class='datatable-row' class:expanded={isOpen} class:highlighted on:click={rowOnClick}>

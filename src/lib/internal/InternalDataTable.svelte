@@ -15,7 +15,7 @@
 	import { buildColumnPropertyData } from '../util/dataTableUtil.js';
 	import { wrapPossibleStore } from '../util/generalUtil.js';
 
-	const config: FullDataTableConfig = getContext(DATATABLE_CONFIG);
+	const config: FullDataTableConfig<unknown> = getContext(DATATABLE_CONFIG);
 
 	export let currentPage: number;
 	export let searchInput: string;
@@ -32,7 +32,7 @@
 
 	const dataSource = wrapPossibleStore(config.dataSource);
 	const highlightedItemId = wrapPossibleStore(config.highlightedItemId);
-	let dataQueryObserver: Readable<QueryObserver>;
+	let dataQueryObserver: Readable<QueryObserver<unknown>>;
 	$: if ($dataSource) {
 		$dataSource.init && $dataSource.init(config);
 		dataQueryObserver = $dataSource.getQueryObserver();
@@ -42,7 +42,7 @@
 	$: $dataQueryObserver.isSuccess && updateData($dataQueryObserver.data);
 	$: pageAmount = Math.ceil(Math.max(1, itemAmount / config.itemsPerPage));
 
-	function updateData(data: PaginatedListResponse) {
+	function updateData(data: PaginatedListResponse<unknown>) {
 		const calculatedMaxItemAmount = (currentPage - 1) * config.itemsPerPage + data.items.length;
 
 		currentOpenIndex = -1;
@@ -56,7 +56,7 @@
 
 	const internalColumnProperties = buildColumnPropertyData(config.columnProperties);
 
-	function refresh(currentPage: number, itemsPerPage: number, sortColumnKey: string, sortDirection: SortDirection, forcedSearchQuery: ForcedSearchQuery | undefined, searchQuery?: ParsedSearchQuery) {
+	function refresh(currentPage: number, itemsPerPage: number, sortColumnKey: string, sortDirection: SortDirection, forcedSearchQuery: ForcedSearchQuery<unknown> | undefined, searchQuery?: ParsedSearchQuery) {
 		if (!browser) {
 			return;
 		}
@@ -72,7 +72,7 @@
 
 		const searchFilters = [...(searchQuery?.searchFilters ?? []), ...(forcedSearchQuery?.searchQuery?.searchFilters ?? [])];
 
-		const requestData: PaginatedListRequest = {
+		const requestData: PaginatedListRequest<unknown> = {
 			start: (currentPage - 1) * itemsPerPage,
 			amount: itemsPerPage,
 			orderBy: forcedSearchQuery?.orderBy ?? orderBy,

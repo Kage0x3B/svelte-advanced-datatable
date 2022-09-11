@@ -1,7 +1,5 @@
-import type { DataRecord } from './DataRecord.js';
-
-export interface PaginatedListResponse<T extends DataRecord = DataRecord> {
+export interface PaginatedListResponse<Data> {
 	totalCount: number;
 
-	items: T[];
+	items: Data[];
 }

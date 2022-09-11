@@ -1,34 +1,33 @@
-import { writable } from 'svelte/store';
 import type { Readable, Subscriber } from 'svelte/store';
-import type { DataRecord } from '../types/DataRecord.js';
+import { writable } from 'svelte/store';
 import type { FullDataTableConfig } from '../types/DataTableConfig.js';
 import type { PaginatedListRequest } from '../types/PaginatedListRequest.js';
 import { hasOwnProperty } from '../util/generalUtil.js';
 import type { IDataSource } from './IDataSource.js';
-import { buildLoadingQueryObserver } from './QueryObserver.js';
 import type { QueryObserver } from './QueryObserver.js';
+import { buildLoadingQueryObserver } from './QueryObserver.js';
 
-export abstract class AbstractDataSource<T extends DataRecord = DataRecord> implements IDataSource<T> {
-	private currentStatus: QueryObserver<T> = buildLoadingQueryObserver();
-	private queryObserver: Readable<QueryObserver<T>> = writable(this.currentStatus, (set) => {
+export abstract class AbstractDataSource<Data> implements IDataSource<Data> {
+	private currentStatus: QueryObserver<Data> = buildLoadingQueryObserver();
+	private queryObserver: Readable<QueryObserver<Data>> = writable(this.currentStatus, (set) => {
 		set(this.currentStatus);
 
 		this.setQueryStatus = set;
 
 		return () => (this.setQueryStatus = undefined);
 	});
-	private setQueryStatus: Subscriber<QueryObserver<T>> | undefined;
-	protected dataTableConfig!: FullDataTableConfig<T>;
+	private setQueryStatus: Subscriber<QueryObserver<Data>> | undefined;
+	protected dataTableConfig!: FullDataTableConfig<Data>;
 
-	init(config: FullDataTableConfig<T>): void {
+	init(config: FullDataTableConfig<Data>): void {
 		this.dataTableConfig = config;
 	}
 
-	getQueryObserver(): Readable<QueryObserver<T>> {
+	getQueryObserver(): Readable<QueryObserver<Data>> {
 		return this.queryObserver;
 	}
 
-	protected updateStatus(status: Pick<QueryObserver<T>, 'data'> | Pick<QueryObserver<T>, 'error'>): void {
+	protected updateStatus(status: Pick<QueryObserver<Data>, 'data'> | Pick<QueryObserver<Data>, 'error'>): void {
 		const hasData = hasOwnProperty(status, 'data') && !!status.data;
 		const hasError = hasOwnProperty(status, 'error') && !!status.error;
 
@@ -44,5 +43,5 @@ export abstract class AbstractDataSource<T extends DataRecord = DataRecord> impl
 		this.setQueryStatus && this.setQueryStatus(this.currentStatus);
 	}
 
-	public abstract requestData(data: PaginatedListRequest<T>): void;
+	public abstract requestData(data: PaginatedListRequest<Data>): void;
 }

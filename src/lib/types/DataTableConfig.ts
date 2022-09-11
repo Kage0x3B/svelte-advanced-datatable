@@ -4,7 +4,6 @@ import type { TableColumnConfig } from '../dataComponent/ComponentType.js';
 import type { IDataSource } from '../dataSource/IDataSource.js';
 import type { ForcedSearchQuery } from '../searchParser/ForcedSearchQuery.js';
 import type { ISearchParser } from '../searchParser/ISearchParser.js';
-import type { DataRecord } from './DataRecord.js';
 import type { MessageFormatter } from './MessageFormatter.js';
 import type { SortDirection } from './SortDirection.js';
 
@@ -16,7 +15,7 @@ export interface ColumnMessageConfig {
 	enumValue?: Record<string, string>;
 }
 
-export type MessageConfig<T extends DataRecord = DataRecord> = Record<keyof T, ColumnMessageConfig> & {
+export type MessageConfig<Data> = Record<keyof Data, ColumnMessageConfig> & {
 	pagination?: {
 		previous: string;
 		next: string;
@@ -29,7 +28,7 @@ export type MessageConfig<T extends DataRecord = DataRecord> = Record<keyof T, C
 	};
 };
 
-export interface DataTableConfig<T extends DataRecord = DataRecord> {
+export interface DataTableConfig<Data> {
 	/**
 	 * A unique identifier/name for this datatable. Should not contain whitespaces and non-ascii characters
 	 */
@@ -38,19 +37,19 @@ export interface DataTableConfig<T extends DataRecord = DataRecord> {
 	/**
 	 * An object with one key for each key in the data, containing configuration options for each table column
 	 */
-	columnProperties: TableColumnConfig<T>;
+	columnProperties: TableColumnConfig<Data>;
 
 	/**
 	 * The data source where the datatable requests the table data from
 	 */
-	dataSource: IDataSource<T> | Readable<IDataSource<T>>;
+	dataSource: IDataSource<Data> | Readable<IDataSource<Data>>;
 
 	/**
 	 * The key of your items unique identifier.
 	 *
 	 * For example a user id or a counter value which increases by one for each item, as long as it's unique for each item
 	 */
-	dataUniquePropertyKey: keyof T & string;
+	dataUniquePropertyKey: keyof Data & string;
 
 	/**
 	 * Whether to use the messageConfig or the svelte-i18n library to provide all strings used by the datatable
@@ -67,7 +66,7 @@ export interface DataTableConfig<T extends DataRecord = DataRecord> {
 	 *
 	 * Ignored if svelte-i18n is enabled by the `messageFormatterType` option
 	 */
-	messageConfig?: MessageConfig<T>;
+	messageConfig?: MessageConfig<Data>;
 
 	/**
 	 * A custom message formatter which can return a replacement or undefined to default to the message provided by the internal formatter/svelte-i18n
@@ -83,12 +82,12 @@ export interface DataTableConfig<T extends DataRecord = DataRecord> {
 	 * An onClick handler for a table row. Gets passed the data item which the clicked row displays
 	 * @param item
 	 */
-	onItemClick?: (item: T) => void;
+	onItemClick?: (item: Data) => void;
 
 	/**
 	 * A search query which overwrites any values by the users current search. Can be used to apply a forced filter to the whole datatable
 	 */
-	forcedSearchQuery?: ForcedSearchQuery<T>;
+	forcedSearchQuery?: ForcedSearchQuery<Data>;
 
 	/**
 	 * The identifier of any item which then gets assigned the `highlighted` class
@@ -98,7 +97,7 @@ export interface DataTableConfig<T extends DataRecord = DataRecord> {
 	/**
 	 * Sort the table using the given key and direction by default
 	 */
-	defaultSort?: { columnKey?: keyof T & string; direction?: SortDirection };
+	defaultSort?: { columnKey?: keyof Data & string; direction?: SortDirection };
 
 	/**
 	 * Whether to enable or disable pagination entirely.
@@ -135,4 +134,4 @@ export interface DataTableConfig<T extends DataRecord = DataRecord> {
 	searchParser?: ISearchParser;
 }
 
-export type FullDataTableConfig<T extends DataRecord = DataRecord> = Required<DataTableConfig<T>>;
+export type FullDataTableConfig<Data> = Required<DataTableConfig<Data>>;

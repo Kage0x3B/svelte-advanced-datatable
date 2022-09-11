@@ -1,13 +1,10 @@
 import type { Readable, Unsubscriber } from 'svelte/store';
 import { readable } from 'svelte/store';
-import type { DataRecord } from '../types/DataRecord.js';
 import type { FullDataTableConfig, MessageConfig } from '../types/DataTableConfig.js';
 import type { InterpolationValues, MessageFormatter } from '../types/MessageFormatter.js';
 import type { SvelteI18nMessageFormatter } from '../types/SvelteI18nTypes.js';
 
-export function createMessageFormatter<T extends DataRecord>(
-	dataTableConfig: FullDataTableConfig<T>
-): Readable<MessageFormatter> {
+export function createMessageFormatter<Data>(dataTableConfig: FullDataTableConfig<Data>): Readable<MessageFormatter> {
 	if (dataTableConfig.messageFormatterType === 'config') {
 		return readable(createConfigMessageFormatter(dataTableConfig, dataTableConfig.messageConfig));
 	} else if (dataTableConfig.messageFormatterType === 'svelte-i18n') {
@@ -19,9 +16,9 @@ export function createMessageFormatter<T extends DataRecord>(
 	}
 }
 
-function createConfigMessageFormatter<T extends DataRecord>(
-	dataTableConfig: FullDataTableConfig<T>,
-	messageConfig: MessageConfig<T>
+function createConfigMessageFormatter<Data>(
+	dataTableConfig: FullDataTableConfig<Data>,
+	messageConfig: MessageConfig<Data>
 ): MessageFormatter {
 	const missingMessageIds = new Set<string>();
 
@@ -59,31 +56,31 @@ function createConfigMessageFormatter<T extends DataRecord>(
 	};
 }
 
-function indexObject(object: DataRecord, deepKey: string): string | undefined {
+function indexObject<Data>(object: Data, deepKey: string): string | undefined {
 	return deepKey.split('.').reduce(
 		// @ts-ignore
 		(deepObject, key) => {
 			if (
 				typeof deepObject === 'undefined' ||
 				deepObject === null ||
-				typeof deepObject[key] === 'undefined' ||
-				deepObject[key] === null
+				typeof deepObject![key as keyof typeof deepObject] === 'undefined' ||
+				deepObject![key as keyof typeof deepObject] === null
 			) {
 				return undefined;
 			}
 
-			return deepObject[key];
+			return deepObject![key as keyof typeof deepObject];
 		},
 		object
-	);
+	) as string;
 }
 
 function replaceMessageVariables(message: string, values: InterpolationValues): string {
 	return message.replace(/{(\w+)}/g, (_, key) => String(values[key]));
 }
 
-function createSvelteI18nMessageFormatter<T extends DataRecord>(
-	dataTableConfig: FullDataTableConfig<T>
+function createSvelteI18nMessageFormatter<Data>(
+	dataTableConfig: FullDataTableConfig<Data>
 ): Readable<MessageFormatter> {
 	return readable<MessageFormatter>(
 		() => '',
@@ -110,8 +107,8 @@ function createSvelteI18nMessageFormatter<T extends DataRecord>(
 	);
 }
 
-function buildInternalSvelteI18nFormatter<T extends DataRecord>(
-	dataTableConfig: FullDataTableConfig<T>,
+function buildInternalSvelteI18nFormatter<Data>(
+	dataTableConfig: FullDataTableConfig<Data>,
 	format: SvelteI18nMessageFormatter
 ): MessageFormatter {
 	return (messageId, options) => {

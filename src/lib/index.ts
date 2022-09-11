@@ -28,7 +28,6 @@ export type {
 } from './dataSource/SvelteQueryDataSource.js';
 
 export type { ApiFunction } from './types/ApiFunction.js';
-export type { DataRecord } from './types/DataRecord.js';
 export type { DataTableConfig, MessageConfig, ColumnMessageConfig } from './types/DataTableConfig.js';
 export type { MessageFormatter, InterpolationValues } from './types/MessageFormatter.js';
 export type { PaginatedListRequest } from './types/PaginatedListRequest.js';

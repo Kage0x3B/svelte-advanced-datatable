@@ -4,17 +4,16 @@
 	import type { SvelteComponentTyped } from 'svelte';
 	import { getContext } from 'svelte';
 	import type { Readable } from 'svelte/store';
-	import type { DataRecord } from '../types/DataRecord.js';
 	import type { FullDataTableConfig } from '../types/DataTableConfig.js';
 	import type { MessageFormatter } from '../types/MessageFormatter.js';
 	import { DATATABLE_CONFIG, DATATABLE_MESSAGE_FORMATTER } from '../util/ContextKey.js';
 
-	const config: FullDataTableConfig = getContext(DATATABLE_CONFIG);
+	const config: FullDataTableConfig<unknown> = getContext(DATATABLE_CONFIG);
 	const format: Readable<MessageFormatter> = getContext(DATATABLE_MESSAGE_FORMATTER);
 
 	export let IconComponent: SvelteComponentTyped;
 	export let BadgeComponent: SvelteComponentTyped;
-	export let item: DataRecord;
+	export let item: unknown;
 	export let key: string;
 
 	const colProps = config.columnProperties[key];

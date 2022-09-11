@@ -1,10 +1,9 @@
 import { ComponentType } from '../dataComponent/ComponentType.js';
-import { BasicTextSearchParser } from '../searchParser/BasicTextSearchParser.js';
-import type { DataRecord } from '../types/DataRecord.js';
+import { BasicTextSearchParser } from '../searchParser/index.js';
 import type { DataTableConfig, FullDataTableConfig, MessageConfig } from '../types/DataTableConfig.js';
 import { hasOwnProperty } from './generalUtil.js';
 
-const defaultConfig: Partial<DataTableConfig> = {
+const defaultConfig: Partial<DataTableConfig<unknown>> = {
 	modalComponent: undefined,
 	onItemClick: undefined,
 	forcedSearchQuery: undefined,
@@ -30,14 +29,15 @@ const defaultConfig: Partial<DataTableConfig> = {
 			placeholder: 'Search',
 			ariaLabel: 'Search'
 		}
-	} as MessageConfig,
+	} as MessageConfig<unknown>,
 	enableSearch: true,
 	searchParser: new BasicTextSearchParser()
 };
 
-export function mergeDataTableConfigDefaults<T extends DataRecord>(config: DataTableConfig<T>): FullDataTableConfig<T> {
+export function mergeDataTableConfigDefaults<Data>(config: DataTableConfig<Data>): FullDataTableConfig<Data> {
 	const enablePagination = config.enablePagination ?? defaultConfig.enablePagination;
-	const itemsPerPage = config.itemsPerPage ?? (enablePagination ? defaultConfig.itemsPerPage : Number.MAX_SAFE_INTEGER);
+	const itemsPerPage =
+		config.itemsPerPage ?? (enablePagination ? defaultConfig.itemsPerPage : Number.MAX_SAFE_INTEGER);
 
 	const fullConfig = {
 		...defaultConfig,
@@ -47,7 +47,7 @@ export function mergeDataTableConfigDefaults<T extends DataRecord>(config: DataT
 			...defaultConfig.messageConfig,
 			...config.messageConfig
 		}
-	} as FullDataTableConfig<T>;
+	} as FullDataTableConfig<Data>;
 
 	if (fullConfig.messageFormatterType === 'config') {
 		if (!fullConfig.messageConfig) {
@@ -56,16 +56,16 @@ export function mergeDataTableConfigDefaults<T extends DataRecord>(config: DataT
 			);
 		}
 
-		validateMessageConfig(<FullDataTableConfig>fullConfig);
+		validateMessageConfig(fullConfig);
 	}
 
 	return fullConfig;
 }
 
 // TODO: Validate presence of all svelte-i18n keys
-function validateMessageConfig(config: FullDataTableConfig): void {
+function validateMessageConfig<Data>(config: FullDataTableConfig<Data>): void {
 	for (const columnKey of Object.keys(config.columnProperties)) {
-		const columnConfig = config.columnProperties[columnKey];
+		const columnConfig = config.columnProperties[columnKey as keyof typeof config.columnProperties];
 
 		if (columnConfig.hidden) {
 			continue;
@@ -91,6 +91,7 @@ function validateMessageConfig(config: FullDataTableConfig): void {
 			);
 		}
 
+		// @ts-ignore
 		config.messageConfig[columnKey] = columnMessageConfig;
 	}
 }

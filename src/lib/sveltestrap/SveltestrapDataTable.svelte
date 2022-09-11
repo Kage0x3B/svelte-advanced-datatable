@@ -4,8 +4,7 @@
 	import type { Readable } from 'svelte/store';
 	import { fade } from 'svelte/transition';
 	import { Icon, Spinner } from 'sveltestrap';
-	import type { ParsedSearchQuery } from '../searchParser/ParsedSearchQuery.js';
-	import type { DataRecord } from '../types/DataRecord.js';
+	import type { ParsedSearchQuery } from '../searchParser/index.js';
 	import type { DataTableConfig, FullDataTableConfig } from '../types/DataTableConfig.js';
 	import type { MessageFormatter } from '../types/MessageFormatter.js';
 	import { DATATABLE_CONFIG, DATATABLE_MESSAGE_FORMATTER } from '../util/ContextKey.js';
@@ -16,12 +15,12 @@
 	import DataTablePagination from './SveltestrapDataTablePagination.svelte';
 	import SearchField from './SveltestrapSearchField.svelte';
 
-	let configExport: DataTableConfig;
+	let configExport: DataTableConfig<unknown>;
 	export { configExport as config };
 
-	const config: FullDataTableConfig = mergeDataTableConfigDefaults<DataRecord>(configExport);
+	const config: FullDataTableConfig<unknown> = mergeDataTableConfigDefaults<unknown>(configExport);
 	setContext(DATATABLE_CONFIG, config);
-	const format: Readable<MessageFormatter> = createMessageFormatter<DataRecord>(config);
+	const format: Readable<MessageFormatter> = createMessageFormatter<unknown>(config);
 	setContext(DATATABLE_MESSAGE_FORMATTER, format);
 
 	export let striped = false;

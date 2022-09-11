@@ -1,4 +1,3 @@
-import type { DataRecord } from '../types/DataRecord.js';
 import type { PaginatedListRequest } from '../types/PaginatedListRequest.js';
 import type { PaginatedListResponse } from '../types/PaginatedListResponse.js';
 import { hasOwnProperty } from '../util/generalUtil.js';
@@ -7,7 +6,7 @@ import { AbstractDataSource } from './AbstractDataSource.js';
 /**
  * Uses the {@link https://developer.mozilla.org/en-US/docs/Web/API/Fetch_API Fetch API} to request the data from an api endpoint via HTTP POST requests
  */
-export class FetchApiDataSource<T extends DataRecord = DataRecord> extends AbstractDataSource<T> {
+export class FetchApiDataSource<Data> extends AbstractDataSource<Data> {
 	/**
 	 * Create a new data source to fetch your paginated table data from an api endpoint.
 	 *
@@ -20,7 +19,7 @@ export class FetchApiDataSource<T extends DataRecord = DataRecord> extends Abstr
 		super();
 	}
 
-	requestData(data: PaginatedListRequest<T>): void {
+	requestData(data: PaginatedListRequest<Data>): void {
 		fetch(this.url, {
 			method: 'POST',
 			headers: {
@@ -29,7 +28,7 @@ export class FetchApiDataSource<T extends DataRecord = DataRecord> extends Abstr
 			body: JSON.stringify(data),
 			...this.options
 		}).then(async (response) => {
-			let resData: DataRecord | undefined = undefined;
+			let resData: Data | undefined = undefined;
 
 			try {
 				resData = await response.json();
@@ -38,13 +37,12 @@ export class FetchApiDataSource<T extends DataRecord = DataRecord> extends Abstr
 
 			if (response.ok && typeof resData !== 'undefined') {
 				this.updateStatus({
-					data: resData as unknown as PaginatedListResponse<T>
+					data: resData as unknown as PaginatedListResponse<Data>
 				});
 			} else {
-				const errorMessage =
-					typeof resData !== 'undefined' && hasOwnProperty(resData, 'message')
-						? String(resData.message)
-						: 'Unknown network error';
+				const errorMessage = hasOwnProperty(resData, 'message')
+					? String(resData!.message)
+					: 'Unknown network error';
 				const error = new Error(errorMessage);
 
 				if (resData) {

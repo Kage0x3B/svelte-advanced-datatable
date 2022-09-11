@@ -1,17 +1,16 @@
 <script lang='ts'>
 	import type { MaybePromise } from '$lib/types';
 	import { getContext } from 'svelte';
-	import type { DataRecord } from '../types/DataRecord.js';
 	import type { FullDataTableConfig } from '../types/DataTableConfig.js';
 	import { DATATABLE_CONFIG } from '../util/ContextKey.js';
 
-	const config: FullDataTableConfig = getContext(DATATABLE_CONFIG);
+	const config: FullDataTableConfig<unknown> = getContext(DATATABLE_CONFIG);
 
 	export let index: number;
 	export let openIndex: number;
 
 	export let onClick: (<T>(item: T) => MaybePromise<void>) | undefined;
-	export let item: DataRecord;
+	export let item: unknown;
 	export let open: (index: number) => void;
 
 	const isExpandable = !!config.modalComponent;

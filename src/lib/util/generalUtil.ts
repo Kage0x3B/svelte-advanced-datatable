@@ -2,13 +2,16 @@ import type { DateTime } from 'luxon';
 import type { Readable } from 'svelte/store';
 import { readable } from 'svelte/store';
 import type { ApiFunction } from '../types/ApiFunction.js';
-import type { DataRecord } from '../types/DataRecord.js';
 import type { PaginatedListRequest } from '../types/PaginatedListRequest.js';
 import type { PaginatedListResponse } from '../types/PaginatedListResponse.js';
 
-// eslint-disable-next-line @typescript-eslint/ban-types
-export function hasOwnProperty<X extends {}, Y extends PropertyKey>(obj: X, prop: Y): obj is X & Record<Y, unknown> {
-	return Object.hasOwn(obj, prop);
+export function hasOwnProperty<X, Y extends PropertyKey>(obj: X, prop: Y): obj is NonNullable<X> & Record<Y, unknown> {
+	// eslint-disable-next-line @typescript-eslint/ban-types
+	return typeof obj !== 'undefined' && obj !== null && Object.hasOwn(obj as object, prop);
+}
+
+export function isIndexable<X>(obj: X): obj is NonNullable<X> & Record<string, unknown> {
+	return typeof obj !== 'undefined' && obj !== null;
 }
 
 export function isDateTime(obj: unknown): obj is DateTime {
@@ -74,13 +77,13 @@ export function mapValue<Key extends string, Value extends string>(
 	}
 }
 
-export function wrapFetchToThrow<T extends DataRecord = DataRecord>(
-	func: (data: PaginatedListRequest<T>) => Promise<Response>
-): ApiFunction<T> {
+export function wrapFetchToThrow<Data>(
+	func: (data: PaginatedListRequest<Data>) => Promise<Response>
+): ApiFunction<Data> {
 	return async (request) => {
 		const res = await func(request);
 
-		let resData: DataRecord | undefined = undefined;
+		let resData: Data | undefined = undefined;
 
 		try {
 			resData = await res.json();
@@ -90,12 +93,9 @@ export function wrapFetchToThrow<T extends DataRecord = DataRecord>(
 		}
 
 		if (res.ok && typeof resData !== 'undefined') {
-			return resData as unknown as PaginatedListResponse<T>;
+			return resData as unknown as PaginatedListResponse<Data>;
 		} else {
-			const errorMessage =
-				typeof resData !== 'undefined' && hasOwnProperty(resData, 'message')
-					? String(resData.message)
-					: 'Unknown network error';
+			const errorMessage = hasOwnProperty(resData, 'message') ? String(resData.message) : 'Unknown network error';
 			const error = new Error(errorMessage);
 
 			if (resData) {

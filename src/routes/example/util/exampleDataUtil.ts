@@ -1,12 +1,12 @@
 import { faker } from '@faker-js/faker';
 
-export function createExampleData<T>(
-	dataGenerator: () => T,
+export function createExampleData<Data>(
+	dataGenerator: () => Data,
 	amount = {
 		min: 100,
 		max: 300
 	}
-): T[] {
+): Data[] {
 	const dataAmount = faker.datatype.number(amount);
 
 	return Array.from({ length: dataAmount }, dataGenerator);

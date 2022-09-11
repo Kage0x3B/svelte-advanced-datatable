@@ -1,15 +1,14 @@
-import type { DataRecord } from '../types/DataRecord.js';
 import type { PaginatedListResponse } from '../types/PaginatedListResponse.js';
 
-export interface QueryObserver<T extends DataRecord = DataRecord> {
-	data: PaginatedListResponse<T> | undefined;
+export interface QueryObserver<Data> {
+	data: PaginatedListResponse<Data> | undefined;
 	error: Error | undefined;
 	isError: boolean;
 	isLoading: boolean;
 	isSuccess: boolean;
 }
 
-const loadingQueryObserver: QueryObserver = {
+const loadingQueryObserver: QueryObserver<unknown> = {
 	data: undefined,
 	error: undefined,
 	isError: false,
@@ -17,13 +16,11 @@ const loadingQueryObserver: QueryObserver = {
 	isSuccess: false
 };
 
-export function buildLoadingQueryObserver<T extends DataRecord = DataRecord>(): QueryObserver<T> {
-	return loadingQueryObserver as QueryObserver<T>;
+export function buildLoadingQueryObserver<Data>(): QueryObserver<Data> {
+	return loadingQueryObserver as QueryObserver<Data>;
 }
 
-export function buildSuccessQueryObserver<T extends DataRecord = DataRecord>(
-	data: PaginatedListResponse<T>
-): QueryObserver<T> {
+export function buildSuccessQueryObserver<Data>(data: PaginatedListResponse<Data>): QueryObserver<Data> {
 	return {
 		data,
 		error: undefined,
@@ -33,7 +30,7 @@ export function buildSuccessQueryObserver<T extends DataRecord = DataRecord>(
 	};
 }
 
-export function buildErrorQueryObserver<T extends DataRecord = DataRecord>(error: Error): QueryObserver<T> {
+export function buildErrorQueryObserver(error: Error): QueryObserver<unknown> {
 	return {
 		data: undefined,
 		error,

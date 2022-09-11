@@ -1,11 +1,13 @@
 import type { ComponentTypeProperties, TableColumnConfig } from '../dataComponent/ComponentType.js';
 import { componentTypes } from '../dataComponent/ComponentType.js';
 
-export function buildColumnPropertyData(columnProperties: TableColumnConfig): Record<string, ComponentTypeProperties> {
+export function buildColumnPropertyData<Data>(
+	columnProperties: TableColumnConfig<Data>
+): Record<string, ComponentTypeProperties> {
 	const internalColumnProperties: Record<string, ComponentTypeProperties> = {};
 
 	for (const key of Object.keys(columnProperties)) {
-		let colProp: ComponentTypeProperties = columnProperties[key];
+		let colProp: ComponentTypeProperties = columnProperties[key as keyof typeof columnProperties];
 		colProp = Object.assign({}, componentTypes.generic.defaultTypeProperties, colProp);
 
 		if (!colProp.type) {
