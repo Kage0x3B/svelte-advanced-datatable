@@ -15,7 +15,7 @@ export interface ColumnMessageConfig {
 	enumValue?: Record<string, string>;
 }
 
-export type MessageConfig<Data> = Record<keyof Data, ColumnMessageConfig> & {
+export type MessageConfig<Data> = Partial<Record<keyof Data, ColumnMessageConfig>> & {
 	pagination?: {
 		previous: string;
 		next: string;
@@ -37,7 +37,7 @@ export interface DataTableConfig<Data> {
 	/**
 	 * An object with one key for each key in the data, containing configuration options for each table column
 	 */
-	columnProperties: TableColumnConfig<Data>;
+	columnProperties: Partial<TableColumnConfig<Data>>;
 
 	/**
 	 * The data source where the datatable requests the table data from

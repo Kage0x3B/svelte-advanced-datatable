@@ -1,14 +1,10 @@
 <script lang='ts'>
 	import type { DataTableConfig } from '$lib';
 	import { ComponentType } from '$lib';
-	import { DataTable } from '$lib/sveltestrap';
 	import { LocalDataSource } from '$lib/dataSource/LocalDataSource.js';
+	import { DataTable } from '$lib/sveltestrap';
+	import type { UserData } from '../../../util/UserData.js';
 	import { exampleUserList } from '../../../util/UserData.js';
-
-	interface UserData {
-		id: number;
-		userName: string;
-	}
 
 	const config: DataTableConfig<UserData> = {
 		type: 'userData',
