@@ -1,9 +1,9 @@
 import type { DateTime } from 'luxon';
 import type { Readable } from 'svelte/store';
 import { readable } from 'svelte/store';
-import type { ApiFunction } from '../types/ApiFunction.js';
-import type { PaginatedListRequest } from '../types/PaginatedListRequest.js';
-import type { PaginatedListResponse } from '../types/PaginatedListResponse.js';
+import type { ApiFunction } from '$lib/types/ApiFunction.js';
+import type { PaginatedListRequest } from '$lib/types/PaginatedListRequest.js';
+import type { PaginatedListResponse } from '$lib/types/PaginatedListResponse.js';
 
 export function hasOwnProperty<X, Y extends PropertyKey>(obj: X, prop: Y): obj is NonNullable<X> & Record<Y, unknown> {
 	// eslint-disable-next-line @typescript-eslint/ban-types

@@ -1,8 +1,8 @@
 import type { Readable, Unsubscriber } from 'svelte/store';
 import { readable } from 'svelte/store';
-import type { FullDataTableConfig, MessageConfig } from '../types/DataTableConfig.js';
-import type { InterpolationValues, MessageFormatter } from '../types/MessageFormatter.js';
-import type { SvelteI18nMessageFormatter } from '../types/SvelteI18nTypes.js';
+import type { FullDataTableConfig, MessageConfig } from '$lib/types/DataTableConfig.js';
+import type { InterpolationValues, MessageFormatter } from '$lib/types/MessageFormatter.js';
+import type { SvelteI18nMessageFormatter } from '$lib/types/SvelteI18nTypes.js';
 
 export function createMessageFormatter<Data>(dataTableConfig: FullDataTableConfig<Data>): Readable<MessageFormatter> {
 	if (dataTableConfig.messageFormatterType === 'config') {

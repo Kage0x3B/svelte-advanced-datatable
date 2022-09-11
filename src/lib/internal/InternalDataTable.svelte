@@ -4,16 +4,16 @@
 	import { page } from '$app/stores';
 	import { getContext, onMount } from 'svelte';
 	import type { Readable } from 'svelte/store';
-	import type { QueryObserver } from '../dataSource/QueryObserver.js';
-	import type { ParsedSearchQuery } from '../searchParser';
-	import type { ForcedSearchQuery } from '../searchParser/ForcedSearchQuery.js';
-	import type { FullDataTableConfig } from '../types/DataTableConfig.js';
-	import type { PaginatedListRequest } from '../types/PaginatedListRequest.js';
-	import type { PaginatedListResponse } from '../types/PaginatedListResponse.js';
-	import type { SortDirection } from '../types/SortDirection.js';
-	import { DATATABLE_CONFIG } from '../util/ContextKey.js';
-	import { buildColumnPropertyData } from '../util/dataTableUtil.js';
-	import { wrapPossibleStore } from '../util/generalUtil.js';
+	import type { QueryObserver } from '$lib/dataSource/QueryObserver.js';
+	import type { ParsedSearchQuery } from '$lib/searchParser';
+	import type { ForcedSearchQuery } from '$lib/searchParser/ForcedSearchQuery.js';
+	import type { FullDataTableConfig } from '$lib/types/DataTableConfig.js';
+	import type { PaginatedListRequest } from '$lib/types/PaginatedListRequest.js';
+	import type { PaginatedListResponse } from '$lib/types/PaginatedListResponse.js';
+	import type { SortDirection } from '$lib/types/SortDirection.js';
+	import { DATATABLE_CONFIG } from '$lib/util/ContextKey.js';
+	import { buildColumnPropertyData } from '$lib/util/dataTableUtil.js';
+	import { wrapPossibleStore } from '$lib/util/generalUtil.js';
 
 	const config: FullDataTableConfig<unknown> = getContext(DATATABLE_CONFIG);
 

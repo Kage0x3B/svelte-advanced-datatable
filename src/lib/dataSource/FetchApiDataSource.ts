@@ -1,6 +1,6 @@
-import type { PaginatedListRequest } from '../types/PaginatedListRequest.js';
-import type { PaginatedListResponse } from '../types/PaginatedListResponse.js';
-import { hasOwnProperty } from '../util/generalUtil.js';
+import type { PaginatedListRequest } from '$lib/types/PaginatedListRequest.js';
+import type { PaginatedListResponse } from '$lib/types/PaginatedListResponse.js';
+import { hasOwnProperty } from '$lib/util/generalUtil.js';
 import { AbstractDataSource } from './AbstractDataSource.js';
 
 /**

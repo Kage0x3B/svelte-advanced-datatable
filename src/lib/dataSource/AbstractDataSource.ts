@@ -1,8 +1,8 @@
 import type { Readable, Subscriber } from 'svelte/store';
 import { writable } from 'svelte/store';
-import type { FullDataTableConfig } from '../types/DataTableConfig.js';
-import type { PaginatedListRequest } from '../types/PaginatedListRequest.js';
-import { hasOwnProperty } from '../util/generalUtil.js';
+import type { FullDataTableConfig } from '$lib/types/DataTableConfig.js';
+import type { PaginatedListRequest } from '$lib/types/PaginatedListRequest.js';
+import { hasOwnProperty } from '$lib/util/generalUtil.js';
 import type { IDataSource } from './IDataSource.js';
 import type { QueryObserver } from './QueryObserver.js';
 import { buildLoadingQueryObserver } from './QueryObserver.js';

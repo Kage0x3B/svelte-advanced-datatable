@@ -1,9 +1,9 @@
 <script lang='ts'>
 	import { getContext } from 'svelte';
-	import type { ParsedSearchQuery } from '../searchParser/index.js';
-	import type { FullDataTableConfig } from '../types/DataTableConfig.js';
-	import { DATATABLE_CONFIG } from '../util/ContextKey.js';
-	import { debounce } from '../util/generalUtil.js';
+	import type { ParsedSearchQuery } from '$lib/searchParser/index.js';
+	import type { FullDataTableConfig } from '$lib/types/DataTableConfig.js';
+	import { DATATABLE_CONFIG } from '$lib/util/ContextKey.js';
+	import { debounce } from '$lib/util/generalUtil.js';
 
 	export let searchInput = '';
 	export let searchQuery: ParsedSearchQuery | undefined = undefined;

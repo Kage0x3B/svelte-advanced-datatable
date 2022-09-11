@@ -3,10 +3,10 @@ import { useQuery } from '@sveltestack/svelte-query';
 import type { UseQueryStoreResult } from '@sveltestack/svelte-query/dist/types.js';
 import type { Readable } from 'svelte/store';
 import { derived } from 'svelte/store';
-import type { ApiFunction } from '../types/ApiFunction.js';
-import type { FullDataTableConfig } from '../types/DataTableConfig.js';
-import type { PaginatedListRequest } from '../types/PaginatedListRequest.js';
-import type { PaginatedListResponse } from '../types/PaginatedListResponse.js';
+import type { ApiFunction } from '$lib/types/ApiFunction.js';
+import type { FullDataTableConfig } from '$lib/types/DataTableConfig.js';
+import type { PaginatedListRequest } from '$lib/types/PaginatedListRequest.js';
+import type { PaginatedListResponse } from '$lib/types/PaginatedListResponse.js';
 import type { IDataSource } from './IDataSource.js';
 import type { QueryObserver } from './QueryObserver.js';
 

@@ -1,5 +1,5 @@
-import type { ComponentTypeProperties, TableColumnConfig } from '../dataComponent/ComponentType.js';
-import { componentTypes } from '../dataComponent/ComponentType.js';
+import type { ComponentTypeProperties, TableColumnConfig } from '$lib/dataComponent/ComponentType.js';
+import { componentTypes } from '$lib/dataComponent/ComponentType.js';
 
 export function buildColumnPropertyData<Data>(
 	columnProperties: TableColumnConfig<Data>

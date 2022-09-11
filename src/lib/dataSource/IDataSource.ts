@@ -1,6 +1,6 @@
 import type { Readable } from 'svelte/store';
-import type { FullDataTableConfig } from '../types/DataTableConfig.js';
-import type { PaginatedListRequest } from '../types/PaginatedListRequest.js';
+import type { FullDataTableConfig } from '$lib/types/DataTableConfig.js';
+import type { PaginatedListRequest } from '$lib/types/PaginatedListRequest.js';
 import type { QueryObserver } from './QueryObserver.js';
 
 export interface IDataSource<Data> {

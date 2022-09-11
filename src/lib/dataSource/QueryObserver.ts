@@ -1,4 +1,4 @@
-import type { PaginatedListResponse } from '../types/PaginatedListResponse.js';
+import type { PaginatedListResponse } from '$lib/types/PaginatedListResponse.js';
 
 export interface QueryObserver<Data> {
 	data: PaginatedListResponse<Data> | undefined;

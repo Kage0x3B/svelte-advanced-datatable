@@ -1,12 +1,12 @@
 <script lang='ts'>
-	import { ComponentType } from '../dataComponent/ComponentType.js';
-	import { isDateTime } from '../util/generalUtil.js';
+	import { ComponentType } from '$lib/dataComponent/ComponentType.js';
+	import { isDateTime } from '$lib/util/generalUtil.js';
 	import type { SvelteComponentTyped } from 'svelte';
 	import { getContext } from 'svelte';
 	import type { Readable } from 'svelte/store';
-	import type { FullDataTableConfig } from '../types/DataTableConfig.js';
-	import type { MessageFormatter } from '../types/MessageFormatter.js';
-	import { DATATABLE_CONFIG, DATATABLE_MESSAGE_FORMATTER } from '../util/ContextKey.js';
+	import type { FullDataTableConfig } from '$lib/types/DataTableConfig.js';
+	import type { MessageFormatter } from '$lib/types/MessageFormatter.js';
+	import { DATATABLE_CONFIG, DATATABLE_MESSAGE_FORMATTER } from '$lib/util/ContextKey.js';
 
 	const config: FullDataTableConfig<unknown> = getContext(DATATABLE_CONFIG);
 	const format: Readable<MessageFormatter> = getContext(DATATABLE_MESSAGE_FORMATTER);

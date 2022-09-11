@@ -1,5 +1,5 @@
-import type { ParsedSearchQuery } from '../searchParser/index.js';
-import type { PaginatedListRequest } from '../types/PaginatedListRequest.js';
+import type { ParsedSearchQuery } from '$lib/searchParser/index.js';
+import type { PaginatedListRequest } from '$lib/types/PaginatedListRequest.js';
 import { AbstractDataSource } from './AbstractDataSource.js';
 
 export interface LocalDataSourceOptions<Data> {

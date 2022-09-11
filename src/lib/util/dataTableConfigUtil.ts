@@ -1,6 +1,6 @@
-import { ComponentType } from '../dataComponent/ComponentType.js';
-import { BasicTextSearchParser } from '../searchParser/index.js';
-import type { DataTableConfig, FullDataTableConfig, MessageConfig } from '../types/DataTableConfig.js';
+import { ComponentType } from '$lib/dataComponent/ComponentType.js';
+import { BasicTextSearchParser } from '$lib/searchParser/index.js';
+import type { DataTableConfig, FullDataTableConfig, MessageConfig } from '$lib/types/DataTableConfig.js';
 import { hasOwnProperty } from './generalUtil.js';
 
 const defaultConfig: Partial<DataTableConfig<unknown>> = {
@@ -35,6 +35,10 @@ const defaultConfig: Partial<DataTableConfig<unknown>> = {
 };
 
 export function mergeDataTableConfigDefaults<Data>(config: DataTableConfig<Data>): FullDataTableConfig<Data> {
+	if (!config) {
+		throw new Error('You need to provide a datatable config!');
+	}
+
 	const enablePagination = config.enablePagination ?? defaultConfig.enablePagination;
 	const itemsPerPage =
 		config.itemsPerPage ?? (enablePagination ? defaultConfig.itemsPerPage : Number.MAX_SAFE_INTEGER);

@@ -1,8 +1,8 @@
 <script lang='ts'>
 	import type { MaybePromise } from '$lib/types';
 	import { getContext } from 'svelte';
-	import type { FullDataTableConfig } from '../types/DataTableConfig.js';
-	import { DATATABLE_CONFIG } from '../util/ContextKey.js';
+	import type { FullDataTableConfig } from '$lib/types/DataTableConfig.js';
+	import { DATATABLE_CONFIG } from '$lib/util/ContextKey.js';
 
 	const config: FullDataTableConfig<unknown> = getContext(DATATABLE_CONFIG);
 

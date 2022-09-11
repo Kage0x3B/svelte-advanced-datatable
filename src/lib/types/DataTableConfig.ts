@@ -1,9 +1,9 @@
 import type { SvelteComponentTyped } from 'svelte';
 import type { Readable } from 'svelte/store';
-import type { TableColumnConfig } from '../dataComponent/ComponentType.js';
-import type { IDataSource } from '../dataSource/IDataSource.js';
-import type { ForcedSearchQuery } from '../searchParser/ForcedSearchQuery.js';
-import type { ISearchParser } from '../searchParser/ISearchParser.js';
+import type { TableColumnConfig } from '$lib/dataComponent/ComponentType.js';
+import type { IDataSource } from '$lib/dataSource/IDataSource.js';
+import type { ForcedSearchQuery } from '$lib/searchParser/ForcedSearchQuery.js';
+import type { ISearchParser } from '$lib/searchParser/ISearchParser.js';
 import type { MessageFormatter } from './MessageFormatter.js';
 import type { SortDirection } from './SortDirection.js';
 

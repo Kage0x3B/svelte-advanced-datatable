@@ -4,10 +4,10 @@
 	import type { MaybePromise } from '$lib/types';
 	import { getContext } from 'svelte';
 	import { slide } from 'svelte/transition';
-	import InternalDataColumn from '../internal/InternalDataColumn.svelte';
-	import InternalDataRow from '../internal/InternalDataRow.svelte';
-	import type { FullDataTableConfig } from '../types/DataTableConfig.js';
-	import { DATATABLE_CONFIG } from '../util/ContextKey.js';
+	import InternalDataColumn from '$lib/internal/InternalDataColumn.svelte';
+	import InternalDataRow from '$lib/internal/InternalDataRow.svelte';
+	import type { FullDataTableConfig } from '$lib/types/DataTableConfig.js';
+	import { DATATABLE_CONFIG } from '$lib/util/ContextKey.js';
 
 	const config: FullDataTableConfig<unknown> = getContext(DATATABLE_CONFIG);
 

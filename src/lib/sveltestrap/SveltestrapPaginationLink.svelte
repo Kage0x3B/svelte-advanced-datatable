@@ -1,9 +1,9 @@
 <script lang='ts'>
 	import { getContext } from 'svelte';
 	import type { Readable } from 'svelte/store';
-	import type { MessageFormatter } from '../types/MessageFormatter.js';
-	import { DATATABLE_MESSAGE_FORMATTER } from '../util/ContextKey.js';
-	import { preventEvent } from '../util/generalUtil.ts';
+	import type { MessageFormatter } from '$lib/types/MessageFormatter.js';
+	import { DATATABLE_MESSAGE_FORMATTER } from '$lib/util/ContextKey.js';
+	import { preventEvent } from '$lib/util/generalUtil.js';
 
 	const format: Readable<MessageFormatter> = getContext(DATATABLE_MESSAGE_FORMATTER);
 

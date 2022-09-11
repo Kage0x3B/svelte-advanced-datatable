@@ -1,5 +1,5 @@
 import type { ParsedSearchQuery } from './ParsedSearchQuery.js';
-import type { SearchFilter } from '../types/SearchFilter.js';
+import type { SearchFilter } from '$lib/types/SearchFilter.js';
 import { AbstractSearchParser } from './AbstractSearchParser.js';
 import { SearchError } from './SearchError.js';
 
