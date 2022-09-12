@@ -1,9 +1,5 @@
 <script lang='ts'>
 	import InternalDataTable from '$lib/internal/InternalDataTable.svelte';
-	import { setContext } from 'svelte';
-	import type { Readable } from 'svelte/store';
-	import { fade } from 'svelte/transition';
-	import { Icon, Spinner } from 'sveltestrap';
 	import type { ParsedSearchQuery } from '$lib/searchParser/index.js';
 	import type { DataTableConfig, FullDataTableConfig } from '$lib/types/DataTableConfig.js';
 	import type { MessageFormatter } from '$lib/types/MessageFormatter.js';
@@ -11,6 +7,10 @@
 	import { mergeDataTableConfigDefaults } from '$lib/util/dataTableConfigUtil.js';
 	import { clamp } from '$lib/util/generalUtil.js';
 	import { createMessageFormatter } from '$lib/util/messageFormatterUtil.js';
+	import { setContext } from 'svelte';
+	import type { Readable } from 'svelte/store';
+	import { fade } from 'svelte/transition';
+	import { Icon, Spinner } from 'sveltestrap';
 	import DataRow from './SveltestrapDataRow.svelte';
 	import DataTablePagination from './SveltestrapDataTablePagination.svelte';
 	import SearchField from './SveltestrapSearchField.svelte';
@@ -67,26 +67,28 @@
 
 	<div class='table-container' class:table-responsive={responsive}>
 		<table class='table' class:centered class:highlight class:striped class:table-hover={hoverable}>
-			<thead>
-				<tr>
-					{#each Object.entries(columnProperties) as [key, colProp], i}
-						{#if !colProp.hidden}
-							<th on:click={() => colProp.sortable && toggleSorting(key)}>
-								{$format(`dataTable.${config.type}.${key}.label`)}
-								{#if colProp.sortable && items.length > 1}
-									{#if sortColumnKey === key && sortDirection === 'asc'}
-										<Icon name='chevron-compact-up' />
-									{:else if sortColumnKey === key && sortDirection === 'desc'}
-										<Icon name='chevron-compact-down' />
-									{:else}
-										<Icon name='chevron-expand' />
+			{#if config.showTableHeader}
+				<thead>
+					<tr>
+						{#each Object.entries(columnProperties) as [key, colProp], i}
+							{#if !colProp.hidden}
+								<th on:click={() => colProp.sortable && toggleSorting(key)}>
+									{$format(`dataTable.${config.type}.${key}.label`)}
+									{#if colProp.sortable && items.length > 1}
+										{#if sortColumnKey === key && sortDirection === 'asc'}
+											<Icon name='chevron-compact-up' />
+										{:else if sortColumnKey === key && sortDirection === 'desc'}
+											<Icon name='chevron-compact-down' />
+										{:else}
+											<Icon name='chevron-expand' />
+										{/if}
 									{/if}
-								{/if}
-							</th>
-						{/if}
-					{/each}
-				</tr>
-			</thead>
+								</th>
+							{/if}
+						{/each}
+					</tr>
+				</thead>
+			{/if}
 			<tbody>
 				{#each items as item, index (item[config.dataUniquePropertyKey])}
 					<DataRow {item} {index}

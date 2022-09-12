@@ -1,9 +1,9 @@
-import type { SvelteComponentTyped } from 'svelte';
-import type { Readable } from 'svelte/store';
 import type { TableColumnConfig } from '$lib/dataComponent/ComponentType.js';
 import type { IDataSource } from '$lib/dataSource/IDataSource.js';
 import type { ForcedSearchQuery } from '$lib/searchParser/ForcedSearchQuery.js';
 import type { ISearchParser } from '$lib/searchParser/ISearchParser.js';
+import type { SvelteComponentTyped } from 'svelte';
+import type { Readable } from 'svelte/store';
 import type { MessageFormatter } from './MessageFormatter.js';
 import type { SortDirection } from './SortDirection.js';
 
@@ -132,6 +132,13 @@ export interface DataTableConfig<Data> {
 	 * Which search parser to use to parse the users search text into search filters, categories and more
 	 */
 	searchParser?: ISearchParser;
+
+	/**
+	 * Whether to show the table header row.
+	 *
+	 * Tables without a header are not sortable!
+	 */
+	showTableHeader?: boolean;
 }
 
 export type FullDataTableConfig<Data> = Required<DataTableConfig<Data>>;

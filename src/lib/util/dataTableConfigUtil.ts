@@ -31,7 +31,8 @@ const defaultConfig: Partial<DataTableConfig<unknown>> = {
 		}
 	} as MessageConfig<unknown>,
 	enableSearch: true,
-	searchParser: new BasicTextSearchParser()
+	searchParser: new BasicTextSearchParser(),
+	showTableHeader: true
 };
 
 export function mergeDataTableConfigDefaults<Data>(config: DataTableConfig<Data>): FullDataTableConfig<Data> {
@@ -71,7 +72,7 @@ function validateMessageConfig<Data>(config: FullDataTableConfig<Data>): void {
 	for (const columnKey of Object.keys(config.columnProperties)) {
 		const columnConfig = config.columnProperties[columnKey as keyof typeof config.columnProperties];
 
-		if (columnConfig.hidden) {
+		if (columnConfig!.hidden) {
 			continue;
 		}
 
@@ -89,7 +90,7 @@ function validateMessageConfig<Data>(config: FullDataTableConfig<Data>): void {
 			console.warn(`DataTable ${config.type} message config doesn't provide a label for column ${columnKey}`);
 		}
 
-		if (columnConfig.type === ComponentType.ENUM && !hasOwnProperty(columnMessageConfig, 'enumValue')) {
+		if (columnConfig!.type === ComponentType.ENUM && !hasOwnProperty(columnMessageConfig, 'enumValue')) {
 			console.warn(
 				`DataTable ${config.type} message config doesn't provide any enumValue names for enum type column ${columnKey}`
 			);
