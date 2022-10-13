@@ -1,9 +1,6 @@
 <script lang='ts'>
-	import { browser } from '$app/env';
 	import { afterNavigate, goto } from '$app/navigation';
 	import { page } from '$app/stores';
-	import { getContext, onMount } from 'svelte';
-	import type { Readable } from 'svelte/store';
 	import type { QueryObserver } from '$lib/dataSource/QueryObserver.js';
 	import type { ParsedSearchQuery } from '$lib/searchParser';
 	import type { ForcedSearchQuery } from '$lib/searchParser/ForcedSearchQuery.js';
@@ -13,7 +10,9 @@
 	import type { SortDirection } from '$lib/types/SortDirection.js';
 	import { DATATABLE_CONFIG } from '$lib/util/ContextKey.js';
 	import { buildColumnPropertyData } from '$lib/util/dataTableUtil.js';
-	import { wrapPossibleStore } from '$lib/util/generalUtil.js';
+	import { browser, wrapPossibleStore } from '$lib/util/generalUtil.js';
+	import { getContext, onMount } from 'svelte';
+	import type { Readable } from 'svelte/store';
 
 	const config: FullDataTableConfig<unknown> = getContext(DATATABLE_CONFIG);
 

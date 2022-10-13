@@ -5,6 +5,8 @@ import type { ApiFunction } from '$lib/types/ApiFunction.js';
 import type { PaginatedListRequest } from '$lib/types/PaginatedListRequest.js';
 import type { PaginatedListResponse } from '$lib/types/PaginatedListResponse.js';
 
+export const browser = typeof window !== 'undefined';
+
 export function hasOwnProperty<X, Y extends PropertyKey>(obj: X, prop: Y): obj is NonNullable<X> & Record<Y, unknown> {
 	// eslint-disable-next-line @typescript-eslint/ban-types
 	return typeof obj !== 'undefined' && obj !== null && Object.hasOwn(obj as object, prop);
