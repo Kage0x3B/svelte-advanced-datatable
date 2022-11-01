@@ -87,7 +87,7 @@ export interface DataTableConfig<Data> {
 	/**
 	 * A search query which overwrites any values by the users current search. Can be used to apply a forced filter to the whole datatable
 	 */
-	forcedSearchQuery?: ForcedSearchQuery<Data>;
+	forcedSearchQuery?: Readable<ForcedSearchQuery<Data>>;
 
 	/**
 	 * The identifier of any item which then gets assigned the `highlighted` class

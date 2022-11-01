@@ -15,6 +15,7 @@
 	import type { Readable } from 'svelte/store';
 
 	const config: FullDataTableConfig<unknown> = getContext(DATATABLE_CONFIG);
+	const forcedSearchQuery = config.forcedSearchQuery;
 
 	export let currentPage: number;
 	export let searchInput: string;
@@ -37,7 +38,7 @@
 		dataQueryObserver = $dataSource.getQueryObserver();
 	}
 
-	$: refresh(currentPage, config.itemsPerPage, sortColumnKey, sortDirection, config.forcedSearchQuery, searchQuery);
+	$: refresh(currentPage, config.itemsPerPage, sortColumnKey, sortDirection, $forcedSearchQuery, searchQuery);
 	$: $dataQueryObserver.isSuccess && updateData($dataQueryObserver.data);
 	$: pageAmount = Math.ceil(Math.max(1, itemAmount / config.itemsPerPage));
 
