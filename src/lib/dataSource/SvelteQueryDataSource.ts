@@ -1,12 +1,12 @@
+import type { ApiFunction } from '$lib/types/ApiFunction.js';
+import type { FullDataTableConfig } from '$lib/types/DataTableConfig.js';
+import type { PaginatedListRequest } from '$lib/types/PaginatedListRequest.js';
+import type { PaginatedListResponse } from '$lib/types/PaginatedListResponse.js';
 import type { QueryKey, UseQueryOptions } from '@sveltestack/svelte-query';
 import { useQuery } from '@sveltestack/svelte-query';
 import type { UseQueryStoreResult } from '@sveltestack/svelte-query/dist/types.js';
 import type { Readable } from 'svelte/store';
 import { derived } from 'svelte/store';
-import type { ApiFunction } from '$lib/types/ApiFunction.js';
-import type { FullDataTableConfig } from '$lib/types/DataTableConfig.js';
-import type { PaginatedListRequest } from '$lib/types/PaginatedListRequest.js';
-import type { PaginatedListResponse } from '$lib/types/PaginatedListResponse.js';
 import type { IDataSource } from './IDataSource.js';
 import type { QueryObserver } from './QueryObserver.js';
 
@@ -31,6 +31,7 @@ export class SvelteQueryDataSource<Data> implements IDataSource<Data> {
 	private readonly dataQuery: DataTableUseQueryStoreResult<Data>;
 	private readonly dataObserver: Readable<QueryObserver<Data>>;
 	private queryKey: string | undefined;
+	private queryEnabled: boolean | undefined = undefined;
 
 	/**
 	 * Create a new data source to fetch your paginated table data from an api endpoint
@@ -42,9 +43,16 @@ export class SvelteQueryDataSource<Data> implements IDataSource<Data> {
 	 *
 	 * @see {@link https://sveltequery.vercel.app/reference/useQuery}
 	 */
-	constructor(private apiFunction: ApiFunction<Data>, private additionalQueryOptions: DataTableUseQueryOptions<Data> = {}) {
+	constructor(
+		private apiFunction: ApiFunction<Data>,
+		private additionalQueryOptions: DataTableUseQueryOptions<Data> = {}
+	) {
 		this.dataQuery = this.useNoopQuery();
 		this.dataObserver = derived(this.dataQuery, ($dataQuery) => $dataQuery as QueryObserver<Data>);
+
+		if (typeof this.additionalQueryOptions.enabled !== 'undefined') {
+			this.queryEnabled = !!this.additionalQueryOptions.enabled;
+		}
 	}
 
 	public getQueryObserver(): Readable<QueryObserver<Data>> {
@@ -60,10 +68,12 @@ export class SvelteQueryDataSource<Data> implements IDataSource<Data> {
 			throw new Error('Svelte-Query data source was not properly initialized before requesting data');
 		}
 
+		this.queryEnabled ??= true;
+
 		this.dataQuery.setOptions([this.queryKey, data], this.wrapApiFunction(), {
-			enabled: true,
 			keepPreviousData: true,
-			...this.additionalQueryOptions
+			...this.additionalQueryOptions,
+			enabled: this.queryEnabled
 		});
 	}
 
@@ -72,13 +82,19 @@ export class SvelteQueryDataSource<Data> implements IDataSource<Data> {
 	}
 
 	public setEnabled(enabled: boolean): void {
+		this.queryEnabled = enabled;
 		this.dataQuery.setEnabled(enabled);
 	}
 
 	public updateQueryOptions(queryOptions: Partial<DataTableUseQueryOptions<Data>>): void {
+		if (typeof queryOptions.enabled !== 'undefined') {
+			this.queryEnabled = !!queryOptions.enabled;
+		}
+
 		this.additionalQueryOptions = {
 			...this.additionalQueryOptions,
-			...queryOptions
+			...queryOptions,
+			enabled: this.queryEnabled ?? false
 		};
 
 		this.dataQuery.updateOptions(
@@ -105,7 +121,9 @@ export class SvelteQueryDataSource<Data> implements IDataSource<Data> {
 		);
 	}
 
-	private wrapApiFunction(): (options: { queryKey: DataTableQueryKey<Data> }) => Promise<PaginatedListResponse<Data>> {
+	private wrapApiFunction(): (options: {
+		queryKey: DataTableQueryKey<Data>;
+	}) => Promise<PaginatedListResponse<Data>> {
 		return ({ queryKey }) => {
 			return this.apiFunction(queryKey[1]);
 		};
