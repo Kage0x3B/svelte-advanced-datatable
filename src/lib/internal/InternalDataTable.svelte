@@ -43,6 +43,10 @@
 	$: pageAmount = Math.ceil(Math.max(1, itemAmount / config.itemsPerPage));
 
 	function updateData(data: PaginatedListResponse<unknown>) {
+		if (!data || !data.items) {
+			return;
+		}
+
 		const calculatedMaxItemAmount = (currentPage - 1) * config.itemsPerPage + data.items.length;
 
 		currentOpenIndex = -1;
