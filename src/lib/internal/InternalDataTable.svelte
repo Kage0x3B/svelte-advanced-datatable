@@ -1,6 +1,4 @@
 <script lang='ts'>
-	import { afterNavigate, goto } from '$app/navigation';
-	import { page } from '$app/stores';
 	import type { QueryObserver } from '$lib/dataSource/QueryObserver.js';
 	import type { ParsedSearchQuery } from '$lib/searchParser';
 	import type { ForcedSearchQuery } from '$lib/searchParser/ForcedSearchQuery.js';
@@ -103,36 +101,12 @@
 		}
 	}
 
-	async function updateNavigation(searchParams: URLSearchParams, searchInput: string): Promise<void> {
-		if (!isInitialized || (searchParams.get('query') ?? '') === searchInput) {
-			return;
-		}
-
-		if (searchInput.trim()) {
-			searchParams.set('query', encodeURIComponent(searchInput));
-		} else {
-			searchParams.delete('query');
-		}
-
-		await goto(`?${searchParams.toString()}`, { replaceState: true, keepfocus: true });
-	}
-
-	$: browser && config.enableSearch && updateNavigation($page.url.searchParams, searchInput);
-
 	const open = (index: number) => currentOpenIndex = items.length <= 1 ? 0 : index;
 
 	onMount(() => {
-		if (config.enableSearch && $page.url.searchParams.has('query')) {
-			searchInput = decodeURIComponent($page.url.searchParams.get('query'));
-		}
-
 		$dataSource.onMount && $dataSource.onMount();
 
 		isInitialized = true;
-	});
-
-	afterNavigate(() => {
-		$dataSource.afterNavigate && $dataSource.afterNavigate();
 	});
 </script>
 
