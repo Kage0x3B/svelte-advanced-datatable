@@ -35,5 +35,7 @@ export type { PaginatedListResponse } from './types/PaginatedListResponse.js';
 export type { SearchFilter } from './types/SearchFilter.js';
 export type { SortDirection } from './types/SortDirection.js';
 
-export type { DATATABLE_CONFIG, DATATABLE_MESSAGE_FORMATTER } from './util/ContextKey.js';
+export { DATATABLE_CONFIG, DATATABLE_MESSAGE_FORMATTER } from './util/ContextKey.js';
 export { wrapFetchToThrow } from './util/generalUtil.js';
+export { mergeDataTableConfigDefaults } from './util/dataTableConfigUtil.js';
+export { createMessageFormatter } from './util/messageFormatterUtil.js';
