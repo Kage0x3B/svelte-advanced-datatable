@@ -62,7 +62,9 @@ export function mapValue<Key extends string, Value extends string>(
 	key: Key,
 	defaultToKey = false
 ): Value | undefined {
-	if (!hasOwnProperty(map, key)) {
+	if (hasOwnProperty(map, key)) {
+		return map[key];
+	} else {
 		if (defaultToKey) {
 			return key as unknown as Value;
 		} else {
