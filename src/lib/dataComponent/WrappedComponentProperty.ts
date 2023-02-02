@@ -7,6 +7,7 @@ export enum WrappedComponentColor {
 	red = 'red',
 	green = 'green',
 	blue = 'blue',
+	yellow = 'yellow',
 	gray = 'gray',
 	dark = 'dark',
 	light = 'light'

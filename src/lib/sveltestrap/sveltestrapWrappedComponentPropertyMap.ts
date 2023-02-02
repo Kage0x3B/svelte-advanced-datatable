@@ -11,6 +11,7 @@ export const sveltestrapColorMap: Record<WrappedComponentColor, SveltestrapColor
 	red: 'danger',
 	green: 'success',
 	blue: 'info',
+	yellow: 'warning',
 	gray: 'secondary',
 	dark: 'dark',
 	light: 'light'
