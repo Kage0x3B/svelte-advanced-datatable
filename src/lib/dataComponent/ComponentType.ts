@@ -43,7 +43,7 @@ export enum ComponentType {
 	 */
 	ENUM = 'enum',
 	/**
-	 * Date type supporting the normal JavaScript {@link Date} as well as {@link https://moment.github.io/luxon luxon DateTime}
+	 * Date type supporting the normal JavaScript Date as well as {@link https://moment.github.io/luxon luxon DateTime}
 	 *
 	 * @see {@link DateComponentTypeProperties}
 	 */

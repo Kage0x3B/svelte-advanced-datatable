@@ -8,6 +8,16 @@ const config: UserConfig = {
 		esbuildOptions: {
 			platform: 'node'
 		}
+	},
+	server: {
+		host: true,
+		port: 5173,
+		strictPort: true
+	},
+	preview: {
+		host: true,
+		port: 5173,
+		strictPort: true
 	}
 };
 
