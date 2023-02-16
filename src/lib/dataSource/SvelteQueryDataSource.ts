@@ -108,12 +108,6 @@ export class SvelteQueryDataSource<Data> implements IDataSource<Data> {
 			this.dataQueryUnsubscribe();
 		}
 
-		console.trace('Updating query with', {
-			...this.additionalQueryOptions,
-			queryKey: this.queryKey,
-			queryFn: this.wrapApiFunction(),
-			enabled: this.queryEnabled ?? false
-		});
 		this.dataQuery = createQuery({
 			...this.additionalQueryOptions,
 			queryKey: this.queryKey,
