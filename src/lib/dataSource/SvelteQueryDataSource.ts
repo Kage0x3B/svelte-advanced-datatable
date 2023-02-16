@@ -2,21 +2,16 @@ import type { ApiFunction } from '$lib/types/ApiFunction.js';
 import type { FullDataTableConfig } from '$lib/types/DataTableConfig.js';
 import type { PaginatedListRequest } from '$lib/types/PaginatedListRequest.js';
 import type { PaginatedListResponse } from '$lib/types/PaginatedListResponse.js';
-import type { QueryKey, UseQueryOptions } from '@sveltestack/svelte-query';
-import { useQuery } from '@sveltestack/svelte-query';
-import type { UseQueryStoreResult } from '@sveltestack/svelte-query/dist/types.js';
-import type { Readable } from 'svelte/store';
-import { derived } from 'svelte/store';
+import type { CreateQueryOptions, CreateQueryResult } from '@tanstack/svelte-query';
+import { createQuery } from '@tanstack/svelte-query';
+import type { Readable, Writable } from 'svelte/store';
+import { writable } from 'svelte/store';
 import type { IDataSource } from './IDataSource.js';
 import type { QueryObserver } from './QueryObserver.js';
+import { buildLoadingQueryObserver } from './QueryObserver.js';
 
-export type DataTableUseQueryStoreResult<Data> = UseQueryStoreResult<
-	PaginatedListResponse<Data>,
-	unknown,
-	PaginatedListResponse<Data>,
-	DataTableQueryKey<Data>
->;
-export type DataTableUseQueryOptions<Data> = UseQueryOptions<
+export type DataTableUseQueryStoreResult<Data> = CreateQueryResult<PaginatedListResponse<Data>>;
+export type DataTableUseQueryOptions<Data> = CreateQueryOptions<
 	PaginatedListResponse<Data>,
 	unknown,
 	PaginatedListResponse<Data>,
@@ -28,9 +23,12 @@ export type DataTableQueryKey<Data> = [key: string, request: PaginatedListReques
  * Uses the Svelte Query library to fetch your paginated table data.
  */
 export class SvelteQueryDataSource<Data> implements IDataSource<Data> {
-	private readonly dataQuery: DataTableUseQueryStoreResult<Data>;
-	private readonly dataObserver: Readable<QueryObserver<Data>>;
-	private queryKey: string | undefined;
+	private dataQuery: DataTableUseQueryStoreResult<Data> | undefined;
+	private dataQueryUnsubscribe: (() => void) | undefined;
+	private readonly dataObserver: Writable<QueryObserver<Data>>;
+	private initialized = false;
+	private queryKeyPrefix: string | undefined;
+	private queryKey: unknown[] = [];
 	private queryEnabled: boolean | undefined = undefined;
 
 	/**
@@ -45,10 +43,11 @@ export class SvelteQueryDataSource<Data> implements IDataSource<Data> {
 	 */
 	constructor(
 		private apiFunction: ApiFunction<Data>,
-		private additionalQueryOptions: DataTableUseQueryOptions<Data> = {}
+		private additionalQueryOptions: DataTableUseQueryOptions<Data> = {
+			keepPreviousData: true
+		}
 	) {
-		this.dataQuery = this.useNoopQuery();
-		this.dataObserver = derived(this.dataQuery, ($dataQuery) => $dataQuery as QueryObserver<Data>);
+		this.dataObserver = writable(buildLoadingQueryObserver());
 
 		if (typeof this.additionalQueryOptions.enabled !== 'undefined') {
 			this.queryEnabled = !!this.additionalQueryOptions.enabled;
@@ -60,64 +59,69 @@ export class SvelteQueryDataSource<Data> implements IDataSource<Data> {
 	}
 
 	public init(config: FullDataTableConfig<Data>): void {
-		this.queryKey = `dataTable-${config.type}`;
+		this.queryKeyPrefix = `dataTable-${config.type}`;
+
+		this.initialized = true;
 	}
 
 	public requestData(data: PaginatedListRequest<Data>): void {
-		if (typeof this.queryKey === 'undefined') {
+		if (!this.initialized) {
 			throw new Error('Svelte-Query data source was not properly initialized before requesting data');
 		}
 
 		this.queryEnabled ??= true;
 
-		this.dataQuery.setOptions([this.queryKey, data], this.wrapApiFunction(), {
-			keepPreviousData: true,
-			...this.additionalQueryOptions,
-			enabled: this.queryEnabled
-		});
+		this.queryKey = [this.queryKeyPrefix, data];
+		this.updateQueryOptions({});
 	}
 
 	public setApiFunction(apiFunction: ApiFunction<Data>): void {
 		this.apiFunction = apiFunction;
+
+		this.updateQueryOptions({});
 	}
 
 	public setEnabled(enabled: boolean): void {
 		this.queryEnabled = enabled;
-		this.dataQuery.setEnabled(enabled);
+
+		this.updateQueryOptions({});
 	}
 
-	public updateQueryOptions(queryOptions: Partial<DataTableUseQueryOptions<Data>>): void {
+	public updateQueryOptions(
+		queryOptions: Partial<Omit<DataTableUseQueryOptions<Data>, 'queryKey' | 'queryFn'>>
+	): void {
 		if (typeof queryOptions.enabled !== 'undefined') {
 			this.queryEnabled = !!queryOptions.enabled;
 		}
 
 		this.additionalQueryOptions = {
 			...this.additionalQueryOptions,
-			...queryOptions,
-			enabled: this.queryEnabled ?? false
+			...queryOptions
 		};
 
-		this.dataQuery.updateOptions(
-			this.additionalQueryOptions as unknown as UseQueryOptions<
-				PaginatedListResponse<Data>,
-				unknown,
-				PaginatedListResponse<Data>
-			>
-		);
-	}
+		if (!this.initialized) {
+			return;
+		}
 
-	private useNoopQuery<
-		TQueryFnData,
-		TError = unknown,
-		TData = TQueryFnData,
-		TQueryKey extends QueryKey = QueryKey
-	>(): UseQueryStoreResult<TQueryFnData, TError, TData, TQueryKey> {
-		return useQuery<TQueryFnData, TError, TData, TQueryKey>(
-			[] as unknown as TQueryKey,
-			() => undefined as unknown as TQueryFnData,
-			{
-				enabled: false
-			}
+		if (this.dataQueryUnsubscribe) {
+			this.dataQueryUnsubscribe();
+		}
+
+		console.trace('Updating query with', {
+			...this.additionalQueryOptions,
+			queryKey: this.queryKey,
+			queryFn: this.wrapApiFunction(),
+			enabled: this.queryEnabled ?? false
+		});
+		this.dataQuery = createQuery({
+			...this.additionalQueryOptions,
+			queryKey: this.queryKey,
+			queryFn: this.wrapApiFunction(),
+			enabled: this.queryEnabled ?? false
+		});
+
+		this.dataQueryUnsubscribe = this.dataQuery.subscribe((value: QueryObserver<Data>) =>
+			this.dataObserver.set(value)
 		);
 	}
 
