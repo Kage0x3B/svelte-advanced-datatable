@@ -72,7 +72,7 @@ export class SvelteQueryDataSource<Data> implements IDataSource<Data> {
 
 		this.queryEnabled ??= true;
 
-		this.queryKey = [this.queryKeyPrefix, data];
+		this.queryKey = [this.queryKeyPrefix, this.normalizeRequestData(data)];
 		this.updateQueryOptions({});
 	}
 
@@ -125,6 +125,27 @@ export class SvelteQueryDataSource<Data> implements IDataSource<Data> {
 	}) => Promise<PaginatedListResponse<Data>> {
 		return ({ queryKey }) => {
 			return this.apiFunction(queryKey[1]);
+		};
+	}
+
+	private normalizeRequestData(data: PaginatedListRequest<Data>): PaginatedListRequest<Data> {
+		return {
+			start: data.start ?? 0,
+			amount: data.amount ?? 10,
+			orderBy:
+				data.orderBy && data.orderBy.column
+					? {
+							order: data.orderBy.order ?? 'desc',
+							column: data.orderBy.column
+					  }
+					: undefined,
+			rawSearchQuery: data.rawSearchQuery ?? '',
+			searchQuery: {
+				searchText: data.searchQuery?.searchText ?? '',
+				searchCategories: data.searchQuery?.searchCategories ?? [],
+				searchFilters: data.searchQuery?.searchFilters ?? [],
+				forceGlobalSearch: data.searchQuery?.forceGlobalSearch ?? false
+			}
 		};
 	}
 }
