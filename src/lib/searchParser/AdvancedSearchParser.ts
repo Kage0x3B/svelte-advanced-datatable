@@ -16,17 +16,23 @@ export class AdvancedSearchParser<
 	private readonly searchCategoryAliases: AliasMap<SearchCategory>;
 	private readonly searchFilterAliases: AliasMap<SearchFilterType> = {} as AliasMap;
 	private readonly additionalQueryPartParsers: QueryPartParser<SearchCategory, SearchFilterType>[] = [];
+	private readonly enableCategoryParsing: boolean;
+	private readonly enableFilterParsing: boolean;
 
 	constructor(options?: {
 		searchCategoryAliases?: AliasMap<SearchCategory>;
 		searchFilterAliases?: AliasMap;
 		additionalQueryPartParsers: QueryPartParser<SearchCategory, SearchFilterType>[];
+		enableCategoryParsing?: boolean;
+		enableFilterParsing?: boolean;
 	}) {
 		super();
 
 		this.searchCategoryAliases = options?.searchCategoryAliases ?? ({} as AliasMap<SearchCategory>);
 		this.searchFilterAliases = options?.searchFilterAliases ?? ({} as AliasMap);
 		this.additionalQueryPartParsers = options?.additionalQueryPartParsers ?? [];
+		this.enableCategoryParsing = options?.enableCategoryParsing ?? true;
+		this.enableFilterParsing = options?.enableFilterParsing ?? true;
 	}
 
 	parseSearchQuery(rawSearchQuery: string): ParsedSearchQuery<SearchCategory, SearchFilterType> | undefined {
@@ -42,7 +48,7 @@ export class AdvancedSearchParser<
 		let forceGlobalSearch = false;
 
 		for (let queryPart of queryParts) {
-			if (queryPart.startsWith('#')) {
+			if (this.enableCategoryParsing && queryPart.startsWith('#')) {
 				queryPart = queryPart.substring(1);
 
 				if (queryPart === '#') {
@@ -50,7 +56,7 @@ export class AdvancedSearchParser<
 				} else {
 					searchCategories.push(this.matchPartialAlias(this.searchCategoryAliases, queryPart));
 				}
-			} else if (queryPart.indexOf(':') !== -1) {
+			} else if (this.enableFilterParsing && queryPart.indexOf(':') !== -1) {
 				const filterName = queryPart.substring(0, queryPart.indexOf(':'));
 				const filterArgs = queryPart.substring(queryPart.indexOf(':') + 1);
 
