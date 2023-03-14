@@ -20,12 +20,6 @@ export type { IDataSource } from './dataSource/IDataSource.js';
 export { LocalDataSource } from './dataSource/LocalDataSource.js';
 export type { LocalDataSourceOptions } from './dataSource/LocalDataSource.js';
 export type { QueryObserver } from './dataSource/QueryObserver.js';
-export { SvelteQueryDataSource } from './dataSource/SvelteQueryDataSource.js';
-export type {
-	DataTableQueryKey,
-	DataTableUseQueryOptions,
-	DataTableUseQueryStoreResult
-} from './dataSource/SvelteQueryDataSource.js';
 
 export type { ApiFunction } from './types/ApiFunction.js';
 export type {

@@ -1,6 +1,6 @@
 {
 	"name": "svelte-advanced-datatable",
-	"version": "0.4.3",
+	"version": "0.5.3",
 	"scripts": {
 		"dev": "vite dev",
 		"build": "svelte-kit sync && svelte-package && cp ./.npmrc package/",
@@ -20,8 +20,7 @@
 		"@sveltejs/adapter-static": "2.0.1",
 		"@sveltejs/kit": "1.7.0",
 		"@sveltejs/package": "1.0.2",
-		"@tanstack/query-core": "^4.24.6",
-		"@tanstack/svelte-query": "^4.24.6",
+		"@tanstack/svelte-query": "^4.26.1",
 		"@types/luxon": "^3.2.0",
 		"@types/marked": "^4.0.8",
 		"@typescript-eslint/eslint-plugin": "^5.52.0",
@@ -55,6 +54,8 @@
 	},
 	"type": "module",
 	"peerDependencies": {
+		"@tanstack/query-core": "4.x",
+		"@tanstack/svelte-query": "4.x",
 		"svelte": "3.x",
 		"svelte-i18n": "3.x",
 		"sveltestrap": "5.x"
@@ -66,10 +67,13 @@
 		"sveltestrap": {
 			"optional": true
 		},
-		"@tanstack/svelte-query": {
+		"svelte-i18n": {
 			"optional": true
 		},
-		"svelte-i18n": {
+		"@tanstack/query-core": {
+			"optional": true
+		},
+		"@tanstack/svelte-query": {
 			"optional": true
 		}
 	},

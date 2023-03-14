@@ -7,9 +7,9 @@ import type { CreateQueryOptions, CreateQueryResult } from '@tanstack/svelte-que
 import { createQuery } from '@tanstack/svelte-query';
 import type { Readable, Writable } from 'svelte/store';
 import { writable } from 'svelte/store';
-import type { IDataSource } from './IDataSource.js';
-import type { QueryObserver } from './QueryObserver.js';
-import { buildLoadingQueryObserver } from './QueryObserver.js';
+import type { IDataSource } from '../IDataSource.js';
+import type { QueryObserver } from '../QueryObserver.js';
+import { buildLoadingQueryObserver } from '../QueryObserver.js';
 
 export type DataTableUseQueryStoreResult<Data> = CreateQueryResult<PaginatedListResponse<Data>>;
 export type DataTableUseQueryOptions<Data> = CreateQueryOptions<
