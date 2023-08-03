@@ -18,7 +18,7 @@
 		"@playwright/test": "^1.30.0",
 		"@sveltejs/adapter-auto": "2.0.0",
 		"@sveltejs/adapter-static": "2.0.1",
-		"@sveltejs/kit": "1.7.0",
+		"@sveltejs/kit": "1.15.2",
 		"@sveltejs/package": "1.0.2",
 		"@tanstack/svelte-query": "^4.26.1",
 		"@types/luxon": "^3.2.0",
