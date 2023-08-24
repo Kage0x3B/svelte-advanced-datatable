@@ -1,0 +1,48 @@
+<script lang="ts">
+    import { Alert, Col, Row } from 'skeleton';
+    import type { UserData } from '../../util/UserData.js';
+
+    export let item: UserData;
+    export let toggle = undefined;
+
+    const cacheBuster = Math.round(Math.random() * 10);
+    const lastOnlineAmount = Math.ceil(Math.random() * 60);
+    const lastOnlineUnit = Math.random() > 0.5 ? 'hours' : 'minutes';
+    const showPasswortAlert = Math.random() > 0.7;
+    const passwordAlertMonths = Math.ceil(Math.random() * 4);
+</script>
+
+<Row class="py-4">
+    <Col xs="12" lg="3" class="d-flex flex-column align-items-center">
+        <img
+            src="https://api.lorem.space/image/face?w=256&h=256&cacheBuster={cacheBuster}"
+            alt="Picture of {item.firstName} {item.lastName}"
+        />
+    </Col>
+    <Col xs="12" lg="9">
+        <div class="mb-2">
+            <h4 class="mb-0">{item.firstName} {item.lastName} <small class="text-muted">@{item.userName}</small></h4>
+            <small class="text-muted">Last online {lastOnlineAmount} {lastOnlineUnit} ago</small>
+        </div>
+        <p>
+            Contact: <a href="mailto:{item.mailAddress}_NOT_AN_ACTUAL_EMAIL">{item.mailAddress}</a>
+        </p>
+        {#if showPasswortAlert}
+            <Alert color="danger" dismissible fade
+                >The user hasn't changed their password for {passwordAlertMonths} months!</Alert
+            >
+        {/if}
+    </Col>
+</Row>
+
+<style>
+    img {
+        width: 128px;
+        height: 128px;
+        border-radius: 50%;
+        box-shadow:
+            rgba(6, 24, 44, 0.4) 0 0 0 1px,
+            rgba(6, 24, 44, 0.65) 0 4px 6px -1px,
+            rgba(255, 255, 255, 0.08) 0 1px 0 inset;
+    }
+</style>

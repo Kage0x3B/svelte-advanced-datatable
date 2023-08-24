@@ -1,11 +1,11 @@
 <script>
-	import { setContext } from 'svelte';
+    import { setContext } from 'svelte';
 
-	setContext('markdownListItem', true);
+    setContext('markdownListItem', true);
 </script>
 
-<li class='list-group-item position-relative'>
-	<slot />
+<li>
+    <slot />
 </li>
 
 <style>

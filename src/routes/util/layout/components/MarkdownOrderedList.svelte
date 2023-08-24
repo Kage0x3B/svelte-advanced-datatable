@@ -1,3 +1,3 @@
-<ol class='list-group list-group-numbered my-4'>
-	<slot />
+<ol class="my-4">
+    <slot />
 </ol>

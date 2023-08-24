@@ -1,91 +1,99 @@
 {
-	"name": "svelte-advanced-datatable",
-	"version": "0.5.3",
-	"scripts": {
-		"dev": "vite dev",
-		"build": "svelte-kit sync && svelte-package && cp ./.npmrc package/",
-		"build-docs": "svelte-kit sync && typedoc && node prepareApiReferenceFiles.js && vite build",
-		"preview": "vite preview",
-		"test": "playwright test",
-		"test:unit": "vitest",
-		"check": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json",
-		"check:watch": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json --watch",
-		"lint": "prettier --plugin-search-dir . --check . && eslint .",
-		"format": "prettier --plugin-search-dir . --write ."
-	},
-	"devDependencies": {
-		"@faker-js/faker": "^7.6.0",
-		"@playwright/test": "^1.30.0",
-		"@sveltejs/adapter-auto": "2.0.0",
-		"@sveltejs/adapter-static": "2.0.1",
-		"@sveltejs/kit": "1.7.0",
-		"@sveltejs/package": "1.0.2",
-		"@tanstack/svelte-query": "^4.26.1",
-		"@types/luxon": "^3.2.0",
-		"@types/marked": "^4.0.8",
-		"@typescript-eslint/eslint-plugin": "^5.52.0",
-		"@typescript-eslint/parser": "^5.52.0",
-		"bootstrap": "^5.2.3",
-		"eslint": "^8.34.0",
-		"eslint-config-prettier": "^8.6.0",
-		"eslint-plugin-svelte3": "^4.0.0",
-		"github-slugger": "^2.0.0",
-		"highlight.js": "^11.7.0",
-		"luxon": "^3.2.1",
-		"marked": "^4.2.12",
-		"mdsvex": "^0.10.6",
-		"prettier": "^2.8.4",
-		"prettier-plugin-svelte": "^2.9.0",
-		"sass": "^1.58.1",
-		"svelte": "^3.55.1",
-		"svelte-check": "^3.0.3",
-		"svelte-highlight": "^7.2.0",
-		"svelte-i18n": "^3.6.0",
-		"svelte-preprocess": "^5.0.1",
-		"sveltestrap": "^5.10.0",
-		"tslib": "^2.5.0",
-		"typedoc": "^0.23.25",
-		"typedoc-plugin-markdown": "^3.14.0",
-		"typedoc-plugin-mdn-links": "^2.0.2",
-		"typescript": "^4.9.5",
-		"unist-builder": "^3.0.1",
-		"vite": "^4.1.1",
-		"vitest": "^0.28.5"
-	},
-	"type": "module",
-	"peerDependencies": {
-		"@tanstack/query-core": "4.x",
-		"@tanstack/svelte-query": "4.x",
-		"svelte": "3.x",
-		"svelte-i18n": "3.x",
-		"sveltestrap": "5.x"
-	},
-	"peerDependenciesMeta": {
-		"svelte": {
-			"optional": false
-		},
-		"sveltestrap": {
-			"optional": true
-		},
-		"svelte-i18n": {
-			"optional": true
-		},
-		"@tanstack/query-core": {
-			"optional": true
-		},
-		"@tanstack/svelte-query": {
-			"optional": true
-		}
-	},
-	"homepage": "https://svelte-advanced-datatable.pages.dev",
-	"bugs": {
-		"url": "https://github.com/Kage0x3B/svelte-advanced-datatable/issues",
-		"email": "moritz.hein@live.de"
-	},
-	"author": {
-		"name": "Moritz Hein",
-		"email": "moritz.hein@live.de",
-		"url": "https://moritz.website"
-	},
-	"license": "MIT"
+    "name": "svelte-advanced-datatable",
+    "version": "0.5.3",
+    "scripts": {
+        "dev": "vite dev",
+        "build": "svelte-kit sync && svelte-package && cp ./.npmrc package/",
+        "build-docs": "svelte-kit sync && typedoc && node prepareApiReferenceFiles.js && vite build",
+        "preview": "vite preview",
+        "test": "npm run test:integration && npm run test:unit",
+        "check": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json",
+        "check:watch": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json --watch",
+        "lint": "prettier --check . && eslint .",
+        "format": "prettier --write .",
+        "test:integration": "playwright test",
+        "test:unit": "vitest"
+    },
+    "devDependencies": {
+        "@faker-js/faker": "^8.0.2",
+        "@iconify-json/fa6-brands": "^1.1.13",
+        "@iconify-json/mdi": "^1.1.54",
+        "@playwright/test": "^1.37.1",
+        "@skeletonlabs/skeleton": "1.12.0",
+        "@skeletonlabs/tw-plugin": "0.0.0",
+        "@sveltejs/adapter-auto": "2.1.0",
+        "@sveltejs/adapter-static": "2.0.3",
+        "@sveltejs/kit": "1.22.6",
+        "@sveltejs/package": "2.2.1",
+        "@tailwindcss/forms": "^0.5.4",
+        "@tailwindcss/typography": "^0.5.9",
+        "@tanstack/svelte-query": "^4.33.0",
+        "@types/luxon": "^3.3.1",
+        "@types/marked": "^5.0.1",
+        "@types/node": "^20.5.1",
+        "@typescript-eslint/eslint-plugin": "^6.4.0",
+        "@typescript-eslint/parser": "^6.4.0",
+        "autoprefixer": "^10.4.15",
+        "eslint": "^8.47.0",
+        "eslint-config-prettier": "^9.0.0",
+        "eslint-plugin-svelte": "^2.32.4",
+        "github-slugger": "^2.0.0",
+        "highlight.js": "^11.8.0",
+        "luxon": "^3.4.0",
+        "marked": "^7.0.3",
+        "mdsvex": "^0.11.0",
+        "postcss": "^8.4.28",
+        "postcss-import": "^15.1.0",
+        "postcss-load-config": "^4.0.1",
+        "prettier": "^3.0.2",
+        "prettier-plugin-svelte": "^3.0.3",
+        "sass": "^1.66.1",
+        "svelte": "^4.2.0",
+        "svelte-check": "^3.5.0",
+        "svelte-highlight": "^7.3.0",
+        "svelte-i18n": "^3.7.0",
+        "svelte-preprocess": "^5.0.4",
+        "tailwindcss": "^3.3.3",
+        "tslib": "^2.6.2",
+        "typedoc": "^0.24.8",
+        "typedoc-plugin-markdown": "^3.15.4",
+        "typedoc-plugin-mdn-links": "^3.0.3",
+        "typescript": "^5.1.6",
+        "unist-builder": "^4.0.0",
+        "unplugin-icons": "^0.16.5",
+        "vite": "^4.4.9",
+        "vitest": "^0.34.2"
+    },
+    "type": "module",
+    "peerDependencies": {
+        "@tanstack/query-core": "4.x",
+        "@tanstack/svelte-query": "4.x",
+        "svelte": "4.x",
+        "svelte-i18n": "3.x"
+    },
+    "peerDependenciesMeta": {
+        "svelte": {
+            "optional": false
+        },
+        "svelte-i18n": {
+            "optional": true
+        },
+        "@tanstack/query-core": {
+            "optional": true
+        },
+        "@tanstack/svelte-query": {
+            "optional": true
+        }
+    },
+    "homepage": "https://svelte-advanced-datatable.pages.dev",
+    "bugs": {
+        "url": "https://github.com/Kage0x3B/svelte-advanced-datatable/issues",
+        "email": "moritz.hein@live.de"
+    },
+    "author": {
+        "name": "Moritz Hein",
+        "email": "moritz.hein@live.de",
+        "url": "https://moritz.website"
+    },
+    "license": "MIT"
 }

@@ -1,14 +1,26 @@
-/// <reference types="@sveltejs/kit" />
+import '@sveltejs/kit';
+import 'unplugin-icons/types/svelte';
 
 declare module '*.md';
 
-// See https://kit.svelte.dev/docs/types#app
-// for information about these interfaces
-// and what to do when importing types
-declare namespace App {
-	// interface Locals {}
-	// interface PageData {}
-	// interface Platform {}
-	// interface PrivateEnv {}
-	// interface PublicEnv {}
+declare global {
+    namespace App {
+        // interface Error {}
+        // interface Locals {}
+        // interface PageData {}
+        // interface Platform {}
+    }
+
+    declare const eruda:
+        | {
+              init: () => void;
+          }
+        | undefined;
 }
+
+declare module '$lib/assets/*' {
+    const meta: unknown[];
+    export default meta;
+}
+
+export {};

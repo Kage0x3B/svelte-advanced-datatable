@@ -1,9 +1,5 @@
 <script>
-	import BootstrapStyles from '../util/BootstrapStyles.svelte';
-	import MainNavbar from '../util/MainNavbar.svelte';
+    import '../../css/app.pcss';
 </script>
-
-<BootstrapStyles />
-<MainNavbar />
 
 <slot />

@@ -29,7 +29,7 @@ implementing a few components
 npm i svelte-advanced-datatable
 
 # As well as the ui library and data source you want to use
-npm i sveltestrap @sveltestack/svelte-query
+npm i skeleton @sveltestack/svelte-query
 ```
 
 ### Basic Datatable
@@ -43,7 +43,7 @@ To use the component, pass the config object with all required properties to it:
 <script lang='ts'>
 	import type { DataTableConfig } from 'svelte-advanced-datatable';
 	import { ComponentType, FetchApiDataSource } from 'svelte-advanced-datatable';
-	import { DataTable } from 'svelte-advanced-datatable/sveltestrap';
+	import { DataTable } from 'svelte-advanced-datatable/skeleton';
 
 	interface UserData {
 		id: number;

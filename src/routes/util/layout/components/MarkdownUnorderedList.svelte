@@ -1,3 +1,3 @@
-<ul class='list-group my-4'>
-	<slot />
+<ul class="my-4">
+    <slot />
 </ul>
