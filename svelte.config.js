@@ -27,9 +27,6 @@ const config = {
         prerender: {
             handleMissingId: 'ignore'
         }
-    },
-    package: {
-        exports: (filepath) => filepath.endsWith('index.ts')
     }
 };
 

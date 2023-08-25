@@ -10,6 +10,7 @@
       <excludeFolder url="file://$MODULE_DIR$/src/routes/(docs)/(api-reference)/api-reference" />
       <excludeFolder url="file://$MODULE_DIR$/build" />
       <excludeFolder url="file://$MODULE_DIR$/package" />
+      <excludeFolder url="file://$MODULE_DIR$/dist" />
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
