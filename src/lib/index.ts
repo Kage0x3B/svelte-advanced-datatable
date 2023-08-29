@@ -1,10 +1,6 @@
 export type { BooleanComponentTypeProperties } from './dataComponent/BooleanComponentTypeProperties.js';
 export { ComponentType } from './dataComponent/ComponentType.js';
-export type {
-	ComponentTypeProperties,
-	RequiredTypeProperty,
-	TableColumnConfig
-} from './dataComponent/ComponentType.js';
+export type { ComponentTypeProperties, TableColumnConfig } from './dataComponent/ComponentType.js';
 export type { CustomComponentTypeProperties } from './dataComponent/CustomComponentTypeProperties.js';
 export type { DateComponentTypeProperties } from './dataComponent/DateComponentTypeProperties.js';
 export type { EnumComponentTypeProperties } from './dataComponent/EnumComponentTypeProperties.js';
@@ -23,10 +19,10 @@ export type { QueryObserver } from './dataSource/QueryObserver.js';
 
 export type { ApiFunction } from './types/ApiFunction.js';
 export type {
-	DataTableConfig,
-	FullDataTableConfig,
-	MessageConfig,
-	ColumnMessageConfig
+    DataTableConfig,
+    FullDataTableConfig,
+    MessageConfig,
+    ColumnMessageConfig
 } from './types/DataTableConfig.js';
 export type { MessageFormatter, InterpolationValues } from './types/MessageFormatter.js';
 export type { PaginatedListRequest } from './types/PaginatedListRequest.js';

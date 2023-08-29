@@ -66,5 +66,5 @@ const config: DataTableConfig<UserData> = {
 ```
 
 
-<ExampleTable path='sveltestrap/modal' description='This is what your resulting datatable will look like!' />
+<ExampleTable path='skeleton/modal' description='This is what your resulting datatable will look like!' />
 

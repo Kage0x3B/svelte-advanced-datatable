@@ -7,10 +7,10 @@
     import { mergeDataTableConfigDefaults } from '$lib/util/dataTableConfigUtil.js';
     import { clamp } from '$lib/util/generalUtil.js';
     import { createMessageFormatter } from '$lib/util/messageFormatterUtil.js';
+    import { ProgressRadial } from '@skeletonlabs/skeleton';
     import { setContext } from 'svelte';
     import type { Readable } from 'svelte/store';
     import { fade } from 'svelte/transition';
-    import { Icon, Spinner } from 'skeleton';
     import DataRow from './SkeletonDataRow.svelte';
     import DataTablePagination from './SkeletonDataTablePagination.svelte';
     import SearchField from './SkeletonSearchField.svelte';
@@ -50,27 +50,28 @@
     {searchQuery}
     {currentPage}
 >
-    <div class="d-flex justify-content-between align-items-center mb-3">
-        <div class="d-flex flex-row align-items-center">
+    <div class="flex justify-between items-center mb-3">
+        <div class="flex flex-row items-center">
             <slot name="header-first" />
             {#if config.enableSearch}
-                <div class="me-3">
+                <div class="mr-3">
                     <SearchField bind:searchInput bind:searchQuery />
                 </div>
             {/if}
             <slot name="header-after-search" />
             {#if queryObserver.isLoading}
                 <div in:fade|local={{ duration: 100 }} out:fade|local={{ duration: 300 }}>
-                    <Spinner color="primary" />
+                    <ProgressRadial stroke={100} width="w-8" meter="stroke-primary-500" track="stroke-primary-500/30" />
                 </div>
             {/if}
+
             <slot name="header-middle" />
         </div>
         {#if config.enablePagination && config.showTopPagination}
-            <div class="d-flex flex-row justify-content-center flex-wrap">
-                <div class="d-flex align-items-center">
+            <div class="flex flex-row justify-center flex-wrap">
+                <div class="flex items-center">
                     {#if itemAmount >= 0}
-                        <span class="text-muted me-3 disable-text-wrap"
+                        <span class="text-surface-500 mr-3 whitespace-nowrap"
                             >{(currentPage - 1) * config.itemsPerPage + 1}
                             - {clamp(currentPage * config.itemsPerPage, config.itemsPerPage, itemAmount)}
                             von {itemAmount}</span
@@ -93,11 +94,47 @@
                                     {$format(`dataTable.${config.type}.${key}.label`)}
                                     {#if colProp.sortable && items.length > 1}
                                         {#if sortColumnKey === key && sortDirection === 'asc'}
-                                            <Icon name="chevron-compact-up" />
+                                            <svg
+                                                xmlns="http://www.w3.org/2000/svg"
+                                                width="16"
+                                                height="16"
+                                                fill="currentColor"
+                                                class="bi bi-chevron-compact-up"
+                                                viewBox="0 0 16 16"
+                                            >
+                                                <path
+                                                    fill-rule="evenodd"
+                                                    d="M7.776 5.553a.5.5 0 0 1 .448 0l6 3a.5.5 0 1 1-.448.894L8 6.56 2.224 9.447a.5.5 0 1 1-.448-.894l6-3z"
+                                                />
+                                            </svg>
                                         {:else if sortColumnKey === key && sortDirection === 'desc'}
-                                            <Icon name="chevron-compact-down" />
+                                            <svg
+                                                xmlns="http://www.w3.org/2000/svg"
+                                                width="16"
+                                                height="16"
+                                                fill="currentColor"
+                                                class="bi bi-chevron-compact-down"
+                                                viewBox="0 0 16 16"
+                                            >
+                                                <path
+                                                    fill-rule="evenodd"
+                                                    d="M1.553 6.776a.5.5 0 0 1 .67-.223L8 9.44l5.776-2.888a.5.5 0 1 1 .448.894l-6 3a.5.5 0 0 1-.448 0l-6-3a.5.5 0 0 1-.223-.67z"
+                                                />
+                                            </svg>
                                         {:else}
-                                            <Icon name="chevron-expand" />
+                                            <svg
+                                                xmlns="http://www.w3.org/2000/svg"
+                                                width="16"
+                                                height="16"
+                                                fill="currentColor"
+                                                class="bi bi-chevron-expand"
+                                                viewBox="0 0 16 16"
+                                            >
+                                                <path
+                                                    fill-rule="evenodd"
+                                                    d="M3.646 9.146a.5.5 0 0 1 .708 0L8 12.793l3.646-3.647a.5.5 0 0 1 .708.708l-4 4a.5.5 0 0 1-.708 0l-4-4a.5.5 0 0 1 0-.708zm0-2.292a.5.5 0 0 0 .708 0L8 3.207l3.646 3.647a.5.5 0 0 0 .708-.708l-4-4a.5.5 0 0 0-.708 0l-4 4a.5.5 0 0 0 0 .708z"
+                                                />
+                                            </svg>
                                         {/if}
                                     {/if}
                                 </th>

@@ -134,5 +134,5 @@ const config: DataTableConfig<UserData> = {
 
 Which results in the following datatable:
 
-<ExampleTable path='sveltestrap/basic/extensive-example' description='This is what your resulting datatable will look like!' />
+<ExampleTable path='skeleton/basic/extensive-example' description='This is what your resulting datatable will look like!' />
 

@@ -75,5 +75,5 @@ Add the DataTable component as well as the accompanying config to your page:
 This short code-snippet will already result in the following datatable:
 
 
-<ExampleTable path='sveltestrap/basic/first-example' description='This is what your resulting datatable will look like!' />
+<ExampleTable path='skeleton/basic/first-example' description='This is what your resulting datatable will look like!' />
 

@@ -6,22 +6,22 @@ import type { GenericComponentTypeProperties } from './GenericComponentTypePrope
  * @see {@link ComponentType.ENUM}
  */
 export interface EnumComponentTypeProperties<Enum extends string> extends GenericComponentTypeProperties<string> {
-	type: ComponentType.ENUM;
+    type: ComponentType.ENUM;
 
-	/**
-	 * An array listing all possible values of this enum
-	 */
-	values: Enum[];
+    /**
+     * An array listing all possible values of this enum
+     */
+    values: Enum[];
 
-	/**
-	 * Map each enum value to a color
-	 */
-	enumColorKey: Partial<
-		{
-			[key in Enum]: WrappedComponentColor | string;
-		} & {
-			default: WrappedComponentColor | string;
-			unknown: WrappedComponentColor | string;
-		}
-	>;
+    /**
+     * Map each enum value to a color
+     */
+    enumColorKey: Partial<
+        {
+            [key in Enum]: WrappedComponentColor | string;
+        } & {
+            default: WrappedComponentColor | string;
+            unknown: WrappedComponentColor | string;
+        }
+    >;
 }

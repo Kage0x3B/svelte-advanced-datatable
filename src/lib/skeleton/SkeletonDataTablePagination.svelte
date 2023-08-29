@@ -1,7 +1,6 @@
 <script>
-    import { Pagination, PaginationItem } from 'skeleton';
-    import PaginationLink from './SkeletonPaginationLink.svelte';
     import InternalDataTablePagination from '$lib/internal/InternalDataTablePagination.svelte';
+    import SkeletonPaginationButton from '$lib/skeleton/SkeletonPaginationButton.svelte';
 
     export let pageAmount;
     export let maxDisplayedItems = 5;
@@ -16,25 +15,23 @@
     bind:currentPage
     on:navigate
 >
-    <Pagination listClassName="m-0">
-        <PaginationItem disabled={currentPage === 1}>
-            <PaginationLink first on:click={createClickHandler(1)} />
-        </PaginationItem>
-        <PaginationItem disabled={currentPage === 1}>
-            <PaginationLink on:click={createClickHandler('prev')} previous />
-        </PaginationItem>
+    <div class="flex flex-row">
+        <SkeletonPaginationButton disabled={currentPage === 1} first on:click={createClickHandler(1)} />
+        <SkeletonPaginationButton disabled={currentPage === 1} previous on:click={createClickHandler('prev')} />
         {#each pages as page}
-            <PaginationItem active={page === currentPage} disabled={page === '...'}>
-                <PaginationLink on:click={createClickHandler(page)}
-                    ><span class:px-1={page < 10}>{page}</span>
-                </PaginationLink>
-            </PaginationItem>
+            <SkeletonPaginationButton
+                active={page === currentPage}
+                disabled={page === '...'}
+                on:click={createClickHandler(page)}
+            >
+                <span class:px-1={page < 10}>{page}</span>
+            </SkeletonPaginationButton>
         {/each}
-        <PaginationItem disabled={currentPage === pageAmount}>
-            <PaginationLink next on:click={createClickHandler('next')} />
-        </PaginationItem>
-        <PaginationItem disabled={currentPage === pageAmount}>
-            <PaginationLink last on:click={createClickHandler(pageAmount)} />
-        </PaginationItem>
-    </Pagination>
+        <SkeletonPaginationButton disabled={currentPage === pageAmount} next on:click={createClickHandler('next')} />
+        <SkeletonPaginationButton
+            disabled={currentPage === pageAmount}
+            last
+            on:click={createClickHandler(pageAmount)}
+        />
+    </div>
 </InternalDataTablePagination>

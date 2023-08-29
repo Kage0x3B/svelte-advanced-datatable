@@ -1,19 +1,19 @@
 {
-	"$schema": "https://typedoc.org/schema.json",
-	"entryPoints": [
-		"./src/lib/index.ts",
-		"./src/lib/sveltestrap/index.ts",
-		"./src/lib/internal/index.ts",
-		"./src/lib/searchParser/index.ts"
-	],
-	"out": "./src/routes/(docs)/(api-reference)/api-reference",
-	"json": "./src/routes/(docs)/(api-reference)/api-reference/api-reference-meta.json",
-	"name": "Svelte Advanced Datatable",
-	"excludePrivate": true,
-	"excludeProtected": true,
-	"excludeInternal": true,
-	"hideGenerator": true,
-	"readme": "none",
-	"githubPages": false,
-	"basePath": "/api-reference/"
+    "$schema": "https://typedoc.org/schema.json",
+    "entryPoints": [
+        "./src/lib/index.ts",
+        "./src/lib/skeleton/index.ts",
+        "./src/lib/internal/index.ts",
+        "./src/lib/searchParser/index.ts"
+    ],
+    "out": "./src/routes/(docs)/(api-reference)/api-reference",
+    "json": "./src/routes/(docs)/(api-reference)/api-reference/api-reference-meta.json",
+    "name": "Svelte Advanced Datatable",
+    "excludePrivate": true,
+    "excludeProtected": true,
+    "excludeInternal": true,
+    "hideGenerator": true,
+    "readme": "none",
+    "githubPages": false,
+    "basePath": "/api-reference/"
 }
