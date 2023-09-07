@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { skeletonColorMap } from '$lib/skeleton/skeletonWrappedComponentPropertyMap.js';
+    import { skeletonTextColorMap } from '$lib/skeleton/skeletonWrappedComponentPropertyMap.js';
     import { mapValue } from '$lib/util/generalUtil.js';
     import type { WrappedComponentColor, WrappedIconName } from '$lib/dataComponent/WrappedComponentProperty.js';
 
@@ -7,7 +7,7 @@
     export let color: WrappedComponentColor;
 </script>
 
-<div class="h4 absolute {mapValue(skeletonColorMap, color)}">
+<div class="h4 absolute {mapValue(skeletonTextColorMap, color)}">
     {#if name === 'check'}
         <svg
             xmlns="http://www.w3.org/2000/svg"

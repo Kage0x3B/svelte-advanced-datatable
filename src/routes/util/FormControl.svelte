@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { classnames } from '$lib/component/util/util.js';
+    import { classnames } from '$lib/util/generalUtil.js';
 
     export let label = '';
     let forId: string | undefined = undefined;

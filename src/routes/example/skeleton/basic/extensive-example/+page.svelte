@@ -35,10 +35,10 @@
                 type: ComponentType.ENUM,
                 values: ['male', 'female'],
                 enumColorKey: {
-                    male: 'info',
-                    female: 'danger',
-                    default: 'primary',
-                    unknown: 'secondary'
+                    male: 'blue',
+                    female: 'red',
+                    default: 'gray',
+                    unknown: 'gray'
                 }
             } as EnumComponentTypeProperties<'male' | 'female'>
         },

@@ -15,7 +15,7 @@
     bind:currentPage
     on:navigate
 >
-    <div class="flex flex-row">
+    <div class="btn-group variant-filled-surface">
         <SkeletonPaginationButton disabled={currentPage === 1} first on:click={createClickHandler(1)} />
         <SkeletonPaginationButton disabled={currentPage === 1} previous on:click={createClickHandler('prev')} />
         {#each pages as page}

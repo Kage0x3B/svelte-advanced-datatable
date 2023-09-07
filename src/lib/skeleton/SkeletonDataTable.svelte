@@ -34,6 +34,12 @@
     let searchQuery: ParsedSearchQuery | undefined;
 </script>
 
+<!--
+@component
+
+Datatable component for the https://www.skeleton.dev ui library (version 2.0+).
+-->
+
 <InternalDataTable
     let:queryObserver
     let:columnProperties
@@ -84,59 +90,62 @@
     </div>
 
     <div class="table-container" class:table-responsive={responsive}>
-        <table class="table" class:centered class:highlight class:striped class:table-hover={hoverable}>
+        <table class="table" class:highlight class:table-hover={hoverable}>
             {#if config.showTableHeader}
                 <thead>
                     <tr>
-                        {#each Object.entries(columnProperties) as [key, colProp], i}
+                        {#each Object.entries(columnProperties) as [key, colProp]}
                             {#if !colProp.hidden}
                                 <th on:click={() => colProp.sortable && toggleSorting(key)}>
-                                    {$format(`dataTable.${config.type}.${key}.label`)}
-                                    {#if colProp.sortable && items.length > 1}
-                                        {#if sortColumnKey === key && sortDirection === 'asc'}
-                                            <svg
-                                                xmlns="http://www.w3.org/2000/svg"
-                                                width="16"
-                                                height="16"
-                                                fill="currentColor"
-                                                class="bi bi-chevron-compact-up"
-                                                viewBox="0 0 16 16"
-                                            >
-                                                <path
-                                                    fill-rule="evenodd"
-                                                    d="M7.776 5.553a.5.5 0 0 1 .448 0l6 3a.5.5 0 1 1-.448.894L8 6.56 2.224 9.447a.5.5 0 1 1-.448-.894l6-3z"
-                                                />
-                                            </svg>
-                                        {:else if sortColumnKey === key && sortDirection === 'desc'}
-                                            <svg
-                                                xmlns="http://www.w3.org/2000/svg"
-                                                width="16"
-                                                height="16"
-                                                fill="currentColor"
-                                                class="bi bi-chevron-compact-down"
-                                                viewBox="0 0 16 16"
-                                            >
-                                                <path
-                                                    fill-rule="evenodd"
-                                                    d="M1.553 6.776a.5.5 0 0 1 .67-.223L8 9.44l5.776-2.888a.5.5 0 1 1 .448.894l-6 3a.5.5 0 0 1-.448 0l-6-3a.5.5 0 0 1-.223-.67z"
-                                                />
-                                            </svg>
-                                        {:else}
-                                            <svg
-                                                xmlns="http://www.w3.org/2000/svg"
-                                                width="16"
-                                                height="16"
-                                                fill="currentColor"
-                                                class="bi bi-chevron-expand"
-                                                viewBox="0 0 16 16"
-                                            >
-                                                <path
-                                                    fill-rule="evenodd"
-                                                    d="M3.646 9.146a.5.5 0 0 1 .708 0L8 12.793l3.646-3.647a.5.5 0 0 1 .708.708l-4 4a.5.5 0 0 1-.708 0l-4-4a.5.5 0 0 1 0-.708zm0-2.292a.5.5 0 0 0 .708 0L8 3.207l3.646 3.647a.5.5 0 0 0 .708-.708l-4-4a.5.5 0 0 0-.708 0l-4 4a.5.5 0 0 0 0 .708z"
-                                                />
-                                            </svg>
+                                    <div class="flex flex-row justify-between items-center">
+                                        <span class="min-w-1/2">{$format(`dataTable.${config.type}.${key}.label`)}</span
+                                        >
+                                        {#if colProp.sortable && items.length > 1}
+                                            {#if sortColumnKey === key && sortDirection === 'asc'}
+                                                <svg
+                                                    xmlns="http://www.w3.org/2000/svg"
+                                                    width="16"
+                                                    height="16"
+                                                    fill="currentColor"
+                                                    class="bi bi-chevron-compact-up min-w-[16px] w-[16px]"
+                                                    viewBox="0 0 16 16"
+                                                >
+                                                    <path
+                                                        fill-rule="evenodd"
+                                                        d="M7.776 5.553a.5.5 0 0 1 .448 0l6 3a.5.5 0 1 1-.448.894L8 6.56 2.224 9.447a.5.5 0 1 1-.448-.894l6-3z"
+                                                    />
+                                                </svg>
+                                            {:else if sortColumnKey === key && sortDirection === 'desc'}
+                                                <svg
+                                                    xmlns="http://www.w3.org/2000/svg"
+                                                    width="16"
+                                                    height="16"
+                                                    fill="currentColor"
+                                                    class="bi bi-chevron-compact-down min-w-[16px] w-[16px]"
+                                                    viewBox="0 0 16 16"
+                                                >
+                                                    <path
+                                                        fill-rule="evenodd"
+                                                        d="M1.553 6.776a.5.5 0 0 1 .67-.223L8 9.44l5.776-2.888a.5.5 0 1 1 .448.894l-6 3a.5.5 0 0 1-.448 0l-6-3a.5.5 0 0 1-.223-.67z"
+                                                    />
+                                                </svg>
+                                            {:else}
+                                                <svg
+                                                    xmlns="http://www.w3.org/2000/svg"
+                                                    width="16"
+                                                    height="16"
+                                                    fill="currentColor"
+                                                    class="bi bi-chevron-expand min-w-[16px] w-[16px]"
+                                                    viewBox="0 0 16 16"
+                                                >
+                                                    <path
+                                                        fill-rule="evenodd"
+                                                        d="M3.646 9.146a.5.5 0 0 1 .708 0L8 12.793l3.646-3.647a.5.5 0 0 1 .708.708l-4 4a.5.5 0 0 1-.708 0l-4-4a.5.5 0 0 1 0-.708zm0-2.292a.5.5 0 0 0 .708 0L8 3.207l3.646 3.647a.5.5 0 0 0 .708-.708l-4-4a.5.5 0 0 0-.708 0l-4 4a.5.5 0 0 0 0 .708z"
+                                                    />
+                                                </svg>
+                                            {/if}
                                         {/if}
-                                    {/if}
+                                    </div>
                                 </th>
                             {/if}
                         {/each}

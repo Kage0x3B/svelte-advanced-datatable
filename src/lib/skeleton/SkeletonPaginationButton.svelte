@@ -1,4 +1,5 @@
 <script lang="ts">
+    import { classnames } from '$lib/util/generalUtil.js';
     import { getContext } from 'svelte';
     import type { Readable } from 'svelte/store';
     import type { MessageFormatter } from '$lib/types/MessageFormatter.js';
@@ -14,7 +15,9 @@
     export let first = false;
     export let last = false;
 
-    $: classes = `${className} btn btn-pagination ${active ? 'variant-filled-primary active' : 'variant-filled'}`;
+    $: classes = classnames(className, 'btn-pagination', {
+        '!variant-filled-primary active': active
+    });
 
     let type: 'previous' | 'next' | 'first' | 'last';
     let caretCharacter: string;
@@ -36,12 +39,13 @@
 
 <button type="button" class={classes} on:click {...$$restProps}>
     {#if previous || first}
-        <span aria-hidden="true"><slot>{caretCharacter}</slot></span><span class="sr-only hidden xl:inline"
+        <span aria-hidden="true"><slot>{caretCharacter}</slot></span><span class="sr-only xl:not-sr-only"
             >&nbsp;{$format(`pagination.${type}`)}</span
         >
     {:else if next || last}
-        <span class="sr-only hidden xl:inline">{$format(`pagination.${type}`)}&nbsp;</span><span aria-hidden="true"
-            ><slot>{caretCharacter}</slot></span
+        <span class="sr-only xl:not-sr-only">{$format(`pagination.${type}`)}&nbsp;</span><span
+            aria-hidden="true"
+            class="border-0 !m-0"><slot>{caretCharacter}</slot></span
         >
     {:else}
         <slot />

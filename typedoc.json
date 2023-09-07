@@ -15,5 +15,10 @@
     "hideGenerator": true,
     "readme": "none",
     "githubPages": false,
-    "basePath": "/api-reference/"
+    "basePath": "/api-reference/",
+    "cleanOutputDir": true,
+    "plugin": ["typedoc-plugin-markdown", "typedoc-plugin-mdn-links"],
+    "publicPath": "/api-reference/",
+    "hideBreadcrumbs": true,
+    "hideInPageTOC": true
 }

@@ -24,6 +24,8 @@
 
 <InternalDataRow let:isOpen let:rowOnClick bind:toggle {index} {openIndex} {onClick} {item} {open}>
     {#if isOpen}
+        <!-- Used to make the total count of rows for this element even, so the striped row colors don't change -->
+        <tr class="margin-row hidden"></tr>
         <tr class="margin-row top">
             <td colspan={Object.keys(config.columnProperties).length} transition:slide|local></td>
         </tr>
@@ -71,9 +73,17 @@
         background-color: #f0f;
     }
 
-    .datatable-modal-container > td:hover,
-    .margin-row > td:hover {
-        box-shadow: none;
+    .margin-row {
+        background-color: transparent !important;
+    }
+
+    .datatable-modal-container:hover,
+    .margin-row:hover {
+        background-color: transparent !important;
+    }
+
+    .datatable-row.expanded {
+        background-color: transparent;
     }
 
     .datatable-row.expanded td {

@@ -1,6 +1,7 @@
 <script lang="ts">
-    import type { ComponentType, DataTableConfig, wrapFetchToThrow } from '$lib';
-    import type { SvelteQueryDataSource } from '$lib/dataSource/svelteQuery';
+    import type { DataTableConfig } from '$lib';
+    import { ComponentType, wrapFetchToThrow } from '$lib';
+    import { SvelteQueryDataSource } from '$lib/dataSource/svelteQuery';
     import { DataTable } from '$lib/skeleton';
 
     interface UserData {

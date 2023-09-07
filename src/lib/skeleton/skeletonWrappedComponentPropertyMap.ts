@@ -7,8 +7,9 @@ export const skeletonIconNameMap: Record<WrappedIconName, string> = {
 
 type SkeletonColor = 'primary' | 'secondary' | 'tertiary' | 'success' | 'warning' | 'error' | 'surface';
 type SkeletonTextColor = `text-${SkeletonColor}-500`;
+type SkeletonVariantFilledColor = `variant-filled-${SkeletonColor}`;
 
-export const skeletonColorMap: Record<WrappedComponentColor, SkeletonTextColor> = {
+export const skeletonTextColorMap: Record<WrappedComponentColor, SkeletonTextColor> = {
     red: 'text-error-500',
     green: 'text-success-500',
     blue: 'text-tertiary-500',
@@ -16,4 +17,14 @@ export const skeletonColorMap: Record<WrappedComponentColor, SkeletonTextColor> 
     gray: 'text-secondary-500',
     dark: 'text-surface-500',
     light: 'text-surface-500'
+};
+
+export const skeletonVariantFilledColorMap: Record<WrappedComponentColor, SkeletonVariantFilledColor> = {
+    red: 'variant-filled-error',
+    green: 'variant-filled-success',
+    blue: 'variant-filled-tertiary',
+    yellow: 'variant-filled-warning',
+    gray: 'variant-filled-secondary',
+    dark: 'variant-filled-surface',
+    light: 'variant-filled-surface'
 };

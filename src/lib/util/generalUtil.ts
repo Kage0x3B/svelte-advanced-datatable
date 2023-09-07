@@ -8,44 +8,44 @@ import type { PaginatedListResponse } from '$lib/types/PaginatedListResponse.js'
 export const browser = typeof window !== 'undefined';
 
 export function hasOwnProperty<X, Y extends PropertyKey>(obj: X, prop: Y): obj is NonNullable<X> & Record<Y, unknown> {
-	// eslint-disable-next-line @typescript-eslint/ban-types
-	return typeof obj !== 'undefined' && obj !== null && Object.hasOwn(obj as object, prop);
+    // eslint-disable-next-line @typescript-eslint/ban-types
+    return typeof obj !== 'undefined' && obj !== null && Object.hasOwn(obj as object, prop);
 }
 
 export function isIndexable<X>(obj: X): obj is NonNullable<X> & Record<string, unknown> {
-	return typeof obj !== 'undefined' && obj !== null;
+    return typeof obj !== 'undefined' && obj !== null;
 }
 
 export function isDateTime(obj: unknown): obj is DateTime {
-	return !!(obj && hasOwnProperty(obj, 'isLuxonDateTime') && obj.isLuxonDateTime);
+    return !!(obj && hasOwnProperty(obj, 'isLuxonDateTime') && obj.isLuxonDateTime);
 }
 
 export function isStore<T>(store: unknown): store is Readable<T> {
-	return !!store && hasOwnProperty(store, 'subscribe');
+    return !!store && hasOwnProperty(store, 'subscribe');
 }
 
 export function wrapPossibleStore<T>(store: T | Readable<T>): Readable<T> {
-	return isStore(store) ? store : readable(store);
+    return isStore(store) ? store : readable(store);
 }
 
 export function clamp(value: number, min: number, max: number): number {
-	return Math.min(Math.max(value, min), max);
+    return Math.min(Math.max(value, min), max);
 }
 
 export function debounce<ArgsType extends unknown[]>(
-	func: (...args: ArgsType) => void,
-	waitTime: number
+    func: (...args: ArgsType) => void,
+    waitTime: number
 ): (...args: ArgsType) => void {
-	let timer: NodeJS.Timeout;
+    let timer: NodeJS.Timeout;
 
-	return (...args: ArgsType) => {
-		clearTimeout(timer);
-		timer = setTimeout(() => func(...args), waitTime);
-	};
+    return (...args: ArgsType) => {
+        clearTimeout(timer);
+        timer = setTimeout(() => func(...args), waitTime);
+    };
 }
 
 export function preventEvent(e: Event): void {
-	e.preventDefault();
+    e.preventDefault();
 }
 
 const missingKeyValueMappings = new Set<string>();
@@ -58,55 +58,82 @@ const missingKeyValueMappings = new Set<string>();
  * @param defaultToKey should the key be returned as the value, in case a key to value mapping doesn't exist
  */
 export function mapValue<Key extends string, Value extends string>(
-	map: Record<Key, Value>,
-	key: Key,
-	defaultToKey = false
+    map: Record<Key, Value>,
+    key: Key,
+    defaultToKey = false
 ): Value | undefined {
-	if (hasOwnProperty(map, key)) {
-		return map[key];
-	} else {
-		if (defaultToKey) {
-			return key as unknown as Value;
-		} else {
-			if (!missingKeyValueMappings.has(key)) {
-				const keys = Object.keys(map).slice(0, 5).join(', ');
-				const values = Object.values(map).slice(0, 5).join(', ');
-				console.warn(`Can't map key ${key} to a value for the mapping ${keys} -> ${values}`);
+    if (hasOwnProperty(map, key)) {
+        return map[key];
+    } else {
+        if (defaultToKey) {
+            return key as unknown as Value;
+        } else {
+            if (!missingKeyValueMappings.has(key)) {
+                const keys = Object.keys(map).slice(0, 5).join(', ');
+                const values = Object.values(map).slice(0, 5).join(', ');
+                console.warn(`Can't map key ${key} to a value for the mapping ${keys} -> ${values}`);
 
-				missingKeyValueMappings.add(key);
-			}
+                missingKeyValueMappings.add(key);
+            }
 
-			return undefined;
-		}
-	}
+            return undefined;
+        }
+    }
 }
 
 export function wrapFetchToThrow<Data>(
-	func: (data: PaginatedListRequest<Data>) => Promise<Response>
+    func: (data: PaginatedListRequest<Data>) => Promise<Response>
 ): ApiFunction<Data> {
-	return async (request) => {
-		const res = await func(request);
+    return async (request) => {
+        const res = await func(request);
 
-		let resData: Data | undefined = undefined;
+        let resData: Data | undefined = undefined;
 
-		try {
-			resData = await res.json();
-			// eslint-disable-next-line no-empty
-		} catch (err) {
-			console.error(err);
-		}
+        try {
+            resData = await res.json();
+            // eslint-disable-next-line no-empty
+        } catch (err) {
+            console.error(err);
+        }
 
-		if (res.ok && typeof resData !== 'undefined') {
-			return resData as unknown as PaginatedListResponse<Data>;
-		} else {
-			const errorMessage = hasOwnProperty(resData, 'message') ? String(resData.message) : 'Unknown network error';
-			const error = new Error(errorMessage);
+        if (res.ok && typeof resData !== 'undefined') {
+            return resData as unknown as PaginatedListResponse<Data>;
+        } else {
+            const errorMessage = hasOwnProperty(resData, 'message') ? String(resData.message) : 'Unknown network error';
+            const error = new Error(errorMessage);
 
-			if (resData) {
-				Object.assign(error, resData);
-			}
+            if (resData) {
+                Object.assign(error, resData);
+            }
 
-			throw error;
-		}
-	};
+            throw error;
+        }
+    };
+}
+
+type ClassNameType = string | number | (string | number)[] | Record<string, boolean>;
+
+function toClassName(value: ClassNameType): string {
+    let result = '';
+
+    if (typeof value === 'string' || typeof value === 'number') {
+        result += value;
+    } else if (typeof value === 'object') {
+        if (Array.isArray(value)) {
+            result = value.map(toClassName).filter(Boolean).join(' ');
+        } else {
+            for (const key of Object.keys(value)) {
+                if (value[key]) {
+                    result && (result += ' ');
+                    result += key;
+                }
+            }
+        }
+    }
+
+    return result;
+}
+
+export function classnames(...args: ClassNameType[]): string {
+    return args.map(toClassName).filter(Boolean).join(' ');
 }

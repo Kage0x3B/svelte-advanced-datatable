@@ -1,39 +1,45 @@
 <script lang="ts">
-    import { Alert, Col, Row } from 'skeleton';
     import type { UserData } from '../../util/UserData.js';
 
     export let item: UserData;
     export let toggle = undefined;
 
-    const cacheBuster = Math.round(Math.random() * 10);
+    const randomImageId = Math.ceil(Math.random() * 20);
     const lastOnlineAmount = Math.ceil(Math.random() * 60);
     const lastOnlineUnit = Math.random() > 0.5 ? 'hours' : 'minutes';
     const showPasswortAlert = Math.random() > 0.7;
     const passwordAlertMonths = Math.ceil(Math.random() * 4);
 </script>
 
-<Row class="py-4">
-    <Col xs="12" lg="3" class="d-flex flex-column align-items-center">
+<div
+    class="py-4 container mx-auto flex flex-col lg:flex-row justify-center lg:justify-start items-center gap-8 lg:gap-0"
+>
+    <div class="lg:w-1/4 flex justify-center">
         <img
-            src="https://api.lorem.space/image/face?w=256&h=256&cacheBuster={cacheBuster}"
+            src="/img/random-persons/{item.gender}/{randomImageId}.jpg"
             alt="Picture of {item.firstName} {item.lastName}"
         />
-    </Col>
-    <Col xs="12" lg="9">
+    </div>
+    <div class="lg:w-2/4">
         <div class="mb-2">
-            <h4 class="mb-0">{item.firstName} {item.lastName} <small class="text-muted">@{item.userName}</small></h4>
-            <small class="text-muted">Last online {lastOnlineAmount} {lastOnlineUnit} ago</small>
+            <h4 class="mb-0 h4">
+                {item.firstName}
+                {item.lastName} <small class="text-surface-500">@{item.userName}</small>
+            </h4>
+            <small class="text-surface-500 text-sm">Last online {lastOnlineAmount} {lastOnlineUnit} ago</small>
         </div>
         <p>
-            Contact: <a href="mailto:{item.mailAddress}_NOT_AN_ACTUAL_EMAIL">{item.mailAddress}</a>
+            Contact: <a href="mailto:{item.mailAddress}_NOT_AN_ACTUAL_EMAIL" class="text-primary-500"
+                >{item.mailAddress}</a
+            >
         </p>
         {#if showPasswortAlert}
-            <Alert color="danger" dismissible fade
-                >The user hasn't changed their password for {passwordAlertMonths} months!</Alert
-            >
+            <div class="alert variant-ghost-error mt-4">
+                The user hasn't changed their password for {passwordAlertMonths} months!
+            </div>
         {/if}
-    </Col>
-</Row>
+    </div>
+</div>
 
 <style>
     img {

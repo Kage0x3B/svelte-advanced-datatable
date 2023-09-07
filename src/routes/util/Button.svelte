@@ -1,6 +1,6 @@
 <script lang="ts">
+    import { classnames } from '$lib/util/generalUtil.js';
     import { ProgressRadial } from '@skeletonlabs/skeleton';
-    import { classnames } from './componentUtil.js';
     import type { ButtonVariantList, ThemeButtonSize } from './theme.js';
 
     let className = '';
