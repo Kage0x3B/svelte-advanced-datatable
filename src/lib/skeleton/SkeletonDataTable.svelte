@@ -167,15 +167,15 @@ Datatable component for the https://www.skeleton.dev ui library (version 2.0+).
         </table>
     </div>
     {#if items.length > 10 && config.enablePagination && config.showBottomPagination}
-        <div class="d-flex justify-content-between align-items-center" transition:fade|local={{ duration: 200 }}>
+        <div class="flex justify-between items-center mt-3" transition:fade|local={{ duration: 200 }}>
             <div>
                 {#if queryObserver.isLoading}
-                    <Spinner color="primary" />
+                    <ProgressRadial stroke={100} width="w-8" meter="stroke-primary-500" track="stroke-primary-500/30" />
                 {/if}
             </div>
-            <div class="d-flex flex-row align-items-baseline">
+            <div class="flex flex-row items-baseline">
                 {#if itemAmount >= 0}
-                    <span class="text-muted me-3"
+                    <span class="text-surface-500 mr-3"
                         >{(currentPage - 1) * config.itemsPerPage + 1}
                         - {clamp(currentPage * config.itemsPerPage, config.itemsPerPage, itemAmount)} von {itemAmount}</span
                     >
