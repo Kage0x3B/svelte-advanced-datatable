@@ -97,244 +97,83 @@
     },
     "license": "MIT",
     "exports": {
-        "./package.json": "./package.json",
-        "./dataComponent/BooleanComponentTypeProperties": {
-            "types": "./dist/dataComponent/BooleanComponentTypeProperties.d.ts",
-            "default": "./dist/dataComponent/BooleanComponentTypeProperties.js"
+        ".": {
+            "types": "./dist/index.d.ts",
+            "default": "./dist/index.js"
         },
-        "./dataComponent/ComponentType": {
-            "types": "./dist/dataComponent/ComponentType.d.ts",
-            "default": "./dist/dataComponent/ComponentType.js"
+        "./index": {
+            "types": "./dist/index.d.ts",
+            "default": "./dist/index.js"
         },
-        "./dataComponent/CustomComponentTypeProperties": {
-            "types": "./dist/dataComponent/CustomComponentTypeProperties.d.ts",
-            "default": "./dist/dataComponent/CustomComponentTypeProperties.js"
-        },
-        "./dataComponent/DateComponentTypeProperties": {
-            "types": "./dist/dataComponent/DateComponentTypeProperties.d.ts",
-            "default": "./dist/dataComponent/DateComponentTypeProperties.js"
-        },
-        "./dataComponent/EnumComponentTypeProperties": {
-            "types": "./dist/dataComponent/EnumComponentTypeProperties.d.ts",
-            "default": "./dist/dataComponent/EnumComponentTypeProperties.js"
-        },
-        "./dataComponent/GenericComponentTypeProperties": {
-            "types": "./dist/dataComponent/GenericComponentTypeProperties.d.ts",
-            "default": "./dist/dataComponent/GenericComponentTypeProperties.js"
-        },
-        "./dataComponent/NumberComponentTypeProperties": {
-            "types": "./dist/dataComponent/NumberComponentTypeProperties.d.ts",
-            "default": "./dist/dataComponent/NumberComponentTypeProperties.js"
-        },
-        "./dataComponent/StringComponentTypeProperties": {
-            "types": "./dist/dataComponent/StringComponentTypeProperties.d.ts",
-            "default": "./dist/dataComponent/StringComponentTypeProperties.js"
-        },
-        "./dataComponent/WrappedComponentProperty": {
-            "types": "./dist/dataComponent/WrappedComponentProperty.d.ts",
-            "default": "./dist/dataComponent/WrappedComponentProperty.js"
-        },
-        "./dataSource/AbstractDataSource": {
-            "types": "./dist/dataSource/AbstractDataSource.d.ts",
-            "default": "./dist/dataSource/AbstractDataSource.js"
-        },
-        "./dataSource/ApiFunctionDataSource": {
-            "types": "./dist/dataSource/ApiFunctionDataSource.d.ts",
-            "default": "./dist/dataSource/ApiFunctionDataSource.js"
-        },
-        "./dataSource/FetchApiDataSource": {
-            "types": "./dist/dataSource/FetchApiDataSource.d.ts",
-            "default": "./dist/dataSource/FetchApiDataSource.js"
-        },
-        "./dataSource/IDataSource": {
-            "types": "./dist/dataSource/IDataSource.d.ts",
-            "default": "./dist/dataSource/IDataSource.js"
-        },
-        "./dataSource/LocalDataSource": {
-            "types": "./dist/dataSource/LocalDataSource.d.ts",
-            "default": "./dist/dataSource/LocalDataSource.js"
-        },
-        "./dataSource/QueryObserver": {
-            "types": "./dist/dataSource/QueryObserver.d.ts",
-            "default": "./dist/dataSource/QueryObserver.js"
+        "./index.js": {
+            "types": "./dist/index.d.ts",
+            "default": "./dist/index.js"
         },
         "./dataSource": {
             "types": "./dist/dataSource/index.d.ts",
-            "svelte": "./dist/dataSource/index.js",
             "default": "./dist/dataSource/index.js"
         },
-        "./dataSource/svelteQuery/SvelteQueryDataSource": {
-            "types": "./dist/dataSource/svelteQuery/SvelteQueryDataSource.d.ts",
-            "default": "./dist/dataSource/svelteQuery/SvelteQueryDataSource.js"
+        "./dataSource/index": {
+            "types": "./dist/dataSource/index.d.ts",
+            "default": "./dist/dataSource/index.js"
+        },
+        "./dataSource/index.js": {
+            "types": "./dist/dataSource/index.d.ts",
+            "default": "./dist/dataSource/index.js"
         },
         "./dataSource/svelteQuery": {
             "types": "./dist/dataSource/svelteQuery/index.d.ts",
-            "svelte": "./dist/dataSource/svelteQuery/index.js",
             "default": "./dist/dataSource/svelteQuery/index.js"
         },
-        ".": {
-            "types": "./dist/index.d.ts",
-            "svelte": "./dist/index.js",
-            "default": "./dist/index.js"
+        "./dataSource/svelteQuery/index": {
+            "types": "./dist/dataSource/svelteQuery/index.d.ts",
+            "default": "./dist/dataSource/svelteQuery/index.js"
         },
-        "./internal/InternalDataColumn.svelte": {
-            "types": "./dist/internal/InternalDataColumn.svelte.d.ts",
-            "svelte": "./dist/internal/InternalDataColumn.svelte",
-            "default": "./dist/internal/InternalDataColumn.svelte"
-        },
-        "./internal/InternalDataRow.svelte": {
-            "types": "./dist/internal/InternalDataRow.svelte.d.ts",
-            "svelte": "./dist/internal/InternalDataRow.svelte",
-            "default": "./dist/internal/InternalDataRow.svelte"
-        },
-        "./internal/InternalDataTable.svelte": {
-            "types": "./dist/internal/InternalDataTable.svelte.d.ts",
-            "svelte": "./dist/internal/InternalDataTable.svelte",
-            "default": "./dist/internal/InternalDataTable.svelte"
-        },
-        "./internal/InternalDataTablePagination.svelte": {
-            "types": "./dist/internal/InternalDataTablePagination.svelte.d.ts",
-            "svelte": "./dist/internal/InternalDataTablePagination.svelte",
-            "default": "./dist/internal/InternalDataTablePagination.svelte"
-        },
-        "./internal/InternalSearchField.svelte": {
-            "types": "./dist/internal/InternalSearchField.svelte.d.ts",
-            "svelte": "./dist/internal/InternalSearchField.svelte",
-            "default": "./dist/internal/InternalSearchField.svelte"
+        "./dataSource/svelteQuery/index.js": {
+            "types": "./dist/dataSource/svelteQuery/index.d.ts",
+            "default": "./dist/dataSource/svelteQuery/index.js"
         },
         "./internal": {
             "types": "./dist/internal/index.d.ts",
             "svelte": "./dist/internal/index.js",
             "default": "./dist/internal/index.js"
         },
-        "./searchParser/AbstractSearchParser": {
-            "types": "./dist/searchParser/AbstractSearchParser.d.ts",
-            "default": "./dist/searchParser/AbstractSearchParser.js"
+        "./internal/index": {
+            "types": "./dist/internal/index.d.ts",
+            "svelte": "./dist/internal/index.js",
+            "default": "./dist/internal/index.js"
         },
-        "./searchParser/AdvancedSearchParser": {
-            "types": "./dist/searchParser/AdvancedSearchParser.d.ts",
-            "default": "./dist/searchParser/AdvancedSearchParser.js"
-        },
-        "./searchParser/BasicTextSearchParser": {
-            "types": "./dist/searchParser/BasicTextSearchParser.d.ts",
-            "default": "./dist/searchParser/BasicTextSearchParser.js"
-        },
-        "./searchParser/ForcedSearchQuery": {
-            "types": "./dist/searchParser/ForcedSearchQuery.d.ts",
-            "default": "./dist/searchParser/ForcedSearchQuery.js"
-        },
-        "./searchParser/ISearchParser": {
-            "types": "./dist/searchParser/ISearchParser.d.ts",
-            "default": "./dist/searchParser/ISearchParser.js"
-        },
-        "./searchParser/ParsedSearchQuery": {
-            "types": "./dist/searchParser/ParsedSearchQuery.d.ts",
-            "default": "./dist/searchParser/ParsedSearchQuery.js"
-        },
-        "./searchParser/SearchError": {
-            "types": "./dist/searchParser/SearchError.d.ts",
-            "default": "./dist/searchParser/SearchError.js"
+        "./internal/index.js": {
+            "types": "./dist/internal/index.d.ts",
+            "svelte": "./dist/internal/index.js",
+            "default": "./dist/internal/index.js"
         },
         "./searchParser": {
             "types": "./dist/searchParser/index.d.ts",
-            "svelte": "./dist/searchParser/index.js",
             "default": "./dist/searchParser/index.js"
         },
-        "./skeleton/SkeletonBadgeWrapper.svelte": {
-            "types": "./dist/skeleton/SkeletonBadgeWrapper.svelte.d.ts",
-            "svelte": "./dist/skeleton/SkeletonBadgeWrapper.svelte",
-            "default": "./dist/skeleton/SkeletonBadgeWrapper.svelte"
+        "./searchParser/index": {
+            "types": "./dist/searchParser/index.d.ts",
+            "default": "./dist/searchParser/index.js"
         },
-        "./skeleton/SkeletonDataRow.svelte": {
-            "types": "./dist/skeleton/SkeletonDataRow.svelte.d.ts",
-            "svelte": "./dist/skeleton/SkeletonDataRow.svelte",
-            "default": "./dist/skeleton/SkeletonDataRow.svelte"
-        },
-        "./skeleton/SkeletonDataTable.svelte": {
-            "types": "./dist/skeleton/SkeletonDataTable.svelte.d.ts",
-            "svelte": "./dist/skeleton/SkeletonDataTable.svelte",
-            "default": "./dist/skeleton/SkeletonDataTable.svelte"
-        },
-        "./skeleton/SkeletonDataTablePagination.svelte": {
-            "types": "./dist/skeleton/SkeletonDataTablePagination.svelte.d.ts",
-            "svelte": "./dist/skeleton/SkeletonDataTablePagination.svelte",
-            "default": "./dist/skeleton/SkeletonDataTablePagination.svelte"
-        },
-        "./skeleton/SkeletonIconWrapper.svelte": {
-            "types": "./dist/skeleton/SkeletonIconWrapper.svelte.d.ts",
-            "svelte": "./dist/skeleton/SkeletonIconWrapper.svelte",
-            "default": "./dist/skeleton/SkeletonIconWrapper.svelte"
-        },
-        "./skeleton/SkeletonPaginationLink.svelte": {
-            "types": "./dist/skeleton/SkeletonPaginationLink.svelte.d.ts",
-            "svelte": "./dist/skeleton/SkeletonPaginationLink.svelte",
-            "default": "./dist/skeleton/SkeletonPaginationLink.svelte"
-        },
-        "./skeleton/SkeletonSearchField.svelte": {
-            "types": "./dist/skeleton/SkeletonSearchField.svelte.d.ts",
-            "svelte": "./dist/skeleton/SkeletonSearchField.svelte",
-            "default": "./dist/skeleton/SkeletonSearchField.svelte"
+        "./searchParser/index.js": {
+            "types": "./dist/searchParser/index.d.ts",
+            "default": "./dist/searchParser/index.js"
         },
         "./skeleton": {
             "types": "./dist/skeleton/index.d.ts",
             "svelte": "./dist/skeleton/index.js",
             "default": "./dist/skeleton/index.js"
         },
-        "./skeleton/skeletonWrappedComponentPropertyMap": {
-            "types": "./dist/skeleton/skeletonWrappedComponentPropertyMap.d.ts",
-            "default": "./dist/skeleton/skeletonWrappedComponentPropertyMap.js"
+        "./skeleton/index": {
+            "types": "./dist/skeleton/index.d.ts",
+            "svelte": "./dist/skeleton/index.js",
+            "default": "./dist/skeleton/index.js"
         },
-        "./types/ApiFunction": {
-            "types": "./dist/types/ApiFunction.d.ts",
-            "default": "./dist/types/ApiFunction.js"
-        },
-        "./types/DataTableConfig": {
-            "types": "./dist/types/DataTableConfig.d.ts",
-            "default": "./dist/types/DataTableConfig.js"
-        },
-        "./types/MessageFormatter": {
-            "types": "./dist/types/MessageFormatter.d.ts",
-            "default": "./dist/types/MessageFormatter.js"
-        },
-        "./types/PaginatedListRequest": {
-            "types": "./dist/types/PaginatedListRequest.d.ts",
-            "default": "./dist/types/PaginatedListRequest.js"
-        },
-        "./types/PaginatedListResponse": {
-            "types": "./dist/types/PaginatedListResponse.d.ts",
-            "default": "./dist/types/PaginatedListResponse.js"
-        },
-        "./types/SearchFilter": {
-            "types": "./dist/types/SearchFilter.d.ts",
-            "default": "./dist/types/SearchFilter.js"
-        },
-        "./types/SortDirection": {
-            "types": "./dist/types/SortDirection.d.ts",
-            "default": "./dist/types/SortDirection.js"
-        },
-        "./types/SvelteI18nTypes": {
-            "types": "./dist/types/SvelteI18nTypes.d.ts",
-            "default": "./dist/types/SvelteI18nTypes.js"
-        },
-        "./util/ContextKey": {
-            "types": "./dist/util/ContextKey.d.ts",
-            "default": "./dist/util/ContextKey.js"
-        },
-        "./util/dataTableConfigUtil": {
-            "types": "./dist/util/dataTableConfigUtil.d.ts",
-            "default": "./dist/util/dataTableConfigUtil.js"
-        },
-        "./util/dataTableUtil": {
-            "types": "./dist/util/dataTableUtil.d.ts",
-            "default": "./dist/util/dataTableUtil.js"
-        },
-        "./util/generalUtil": {
-            "types": "./dist/util/generalUtil.d.ts",
-            "default": "./dist/util/generalUtil.js"
-        },
-        "./util/messageFormatterUtil": {
-            "types": "./dist/util/messageFormatterUtil.d.ts",
-            "default": "./dist/util/messageFormatterUtil.js"
+        "./skeleton/index.js": {
+            "types": "./dist/skeleton/index.d.ts",
+            "svelte": "./dist/skeleton/index.js",
+            "default": "./dist/skeleton/index.js"
         }
     },
     "files": [
@@ -343,170 +182,8 @@
     "svelte": "./dist/index.js",
     "typesVersions": {
         ">4.0": {
-            "dataComponent/BooleanComponentTypeProperties": [
-                "./dist/dataComponent/BooleanComponentTypeProperties.d.ts"
-            ],
-            "dataComponent/ComponentType": [
-                "./dist/dataComponent/ComponentType.d.ts"
-            ],
-            "dataComponent/CustomComponentTypeProperties": [
-                "./dist/dataComponent/CustomComponentTypeProperties.d.ts"
-            ],
-            "dataComponent/DateComponentTypeProperties": [
-                "./dist/dataComponent/DateComponentTypeProperties.d.ts"
-            ],
-            "dataComponent/EnumComponentTypeProperties": [
-                "./dist/dataComponent/EnumComponentTypeProperties.d.ts"
-            ],
-            "dataComponent/GenericComponentTypeProperties": [
-                "./dist/dataComponent/GenericComponentTypeProperties.d.ts"
-            ],
-            "dataComponent/NumberComponentTypeProperties": [
-                "./dist/dataComponent/NumberComponentTypeProperties.d.ts"
-            ],
-            "dataComponent/StringComponentTypeProperties": [
-                "./dist/dataComponent/StringComponentTypeProperties.d.ts"
-            ],
-            "dataComponent/WrappedComponentProperty": [
-                "./dist/dataComponent/WrappedComponentProperty.d.ts"
-            ],
-            "dataSource/AbstractDataSource": [
-                "./dist/dataSource/AbstractDataSource.d.ts"
-            ],
-            "dataSource/ApiFunctionDataSource": [
-                "./dist/dataSource/ApiFunctionDataSource.d.ts"
-            ],
-            "dataSource/FetchApiDataSource": [
-                "./dist/dataSource/FetchApiDataSource.d.ts"
-            ],
-            "dataSource/IDataSource": [
-                "./dist/dataSource/IDataSource.d.ts"
-            ],
-            "dataSource/LocalDataSource": [
-                "./dist/dataSource/LocalDataSource.d.ts"
-            ],
-            "dataSource/QueryObserver": [
-                "./dist/dataSource/QueryObserver.d.ts"
-            ],
-            "dataSource": [
-                "./dist/dataSource/index.d.ts"
-            ],
-            "dataSource/svelteQuery/SvelteQueryDataSource": [
-                "./dist/dataSource/svelteQuery/SvelteQueryDataSource.d.ts"
-            ],
-            "dataSource/svelteQuery": [
-                "./dist/dataSource/svelteQuery/index.d.ts"
-            ],
-            "index.d.ts": [
-                "./dist/index.d.ts"
-            ],
-            "internal/InternalDataColumn.svelte": [
-                "./dist/internal/InternalDataColumn.svelte.d.ts"
-            ],
-            "internal/InternalDataRow.svelte": [
-                "./dist/internal/InternalDataRow.svelte.d.ts"
-            ],
-            "internal/InternalDataTable.svelte": [
-                "./dist/internal/InternalDataTable.svelte.d.ts"
-            ],
-            "internal/InternalDataTablePagination.svelte": [
-                "./dist/internal/InternalDataTablePagination.svelte.d.ts"
-            ],
-            "internal/InternalSearchField.svelte": [
-                "./dist/internal/InternalSearchField.svelte.d.ts"
-            ],
-            "internal": [
-                "./dist/internal/index.d.ts"
-            ],
-            "searchParser/AbstractSearchParser": [
-                "./dist/searchParser/AbstractSearchParser.d.ts"
-            ],
-            "searchParser/AdvancedSearchParser": [
-                "./dist/searchParser/AdvancedSearchParser.d.ts"
-            ],
-            "searchParser/BasicTextSearchParser": [
-                "./dist/searchParser/BasicTextSearchParser.d.ts"
-            ],
-            "searchParser/ForcedSearchQuery": [
-                "./dist/searchParser/ForcedSearchQuery.d.ts"
-            ],
-            "searchParser/ISearchParser": [
-                "./dist/searchParser/ISearchParser.d.ts"
-            ],
-            "searchParser/ParsedSearchQuery": [
-                "./dist/searchParser/ParsedSearchQuery.d.ts"
-            ],
-            "searchParser/SearchError": [
-                "./dist/searchParser/SearchError.d.ts"
-            ],
-            "searchParser": [
-                "./dist/searchParser/index.d.ts"
-            ],
-            "skeleton/SkeletonBadgeWrapper.svelte": [
-                "./dist/skeleton/SkeletonBadgeWrapper.svelte.d.ts"
-            ],
-            "skeleton/SkeletonDataRow.svelte": [
-                "./dist/skeleton/SkeletonDataRow.svelte.d.ts"
-            ],
-            "skeleton/SkeletonDataTable.svelte": [
-                "./dist/skeleton/SkeletonDataTable.svelte.d.ts"
-            ],
-            "skeleton/SkeletonDataTablePagination.svelte": [
-                "./dist/skeleton/SkeletonDataTablePagination.svelte.d.ts"
-            ],
-            "skeleton/SkeletonIconWrapper.svelte": [
-                "./dist/skeleton/SkeletonIconWrapper.svelte.d.ts"
-            ],
-            "skeleton/SkeletonPaginationLink.svelte": [
-                "./dist/skeleton/SkeletonPaginationLink.svelte.d.ts"
-            ],
-            "skeleton/SkeletonSearchField.svelte": [
-                "./dist/skeleton/SkeletonSearchField.svelte.d.ts"
-            ],
-            "skeleton": [
-                "./dist/skeleton/index.d.ts"
-            ],
-            "skeleton/skeletonWrappedComponentPropertyMap": [
-                "./dist/skeleton/skeletonWrappedComponentPropertyMap.d.ts"
-            ],
-            "types/ApiFunction": [
-                "./dist/types/ApiFunction.d.ts"
-            ],
-            "types/DataTableConfig": [
-                "./dist/types/DataTableConfig.d.ts"
-            ],
-            "types/MessageFormatter": [
-                "./dist/types/MessageFormatter.d.ts"
-            ],
-            "types/PaginatedListRequest": [
-                "./dist/types/PaginatedListRequest.d.ts"
-            ],
-            "types/PaginatedListResponse": [
-                "./dist/types/PaginatedListResponse.d.ts"
-            ],
-            "types/SearchFilter": [
-                "./dist/types/SearchFilter.d.ts"
-            ],
-            "types/SortDirection": [
-                "./dist/types/SortDirection.d.ts"
-            ],
-            "types/SvelteI18nTypes": [
-                "./dist/types/SvelteI18nTypes.d.ts"
-            ],
-            "util/ContextKey": [
-                "./dist/util/ContextKey.d.ts"
-            ],
-            "util/dataTableConfigUtil": [
-                "./dist/util/dataTableConfigUtil.d.ts"
-            ],
-            "util/dataTableUtil": [
-                "./dist/util/dataTableUtil.d.ts"
-            ],
-            "util/generalUtil": [
-                "./dist/util/generalUtil.d.ts"
-            ],
-            "util/messageFormatterUtil": [
-                "./dist/util/messageFormatterUtil.d.ts"
+            "*": [
+                "./dist/*"
             ]
         }
     }
