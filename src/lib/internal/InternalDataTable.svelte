@@ -73,7 +73,7 @@
             return;
         }
 
-        let orderBy;
+        let orderBy: { column: string; order: SortDirection } | undefined = undefined;
 
         if (sortColumnKey && sortDirection) {
             orderBy = {
@@ -92,9 +92,10 @@
             amount: itemsPerPage,
             orderBy: forcedSearchQuery?.orderBy ?? orderBy,
             searchQuery: {
-                ...searchQuery,
+                searchText: forcedSearchQuery?.searchQuery?.searchText ?? searchQuery?.searchText ?? '',
+                searchCategories: searchQuery?.searchCategories ?? [],
                 searchFilters,
-                searchText: forcedSearchQuery?.searchQuery?.searchText ?? searchQuery?.searchText
+                forceGlobalSearch: searchQuery?.forceGlobalSearch ?? false
             }
         };
 
