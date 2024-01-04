@@ -1,8 +1,8 @@
-<script>
+<script lang="ts">
     import InternalDataTablePagination from '$lib/internal/InternalDataTablePagination.svelte';
     import SkeletonPaginationButton from '$lib/skeleton/SkeletonPaginationButton.svelte';
 
-    export let pageAmount;
+    export let pageAmount: number;
     export let maxDisplayedItems = 5;
     export let currentPage = -1;
 </script>

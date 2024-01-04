@@ -1,6 +1,6 @@
 {
     "name": "svelte-advanced-datatable",
-    "version": "0.6.1",
+    "version": "0.6.2",
     "scripts": {
         "dev": "vite dev",
         "build": "svelte-kit sync && svelte-package",

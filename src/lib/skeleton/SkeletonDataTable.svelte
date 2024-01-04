@@ -56,7 +56,7 @@ Datatable component for the https://www.skeleton.dev ui library (version 2.0+).
     {searchQuery}
     {currentPage}
 >
-    <div class="flex justify-between items-center mb-3">
+    <div class="flex flex-col sm:flex-row sm:justify-between items-center gap-2 mb-3">
         <div class="flex flex-row items-center">
             <slot name="header-first" />
             {#if config.enableSearch}
@@ -77,11 +77,14 @@ Datatable component for the https://www.skeleton.dev ui library (version 2.0+).
             <div class="flex flex-row justify-center flex-wrap">
                 <div class="flex items-center">
                     {#if itemAmount >= 0}
+                        {@const firstIndex = (currentPage - 1) * config.itemsPerPage + 1}
+                        {@const lastIndex = clamp(currentPage * config.itemsPerPage, config.itemsPerPage, itemAmount)}
                         <span class="text-surface-500 mr-3 whitespace-nowrap"
-                            >{(currentPage - 1) * config.itemsPerPage + 1}
-                            - {clamp(currentPage * config.itemsPerPage, config.itemsPerPage, itemAmount)}
-                            von {itemAmount}</span
-                        >
+                            >{$format(`pagination.currentlyShowing`, {
+                                values: { firstIndex, lastIndex, itemAmount },
+                                default: `${firstIndex} - ${lastIndex} of ${itemAmount}`
+                            })}
+                        </span>
                     {/if}
                 </div>
                 <DataTablePagination bind:currentPage {pageAmount} />
@@ -195,6 +198,24 @@ Datatable component for the https://www.skeleton.dev ui library (version 2.0+).
         -webkit-overflow-scrolling: touch;
         border-collapse: separate;
         border-spacing: 0;
+    }
+
+    table thead th {
+        padding: 0.25rem 0.5rem;
+    }
+
+    table tbody :global(td) {
+        padding: 0.25rem 0.5rem;
+    }
+
+    @media (min-width: 768px) {
+        table thead th {
+            padding: 0.75rem 1rem;
+        }
+
+        table tbody :global(td) {
+            padding: 0.75rem 1rem;
+        }
     }
 
     thead {

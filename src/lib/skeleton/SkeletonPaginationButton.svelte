@@ -15,8 +15,11 @@
     export let first = false;
     export let last = false;
 
-    $: classes = classnames(className, 'btn-pagination', {
-        '!variant-filled-primary active': active
+    $: isNumbered = !previous && !next && !first && !last;
+
+    $: classes = classnames(className, 'btn-pagination !btn-sm md:!btn-md', {
+        '!variant-filled-primary active': active,
+        '!hidden md:!block': isNumbered
     });
 
     let type: 'previous' | 'next' | 'first' | 'last';
