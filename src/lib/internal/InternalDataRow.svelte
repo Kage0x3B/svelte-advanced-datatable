@@ -1,47 +1,45 @@
-<script lang='ts'>
-	import type { MaybePromise } from '$lib/types';
-	import { getContext } from 'svelte';
-	import type { FullDataTableConfig } from '$lib/types/DataTableConfig.js';
-	import { DATATABLE_CONFIG } from '$lib/util/ContextKey.js';
+<script lang="ts">
+    import { getContext, type Snippet } from 'svelte';
+    import type { FullDataTableConfig } from '$lib/types/DataTableConfig.js';
+    import { DATATABLE_CONFIG } from '$lib/util/ContextKey.js';
 
-	const config: FullDataTableConfig<unknown> = getContext(DATATABLE_CONFIG);
+    const config: FullDataTableConfig<unknown> = getContext(DATATABLE_CONFIG);
 
+    type OnClickFunction = (<T>(item: T) => void | Promise<void>) | undefined;
 
+    interface Props {
+        index: number;
+        openIndex: number;
+        onClick: OnClickFunction;
+        item: unknown;
+        open: (index: number) => void;
+        toggle?: () => void;
+        children: Snippet<[{ isOpen: boolean; rowOnClick: OnClickFunction; toggle: () => void }]>;
+    }
 
-	const isExpandable = !!config.modalComponent;
+    let {
+        index,
+        openIndex,
+        onClick,
+        item,
+        open,
+        toggle = () => {
+            isExpandable && item && open(isOpen ? -1 : index);
+        },
+        children
+    }: Props = $props();
 
-	let isOpen: boolean = $derived(isExpandable && index === openIndex);
+    const isExpandable = !!config.modalComponent;
 
-	interface Props {
-		index: number;
-		openIndex: number;
-		onClick: (<T>(item: T) => MaybePromise<void>) | undefined;
-		item: unknown;
-		open: (index: number) => void;
-		toggle?: () => void;
-		children?: import('svelte').Snippet<[any]>;
-	}
+    let isOpen: boolean = $derived(isExpandable && index === openIndex);
 
-	let {
-		index,
-		openIndex,
-		onClick,
-		item,
-		open,
-		toggle = () => {
-		isExpandable && item && open(isOpen ? -1 : index);
-	},
-		children
-	}: Props = $props();
-
-	async function rowOnClick() {
-		if (onClick) {
-			await onClick(item);
-		} else if (isExpandable) {
-			toggle();
-		}
-	}
-	
+    async function rowOnClick() {
+        if (onClick) {
+            await onClick(item);
+        } else if (isExpandable) {
+            toggle();
+        }
+    }
 </script>
 
-{@render children?.({ isOpen, rowOnClick, toggle, })}
+{@render children({ isOpen, rowOnClick, toggle })}

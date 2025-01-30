@@ -1,28 +1,20 @@
 <script lang="ts">
-    import { run } from 'svelte/legacy';
-
-    import { createEventDispatcher } from 'svelte';
-
-    const dispatch = createEventDispatcher();
+    import type { Snippet } from 'svelte';
 
     interface Props {
         pageAmount: number;
         maxDisplayedItems?: number;
         currentPage?: any;
-        children?: import('svelte').Snippet<[any]>;
+        children: Snippet<[{ createClickHandler: (page: number) => (event: MouseEvent) => void; pages: number[] }]>;
     }
 
-    let {
-        pageAmount,
-        maxDisplayedItems = 5,
-        currentPage = $bindable(-1),
-        children
-    }: Props = $props();
+    let { pageAmount, maxDisplayedItems = 5, currentPage = $bindable(-1), children }: Props = $props();
 
-    function navigate(page) {
+    function navigate(page: number | 'prev' | 'next') {
         if (pageAmount <= 0 || currentPage < 0 || page === currentPage) {
             return;
         }
+
         if (page === 'prev') {
             page = currentPage - 1;
         } else if (page === 'next') {
@@ -31,13 +23,13 @@
             return;
         }
 
-        page = Math.min(Math.max(page, 1), pageAmount);
+        page = Math.min(Math.max(page as number, 1), pageAmount);
         currentPage = page;
-        dispatch('navigate', { page });
     }
 
-    let pages = $state();
-    run(() => {
+    let pages = $derived(computePages());
+
+    function computePages(): number[] {
         //TODO: Make better pagination which actually respects max items exactly
         if (pageAmount >= 0 && currentPage >= 0) {
             const newPages = [];
@@ -79,14 +71,14 @@
                 }
             }
 
-            pages = newPages;
+            return newPages;
         } else {
-            pages = ['...'];
+            return [];
         }
-    });
+    }
 
-    function createClickHandler(page) {
-        return function (event) {
+    function createClickHandler(page: number) {
+        return (event: MouseEvent) => {
             event.preventDefault();
 
             navigate(page);
@@ -94,4 +86,4 @@
     }
 </script>
 
-{@render children?.({ createClickHandler, pages, })}
+{@render children({ createClickHandler, pages })}

@@ -1,57 +1,50 @@
-<script lang='ts'>
-	import { run } from 'svelte/legacy';
+<script lang="ts">
+    import { getContext, type Snippet } from 'svelte';
+    import type { ParsedSearchQuery } from '$lib/searchParser/index.js';
+    import type { FullDataTableConfig } from '$lib/types/DataTableConfig.js';
+    import { DATATABLE_CONFIG } from '$lib/util/ContextKey.js';
+    import { debounce } from '$lib/util/generalUtil.js';
 
-	import { getContext } from 'svelte';
-	import type { ParsedSearchQuery } from '$lib/searchParser/index.js';
-	import type { FullDataTableConfig } from '$lib/types/DataTableConfig.js';
-	import { DATATABLE_CONFIG } from '$lib/util/ContextKey.js';
-	import { debounce } from '$lib/util/generalUtil.js';
+    interface Props {
+        searchInput?: string;
+        searchQuery?: ParsedSearchQuery | undefined;
+        inputElement: HTMLInputElement | undefined;
+        children: Snippet;
+    }
 
-	interface Props {
-		searchInput?: string;
-		searchQuery?: ParsedSearchQuery | undefined;
-		inputElement: HTMLInputElement;
-		children?: import('svelte').Snippet;
-	}
+    let { searchInput = $bindable(''), searchQuery = $bindable(undefined), inputElement, children }: Props = $props();
 
-	let {
-		searchInput = $bindable(''),
-		searchQuery = $bindable(undefined),
-		inputElement,
-		children
-	}: Props = $props();
+    const config: FullDataTableConfig<unknown> = getContext(DATATABLE_CONFIG);
 
-	const config: FullDataTableConfig<unknown> = getContext(DATATABLE_CONFIG);
+    $effect(() => {
+        updateSearch(searchInput);
+    });
+    const updateSearch = debounce((searchInput: string) => _updateSearch(searchInput), 200);
 
-	const updateSearch = debounce<[string]>((searchInput) => _updateSearch(searchInput), 200);
-	run(() => {
-		updateSearch(searchInput);
-	});
+    function _updateSearch(searchInput: string) {
+        try {
+            searchQuery = config.searchParser.parseSearchQuery(searchInput);
+        } catch (err) {
+            console.log(err);
 
-	function _updateSearch(searchInput) {
-		try {
-			searchQuery = config.searchParser.parseSearchQuery(searchInput);
-		} catch (err) {
-			console.log(err);
+            searchQuery = undefined;
+        }
+    }
 
-			searchQuery = null;
-		}
-	}
+    function handleKeydown(event: KeyboardEvent) {
+        if (event.ctrlKey && event.key == 'f') {
+            event.preventDefault();
 
-	function handleKeydown(e: KeyboardEvent) {
-		if (e.ctrlKey && e.key == 'f') {
-			e.preventDefault();
+            inputElement && inputElement.focus();
+        } else if (event.key === 'Escape' && document.activeElement === inputElement) {
+            event.preventDefault();
 
-			inputElement && inputElement.focus();
-		} else if (e.key === 'Escape' && document.activeElement === inputElement) {
-			e.preventDefault();
-
-			searchInput = '';
-			inputElement && inputElement.blur();
-		}
-	}
+            searchInput = '';
+            inputElement && inputElement.blur();
+        }
+    }
 </script>
 
 <svelte:window onkeydown={handleKeydown} />
 
-{@render children?.()}
+{@render children()}

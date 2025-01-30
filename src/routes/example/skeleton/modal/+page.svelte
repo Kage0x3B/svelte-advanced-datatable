@@ -1,7 +1,7 @@
 <script lang="ts">
     import { ComponentType } from '$lib/dataComponent/ComponentType.js';
     import type { EnumComponentTypeProperties } from '$lib/dataComponent/EnumComponentTypeProperties.js';
-    import { LocalDataSource } from '$lib/index.js';
+    import { LocalDataSource } from '$lib';
     import { DataTable } from '$lib/skeleton/index.js';
     import type { DataTableConfig } from '$lib/types/DataTableConfig.js';
     import { addMessages, getLocaleFromNavigator, init } from 'svelte-i18n';

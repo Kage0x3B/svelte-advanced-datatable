@@ -1,10 +1,10 @@
 <script lang="ts">
-    import { getContext } from 'svelte';
-    import type { Readable } from 'svelte/store';
     import InternalSearchField from '$lib/internal/InternalSearchField.svelte';
-    import type { ParsedSearchQuery } from '$lib/searchParser/index.js';
+    import type { ParsedSearchQuery } from '$lib/searchParser/ParsedSearchQuery.js';
     import type { MessageFormatter } from '$lib/types/MessageFormatter.js';
     import { DATATABLE_MESSAGE_FORMATTER } from '$lib/util/ContextKey.js';
+    import { getContext } from 'svelte';
+    import type { Readable } from 'svelte/store';
 
     const format: Readable<MessageFormatter> = getContext(DATATABLE_MESSAGE_FORMATTER);
 
@@ -14,16 +14,19 @@
     }
 
     let { searchInput = $bindable(''), searchQuery = $bindable(undefined) }: Props = $props();
-    let inputElement: HTMLInputElement = $state();
+    let inputElement: HTMLInputElement | undefined = $state();
 </script>
 
 <InternalSearchField {inputElement} bind:searchQuery {searchInput}>
-    <input
-        class="input"
-        type="search"
-        bind:this={inputElement}
-        bind:value={searchInput}
-        aria-label={$format(`search.ariaLabel`)}
-        placeholder={$format(`search.placeholder`)}
-    />
+    <div class="mr-2">
+        <input
+            aria-label={$format(`search.ariaLabel`)}
+            bind:this={inputElement}
+            bind:value={searchInput}
+            class="search-box"
+            placeholder={$format(`search.placeholder`)}
+            type="search"
+            inputStyle="bordered"
+        />
+    </div>
 </InternalSearchField>

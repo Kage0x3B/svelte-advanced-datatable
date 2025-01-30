@@ -1,5 +1,13 @@
-export { default as InternalDataColumn } from './InternalDataColumn.svelte';
-export { default as InternalDataRow } from './InternalDataRow.svelte';
-export { default as InternalDataTable } from './InternalDataTable.svelte';
-export { default as InternalDataTablePagination } from './InternalDataTablePagination.svelte';
-export { default as InternalSearchField } from './InternalSearchField.svelte';
+import { default as Column } from './InternalDataColumn.svelte';
+import { default as Row } from './InternalDataRow.svelte';
+import { default as Root } from './InternalDataTable.svelte';
+import { default as Pagination } from './InternalDataTablePagination.svelte';
+import { default as SearchField } from './InternalSearchField.svelte';
+
+export default {
+    Column,
+    Row,
+    Root,
+    Pagination,
+    SearchField
+};

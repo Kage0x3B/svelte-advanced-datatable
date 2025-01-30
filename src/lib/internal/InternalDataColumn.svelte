@@ -1,9 +1,11 @@
 <script lang="ts">
     import { ComponentType } from '$lib/dataComponent/ComponentType.js';
     import type { ComponentTypeProperties } from '$lib/dataComponent/ComponentType.js';
-    import type { Constructable } from '$lib/types/Constructable.js';
+    import type { WrappedIconName } from '$lib/dataComponent/WrappedComponentProperty.js';
+    import type { BadgeComponentProps } from '$lib/types/BadgeComponentProps.js';
+    import type { IconComponentProps } from '$lib/types/IconComponentProps.js';
     import { isDateTime } from '$lib/util/generalUtil.js';
-    import type { SvelteComponent } from 'svelte';
+    import type { Component } from 'svelte';
     import { getContext } from 'svelte';
     import type { Readable } from 'svelte/store';
     import type { FullDataTableConfig } from '$lib/types/DataTableConfig.js';
@@ -14,24 +16,15 @@
     const format: Readable<MessageFormatter> = getContext(DATATABLE_MESSAGE_FORMATTER);
 
     interface Props {
-        IconComponent: Constructable<SvelteComponent>;
-        BadgeComponent: Constructable<SvelteComponent>;
+        IconComponent: Component<IconComponentProps>;
+        BadgeComponent: Component<BadgeComponentProps>;
         item: Record<string, unknown>;
         key: string;
     }
 
-    let {
-        IconComponent,
-        BadgeComponent,
-        item,
-        key
-    }: Props = $props();
+    let { IconComponent, BadgeComponent, item, key }: Props = $props();
 
     const colProps = config.columnProperties[key] as unknown as ComponentTypeProperties;
-
-    function isString(key: string): key is string {
-        return typeof key === 'string';
-    }
 </script>
 
 <!-- It's better for performance to generate some fields for easy types (string, int, enum, bool, ..) with a simple if -->
@@ -54,7 +47,7 @@
 {:else if colProps.type === ComponentType.ENUM}
     <BadgeComponent
         color={colProps.values.includes(item[key])
-            ? colProps.enumColorKey[item[key]] ?? colProps.enumColorKey.default
+            ? (colProps.enumColorKey[item[key]] ?? colProps.enumColorKey.default)
             : colProps.enumColorKey.unknown}
     >
         {#if colProps.values.includes(item[key])}

@@ -2,7 +2,7 @@ import type { TableColumnConfig } from '$lib/dataComponent/ComponentType.js';
 import type { IDataSource } from '$lib/dataSource/IDataSource.js';
 import type { ForcedSearchQuery } from '$lib/searchParser/ForcedSearchQuery.js';
 import type { ISearchParser } from '$lib/searchParser/ISearchParser.js';
-import type { SvelteComponentTyped } from 'svelte';
+import type { Component } from 'svelte';
 import type { Readable } from 'svelte/store';
 import type { MessageFormatter } from './MessageFormatter.js';
 import type { SortDirection } from './SortDirection.js';
@@ -42,7 +42,7 @@ export interface DataTableConfig<Data> {
     /**
      * The data source where the datatable requests the table data from
      */
-    dataSource: IDataSource<Data> | Readable<IDataSource<Data>>;
+    dataSource: IDataSource<Data>;
 
     /**
      * The key of your items unique identifier.
@@ -76,7 +76,7 @@ export interface DataTableConfig<Data> {
     /**
      * A svelte component shown when a user clicks on a row to expand it
      */
-    modalComponent?: SvelteComponentTyped;
+    modalComponent?: Component;
 
     /**
      * An onClick handler for a table row. Gets passed the data item which the clicked row displays
@@ -87,7 +87,7 @@ export interface DataTableConfig<Data> {
     /**
      * A search query which overwrites any values by the users current search. Can be used to apply a forced filter to the whole datatable
      */
-    forcedSearchQuery?: Readable<ForcedSearchQuery<Data>>;
+    forcedSearchQuery?: ForcedSearchQuery<Data>;
 
     /**
      * The identifier of any item which then gets assigned the `highlighted` class
@@ -97,7 +97,7 @@ export interface DataTableConfig<Data> {
     /**
      * Sort the table using the given key and direction by default
      */
-    defaultSort?: { columnKey?: keyof Data & string; direction?: SortDirection };
+    defaultSort?: { columnKey?: keyof Data | string; direction?: SortDirection };
 
     /**
      * Whether to enable or disable pagination entirely.

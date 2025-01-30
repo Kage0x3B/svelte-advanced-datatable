@@ -37,7 +37,7 @@ importers:
         specifier: ^3.0.0
         version: 3.0.8(@sveltejs/kit@2.16.1(@sveltejs/vite-plugin-svelte@4.0.4(svelte@5.19.6)(vite@5.4.14(@types/node@20.5.1)(sass@1.66.1)))(svelte@5.19.6)(vite@5.4.14(@types/node@20.5.1)(sass@1.66.1)))
       '@sveltejs/kit':
-        specifier: ^2.5.27
+        specifier: ^2.12.0
         version: 2.16.1(@sveltejs/vite-plugin-svelte@4.0.4(svelte@5.19.6)(vite@5.4.14(@types/node@20.5.1)(sass@1.66.1)))(svelte@5.19.6)(vite@5.4.14(@types/node@20.5.1)(sass@1.66.1))
       '@sveltejs/package':
         specifier: ^2.3.7
@@ -55,8 +55,8 @@ importers:
         specifier: ^4.33.0
         version: 4.33.0(svelte@5.19.6)
       '@types/luxon':
-        specifier: ^3.3.1
-        version: 3.3.1
+        specifier: ^3.4.2
+        version: 3.4.2
       '@types/marked':
         specifier: ^5.0.1
         version: 5.0.1
@@ -88,8 +88,8 @@ importers:
         specifier: ^11.8.0
         version: 11.8.0
       luxon:
-        specifier: ^3.4.0
-        version: 3.4.0
+        specifier: ^3.5.0
+        version: 3.5.0
       marked:
         specifier: ^7.0.3
         version: 7.0.3
@@ -616,8 +616,8 @@ packages:
   '@types/json-schema@7.0.12':
     resolution: {integrity: sha512-Hr5Jfhc9eYOQNPYO5WLDq/n4jqijdHNlDXjuAQkkt+mWdQR+XJToOHrsD4cPaMXpn6KO7y2+wM8AZEs8VpBLVA==}
 
-  '@types/luxon@3.3.1':
-    resolution: {integrity: sha512-XOS5nBcgEeP2PpcqJHjCWhUCAzGfXIU8ILOSLpx2FhxqMW9KdxgCGXNOEKGVBfveKtIpztHzKK5vSRVLyW/NqA==}
+  '@types/luxon@3.4.2':
+    resolution: {integrity: sha512-TifLZlFudklWlMBfhubvgqTXRzLDI5pCbGa4P8a3wPyUQSW+1xQ5eDsreP9DWHX3tjq1ke96uYG/nwundroWcA==}
 
   '@types/marked@5.0.1':
     resolution: {integrity: sha512-Y3pAUzHKh605fN6fvASsz5FDSWbZcs/65Q6xYRmnIP9ZIYz27T4IOmXfH9gWJV1dpi7f1e7z7nBGUTx/a0ptpA==}
@@ -1331,8 +1331,8 @@ packages:
   lunr@2.3.9:
     resolution: {integrity: sha512-zTU3DaZaF3Rt9rhN3uBMGQD3dD2/vFQqnvZCDv4dl5iOzq2IZQqTxu90r4E5J+nP70J3ilqVCrbho2eWaeW8Ow==}
 
-  luxon@3.4.0:
-    resolution: {integrity: sha512-7eDo4Pt7aGhoCheGFIuq4Xa2fJm4ZpmldpGhjTYBNUYNCN6TIEP6v7chwwwt3KRp7YR+rghbfvjyo3V5y9hgBw==}
+  luxon@3.5.0:
+    resolution: {integrity: sha512-rh+Zjr6DNfUYR3bPwJEnuwDdqMbxZW7LOQfUN4B54+Cl+0o5zaU9RJ6bcidfDtC1cWCZXQ+nvX8bf6bAji37QQ==}
     engines: {node: '>=12'}
 
   magic-string@0.30.17:
@@ -2520,7 +2520,7 @@ snapshots:
 
   '@types/json-schema@7.0.12': {}
 
-  '@types/luxon@3.3.1': {}
+  '@types/luxon@3.4.2': {}
 
   '@types/marked@5.0.1': {}
 
@@ -3297,7 +3297,7 @@ snapshots:
 
   lunr@2.3.9: {}
 
-  luxon@3.4.0: {}
+  luxon@3.5.0: {}
 
   magic-string@0.30.17:
     dependencies:

@@ -1,8 +1,7 @@
 <script lang="ts">
-    import { run } from 'svelte/legacy';
-
+    import type { ComponentTypeProperties } from '$lib/dataComponent/ComponentType.js';
     import type { QueryObserver } from '$lib/dataSource/QueryObserver.js';
-    import type { ParsedSearchQuery } from '$lib/searchParser';
+    import type { ParsedSearchQuery } from '$lib/searchParser/ParsedSearchQuery.js';
     import type { ForcedSearchQuery } from '$lib/searchParser/ForcedSearchQuery.js';
     import type { FullDataTableConfig } from '$lib/types/DataTableConfig.js';
     import type { PaginatedListRequest } from '$lib/types/PaginatedListRequest.js';
@@ -10,40 +9,52 @@
     import type { SortDirection } from '$lib/types/SortDirection.js';
     import { DATATABLE_CONFIG } from '$lib/util/ContextKey.js';
     import { buildColumnPropertyData } from '$lib/util/dataTableUtil.js';
-    import { browser, wrapPossibleStore } from '$lib/util/generalUtil.js';
-    import { getContext, onMount } from 'svelte';
-    import type { Readable } from 'svelte/store';
+    import { browser } from '$lib/util/generalUtil.js';
+    import { getContext, type Snippet } from 'svelte';
 
-    const config: FullDataTableConfig<unknown> = getContext(DATATABLE_CONFIG);
-    const forcedSearchQuery = config.forcedSearchQuery;
+    let config: FullDataTableConfig<unknown> = getContext(DATATABLE_CONFIG);
+    let forcedSearchQuery = config.forcedSearchQuery;
 
     interface Props {
         currentPage: number;
         searchInput: string;
         searchQuery: ParsedSearchQuery | undefined;
-        children?: import('svelte').Snippet<[any]>;
+        children: Snippet<
+            [
+                {
+                    queryObserver: QueryObserver<unknown>;
+                    columnProperties: Record<string, ComponentTypeProperties>;
+                    itemAmount: number;
+                    pageAmount: number;
+                    items: Record<string, unknown>[];
+                    sortDirection: SortDirection;
+                    toggleSorting: (columnKey: string) => void;
+                    sortColumnKey: string;
+                    open: (index: number) => void;
+                    currentOpenIndex: number | undefined;
+                    highlightedItemId: string | undefined;
+                }
+            ]
+        >;
     }
 
-    let {
-        currentPage,
-        searchInput,
-        searchQuery,
-        children
-    }: Props = $props();
+    let { currentPage, searchInput, searchQuery, children }: Props = $props();
 
-    let isInitialized = false;
     let itemAmount = $state(-1);
     let pageAmount = $derived(Math.ceil(Math.max(1, itemAmount / config.itemsPerPage)));
-    let items = $state([]);
-    let currentOpenIndex = $state();
+    let items: unknown[] = $state([]);
+    let currentOpenIndex: number | undefined = $state();
 
-    let sortColumnKey: string = $state(config.defaultSort.columnKey);
+    let sortColumnKey: string | undefined = $state(config.defaultSort.columnKey);
     let sortDirection: SortDirection = $state(config.defaultSort.direction ?? false);
 
-    const dataSource = wrapPossibleStore(config.dataSource);
-    const highlightedItemId = wrapPossibleStore(config.highlightedItemId);
-    let dataQueryObserver: Readable<QueryObserver<unknown>> = $state();
+    let highlightedItemId = $state(config.highlightedItemId);
+    let dataQueryObserver: QueryObserver<unknown> | undefined = $state();
 
+    $effect(() => {
+        config.dataSource.init?.(config);
+        dataQueryObserver = config.dataSource.getQueryObserver();
+    });
 
     function updateData(data: PaginatedListResponse<unknown>) {
         if (!data || !data.items) {
@@ -64,7 +75,7 @@
         }
     }
 
-    const internalColumnProperties = buildColumnPropertyData(config.columnProperties);
+    let internalColumnProperties = $derived(buildColumnPropertyData(config.columnProperties));
 
     function refresh(
         currentPage: number,
@@ -78,7 +89,7 @@
             return;
         }
 
-        let orderBy;
+        let orderBy: PaginatedListRequest<unknown>['orderBy'] | undefined;
 
         if (sortColumnKey && sortDirection) {
             orderBy = {
@@ -99,11 +110,11 @@
             searchQuery: {
                 ...searchQuery,
                 searchFilters,
-                searchText: forcedSearchQuery?.searchQuery?.searchText ?? searchQuery?.searchText
+                searchText: forcedSearchQuery?.searchQuery?.searchText ?? searchQuery?.searchText ?? ''
             }
         };
 
-        $dataSource.requestData(requestData);
+        config.dataSource.requestData(requestData);
     }
 
     function toggleSorting(columnKey: string): void {
@@ -119,26 +130,33 @@
         }
     }
 
-    const open = (index: number) => (currentOpenIndex = items.length <= 1 ? 0 : index);
+    const open = (index: number) => {
+        currentOpenIndex = items.length <= 1 ? 0 : index;
+    };
 
-    onMount(() => {
-        $dataSource.onMount && $dataSource.onMount();
+    $effect(() => {
+        config.dataSource.onMount?.();
+    });
 
-        isInitialized = true;
+    $effect(() => {
+        refresh(currentPage, config.itemsPerPage, sortColumnKey, sortDirection, forcedSearchQuery, searchQuery);
     });
-    run(() => {
-        if ($dataSource) {
-            $dataSource.init && $dataSource.init(config);
-            dataQueryObserver = $dataSource.getQueryObserver();
-        }
+
+    $effect(() => {
+        dataQueryObserver?.isSuccess && updateData(dataQueryObserver?.data);
     });
-    run(() => {
-        refresh(currentPage, config.itemsPerPage, sortColumnKey, sortDirection, $forcedSearchQuery, searchQuery);
-    });
-    run(() => {
-        $dataQueryObserver.isSuccess && updateData($dataQueryObserver.data);
-    });
-    
 </script>
 
-{@render children?.({ queryObserver: $dataQueryObserver, columnProperties: internalColumnProperties, itemAmount, pageAmount, items, sortDirection, toggleSorting, sortColumnKey, open, currentOpenIndex, highlightedItemId: $highlightedItemId, })}
+{@render children({
+    queryObserver: dataQueryObserver,
+    columnProperties: internalColumnProperties,
+    itemAmount,
+    pageAmount,
+    items,
+    sortDirection,
+    toggleSorting,
+    sortColumnKey,
+    open,
+    currentOpenIndex,
+    highlightedItemId: $highlightedItemId
+})}
