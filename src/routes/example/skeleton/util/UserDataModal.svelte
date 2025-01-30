@@ -2,8 +2,12 @@
     import { Alert, Col, Row } from '@skeletonlabs/skeleton';
     import type { UserData } from '../../util/UserData.js';
 
-    export let item: UserData;
-    export let toggle = undefined;
+    interface Props {
+        item: UserData;
+        toggle?: any;
+    }
+
+    let { item, toggle = undefined }: Props = $props();
 
     const cacheBuster = Math.round(Math.random() * 10);
     const lastOnlineAmount = Math.ceil(Math.random() * 60);

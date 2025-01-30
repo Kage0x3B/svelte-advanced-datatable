@@ -4,18 +4,22 @@
 </script>
 
 <AppBar background="bg-primary-500 text-white" gridColumns="grid-cols-3" slotTrail="place-content-end">
-    <svelte:fragment slot="lead">
-        <a href="/">
-            <h3 class="font-bold h3 whitespace-nowrap">Svelte Advanced Datatable</h3>
-        </a>
-    </svelte:fragment>
-    <svelte:fragment slot="trail">
-        <a href="/docs/getting-started" class="whitespace-nowrap">Documentation</a>
-        <a href="/api-reference" class="whitespace-nowrap">API Reference</a>
-        <a href="https://github.com/Kage0x3B/svelte-advanced-datatable" rel="external" target="_blank">
-            <IconGithub />
-        </a>
-    </svelte:fragment>
+    {#snippet lead()}
+    
+            <a href="/">
+                <h3 class="font-bold h3 whitespace-nowrap">Svelte Advanced Datatable</h3>
+            </a>
+        
+    {/snippet}
+    {#snippet trail()}
+    
+            <a href="/docs/getting-started" class="whitespace-nowrap">Documentation</a>
+            <a href="/api-reference" class="whitespace-nowrap">API Reference</a>
+            <a href="https://github.com/Kage0x3B/svelte-advanced-datatable" rel="external" target="_blank">
+                <IconGithub />
+            </a>
+        
+    {/snippet}
 </AppBar>
 <!--
 <Navbar color="primary" dark expand="md">

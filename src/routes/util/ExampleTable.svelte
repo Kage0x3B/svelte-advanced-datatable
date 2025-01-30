@@ -1,6 +1,10 @@
 <script lang='ts'>
-	export let path: string;
-	export let description: string;
+	interface Props {
+		path: string;
+		description: string;
+	}
+
+	let { path, description }: Props = $props();
 </script>
 
 <div class='mt-4 mb-5'>

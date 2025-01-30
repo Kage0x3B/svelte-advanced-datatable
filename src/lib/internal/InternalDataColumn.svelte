@@ -13,10 +13,19 @@
     const config: FullDataTableConfig<unknown> = getContext(DATATABLE_CONFIG);
     const format: Readable<MessageFormatter> = getContext(DATATABLE_MESSAGE_FORMATTER);
 
-    export let IconComponent: Constructable<SvelteComponent>;
-    export let BadgeComponent: Constructable<SvelteComponent>;
-    export let item: Record<string, unknown>;
-    export let key: string;
+    interface Props {
+        IconComponent: Constructable<SvelteComponent>;
+        BadgeComponent: Constructable<SvelteComponent>;
+        item: Record<string, unknown>;
+        key: string;
+    }
+
+    let {
+        IconComponent,
+        BadgeComponent,
+        item,
+        key
+    }: Props = $props();
 
     const colProps = config.columnProperties[key] as unknown as ComponentTypeProperties;
 
@@ -27,7 +36,7 @@
 
 <!-- It's better for performance to generate some fields for easy types (string, int, enum, bool, ..) with a simple if -->
 {#if colProps.type === ComponentType.CUSTOM}
-    <svelte:component this={colProps.component} {key} {colProps} {item} value={item[key]} />
+    <colProps.component {key} {colProps} {item} value={item[key]} />
 {:else if colProps.type === ComponentType.STRING || colProps.type === ComponentType.NUMBER}
     {#if typeof item[key] !== 'undefined' && item[key] !== null && item[key] !== 'null'}
         {$format(`dataTable.${config.type}.${key}.format`, {
@@ -38,13 +47,12 @@
 {:else if colProps.type === ComponentType.BOOLEAN}
     <!-- Comparison with two equals intended!! -->
     {#if (!colProps.inverted && item[key] == colProps.truthy) || (colProps.inverted && item[key] != colProps.truthy)}
-        <svelte:component this={IconComponent} name="check" color="green" />
+        <IconComponent name="check" color="green" />
     {:else}
-        <svelte:component this={IconComponent} name="cross" color="red" />
+        <IconComponent name="cross" color="red" />
     {/if}
 {:else if colProps.type === ComponentType.ENUM}
-    <svelte:component
-        this={BadgeComponent}
+    <BadgeComponent
         color={colProps.values.includes(item[key])
             ? colProps.enumColorKey[item[key]] ?? colProps.enumColorKey.default
             : colProps.enumColorKey.unknown}
@@ -54,7 +62,7 @@
         {:else}
             {$format(`dataTable.${config.type}.${key}.enumValue.unknown`)}
         {/if}
-    </svelte:component>
+    </BadgeComponent>
 {:else if colProps.type === ComponentType.DATE}
     <span title={item[key] ?? undefined}>
         {#if isDateTime(item[key])}

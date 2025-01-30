@@ -1,11 +1,23 @@
 <script lang="ts">
+    import { run } from 'svelte/legacy';
+
     import { createEventDispatcher } from 'svelte';
 
     const dispatch = createEventDispatcher();
 
-    export let pageAmount: number;
-    export let maxDisplayedItems = 5;
-    export let currentPage = -1;
+    interface Props {
+        pageAmount: number;
+        maxDisplayedItems?: number;
+        currentPage?: any;
+        children?: import('svelte').Snippet<[any]>;
+    }
+
+    let {
+        pageAmount,
+        maxDisplayedItems = 5,
+        currentPage = $bindable(-1),
+        children
+    }: Props = $props();
 
     function navigate(page) {
         if (pageAmount <= 0 || currentPage < 0 || page === currentPage) {
@@ -24,8 +36,8 @@
         dispatch('navigate', { page });
     }
 
-    let pages;
-    $: {
+    let pages = $state();
+    run(() => {
         //TODO: Make better pagination which actually respects max items exactly
         if (pageAmount >= 0 && currentPage >= 0) {
             const newPages = [];
@@ -71,7 +83,7 @@
         } else {
             pages = ['...'];
         }
-    }
+    });
 
     function createClickHandler(page) {
         return function (event) {
@@ -82,4 +94,4 @@
     }
 </script>
 
-<slot {createClickHandler} {pages} />
+{@render children?.({ createClickHandler, pages, })}

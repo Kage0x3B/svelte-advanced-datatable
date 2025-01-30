@@ -3,8 +3,12 @@
     import { mapValue } from '$lib/util/generalUtil.js';
     import type { WrappedComponentColor, WrappedIconName } from '$lib/dataComponent/WrappedComponentProperty.js';
 
-    export let name: WrappedIconName;
-    export let color: WrappedComponentColor;
+    interface Props {
+        name: WrappedIconName;
+        color: WrappedComponentColor;
+    }
+
+    let { name, color }: Props = $props();
 </script>
 
 <div class="h4 absolute {mapValue(skeletonColorMap, color)}">

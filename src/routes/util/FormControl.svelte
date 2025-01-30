@@ -1,24 +1,36 @@
 <script lang="ts">
     import { classnames } from '$lib/component/util/util.js';
 
-    export let label = '';
-    let forId: string | undefined = undefined;
-    export { forId as for };
+    
 
-    let className = '';
-    export { className as class };
+    interface Props {
+        label?: string;
+        for?: string | undefined;
+        class?: string;
+        children?: import('svelte').Snippet;
+        [key: string]: any
+    }
 
-    $: labelClasses = classnames('label', className, {
+    let {
+        label = '',
+        for: forId = undefined,
+        class: className = '',
+        children,
+        ...rest
+    }: Props = $props();
+    
+
+    let labelClasses = $derived(classnames('label', className, {
         'cursor-pointer': !!forId
-    });
+    }));
 </script>
 
 {#if label}
-    <label class={labelClasses} for={forId} {...$$restProps}>
+    <label class={labelClasses} for={forId} {...rest}>
         <span>{label}</span>
 
-        <slot />
+        {@render children?.()}
     </label>
 {:else}
-    <slot />
+    {@render children?.()}
 {/if}

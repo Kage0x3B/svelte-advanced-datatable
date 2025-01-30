@@ -1,4 +1,4 @@
-<script context="module" lang="ts">
+<script module lang="ts">
     import GithubSlugger from 'github-slugger';
     import MarkdownH1 from './components/heading/MarkdownH1.svelte';
     import MarkdownH2 from './components/heading/MarkdownH2.svelte';
@@ -33,14 +33,14 @@
 </script>
 
 <script lang="ts">
-    import { page } from '$app/stores';
+    import { page } from '$app/state';
     import { AppShell } from '@skeletonlabs/skeleton';
     import { onDestroy } from 'svelte';
     import Footer from '../Footer.svelte';
     import MainNavbar from '../MainNavbar.svelte';
     import ApiReferenceBreadcrumbs from './components/ApiReferenceBreadcrumbs.svelte';
 
-    export let title = undefined;
+    let { title = undefined, children } = $props();
 
     onDestroy(() => slugger.reset());
 </script>
@@ -50,22 +50,26 @@
 </svelte:head>
 
 <AppShell>
-    <svelte:fragment slot="header">
-        <MainNavbar />
-    </svelte:fragment>
+    {#snippet header()}
+    
+            <MainNavbar />
+        
+    {/snippet}
     <div class="container xl:max-w-[80vw] mx-auto my-8">
         <ApiReferenceBreadcrumbs
-            currentPath={$page.url.pathname}
+            currentPath={page.url.pathname}
             indexName="Svelte Advanced Datatable"
             baseUrl="/api-reference"
         />
         <div
             class="mt-4 prose lg:prose-lg dark:prose-invert prose-headings:font-normal prose-a:text-primary-500 prose-a:no-underline prose-ul:border prose-ul:rounded prose-ul:p-0 prose-li:border-b prose-li:list-none prose-li:m-0 prose-li:px-4 prose-li:py-2 prose-code:text-error-400 before:prose-code:hidden after:prose-code:hidden"
         >
-            <slot />
+            {@render children?.()}
         </div>
     </div>
-    <svelte:fragment slot="footer">
-        <Footer />
-    </svelte:fragment>
+    {#snippet footer()}
+    
+            <Footer />
+        
+    {/snippet}
 </AppShell>

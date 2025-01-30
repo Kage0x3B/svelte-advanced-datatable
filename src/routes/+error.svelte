@@ -3,21 +3,28 @@
     import '../css/app.pcss';
     import { AppShell } from '@skeletonlabs/skeleton';
     import MainNavbar from './util/MainNavbar.svelte';
+    interface Props {
+        children?: import('svelte').Snippet;
+    }
 
-    $: message =
-        $page.status === 404
+    let { children }: Props = $props();
+
+    let message =
+        $derived($page.status === 404
             ? "We couldn't find the page you were looking for!"
-            : $page.error?.message ?? 'An error occurred';
+            : $page.error?.message ?? 'An error occurred');
 </script>
 
 <AppShell slotPageContent="p-4">
-    <svelte:fragment slot="header">
-        <MainNavbar />
-    </svelte:fragment>
-    <slot />
+    {#snippet header()}
+    
+            <MainNavbar />
+        
+    {/snippet}
+    {@render children?.()}
 </AppShell>
 
-<slot />
+{@render children?.()}
 
 <div class="flex flex-col justify-center items-center min-h-[60vh]">
     <h1 class="mb-5 text-primary-500">

@@ -1,4 +1,4 @@
-<script context="module" lang="ts">
+<script module lang="ts">
     import MarkdownH1 from './components/heading/MarkdownH1.svelte';
     import MarkdownH2 from './components/heading/MarkdownH2.svelte';
     import MarkdownH3 from './components/heading/MarkdownH3.svelte';
@@ -36,7 +36,7 @@
     import { slugger } from './api-reference-layout.svelte';
     import DocsSidebar from './components/docs/DocsSidebar.svelte';
 
-    export let title = undefined;
+    let { title = undefined, children } = $props();
 
     onDestroy(() => slugger.reset());
 </script>
@@ -46,18 +46,24 @@
 </svelte:head>
 
 <AppShell slotPageContent="p-4" slotSidebarLeft="w-full md:w-1/4 lg:w-1/5 xl:w-1/6 pl-4">
-    <svelte:fragment slot="header">
-        <MainNavbar />
-    </svelte:fragment>
-    <svelte:fragment slot="sidebarLeft">
-        <DocsSidebar />
-    </svelte:fragment>
+    {#snippet header()}
+    
+            <MainNavbar />
+        
+    {/snippet}
+    {#snippet sidebarLeft()}
+    
+            <DocsSidebar />
+        
+    {/snippet}
     <div
         class="prose container xl:max-w-[80%] mx-auto lg:prose-lg dark:prose-invert prose-headings:font-normal prose-a:text-primary-500 prose-a:no-underline"
     >
-        <slot />
+        {@render children?.()}
     </div>
-    <svelte:fragment slot="pageFooter">
-        <Footer />
-    </svelte:fragment>
+    {#snippet pageFooter()}
+    
+            <Footer />
+        
+    {/snippet}
 </AppShell>

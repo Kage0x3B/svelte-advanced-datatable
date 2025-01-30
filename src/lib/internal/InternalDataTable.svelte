@@ -1,4 +1,6 @@
 <script lang="ts">
+    import { run } from 'svelte/legacy';
+
     import type { QueryObserver } from '$lib/dataSource/QueryObserver.js';
     import type { ParsedSearchQuery } from '$lib/searchParser';
     import type { ForcedSearchQuery } from '$lib/searchParser/ForcedSearchQuery.js';
@@ -15,30 +17,33 @@
     const config: FullDataTableConfig<unknown> = getContext(DATATABLE_CONFIG);
     const forcedSearchQuery = config.forcedSearchQuery;
 
-    export let currentPage: number;
-    export let searchInput: string;
-    export let searchQuery: ParsedSearchQuery | undefined;
+    interface Props {
+        currentPage: number;
+        searchInput: string;
+        searchQuery: ParsedSearchQuery | undefined;
+        children?: import('svelte').Snippet<[any]>;
+    }
+
+    let {
+        currentPage,
+        searchInput,
+        searchQuery,
+        children
+    }: Props = $props();
 
     let isInitialized = false;
-    let itemAmount = -1;
-    let pageAmount;
-    let items = [];
-    let currentOpenIndex;
+    let itemAmount = $state(-1);
+    let pageAmount = $derived(Math.ceil(Math.max(1, itemAmount / config.itemsPerPage)));
+    let items = $state([]);
+    let currentOpenIndex = $state();
 
-    let sortColumnKey: string = config.defaultSort.columnKey;
-    let sortDirection: SortDirection = config.defaultSort.direction ?? false;
+    let sortColumnKey: string = $state(config.defaultSort.columnKey);
+    let sortDirection: SortDirection = $state(config.defaultSort.direction ?? false);
 
     const dataSource = wrapPossibleStore(config.dataSource);
     const highlightedItemId = wrapPossibleStore(config.highlightedItemId);
-    let dataQueryObserver: Readable<QueryObserver<unknown>>;
-    $: if ($dataSource) {
-        $dataSource.init && $dataSource.init(config);
-        dataQueryObserver = $dataSource.getQueryObserver();
-    }
+    let dataQueryObserver: Readable<QueryObserver<unknown>> = $state();
 
-    $: refresh(currentPage, config.itemsPerPage, sortColumnKey, sortDirection, $forcedSearchQuery, searchQuery);
-    $: $dataQueryObserver.isSuccess && updateData($dataQueryObserver.data);
-    $: pageAmount = Math.ceil(Math.max(1, itemAmount / config.itemsPerPage));
 
     function updateData(data: PaginatedListResponse<unknown>) {
         if (!data || !data.items) {
@@ -121,18 +126,19 @@
 
         isInitialized = true;
     });
+    run(() => {
+        if ($dataSource) {
+            $dataSource.init && $dataSource.init(config);
+            dataQueryObserver = $dataSource.getQueryObserver();
+        }
+    });
+    run(() => {
+        refresh(currentPage, config.itemsPerPage, sortColumnKey, sortDirection, $forcedSearchQuery, searchQuery);
+    });
+    run(() => {
+        $dataQueryObserver.isSuccess && updateData($dataQueryObserver.data);
+    });
+    
 </script>
 
-<slot
-    queryObserver={$dataQueryObserver}
-    columnProperties={internalColumnProperties}
-    {itemAmount}
-    {pageAmount}
-    {items}
-    {sortDirection}
-    {toggleSorting}
-    {sortColumnKey}
-    {open}
-    {currentOpenIndex}
-    highlightedItemId={$highlightedItemId}
-/>
+{@render children?.({ queryObserver: $dataQueryObserver, columnProperties: internalColumnProperties, itemAmount, pageAmount, items, sortDirection, toggleSorting, sortColumnKey, open, currentOpenIndex, highlightedItemId: $highlightedItemId, })}

@@ -1,33 +1,44 @@
 <script lang="ts">
-    import { page } from '$app/stores';
+    import { page } from '$app/state';
 
     const docsBaseUrl = '/docs/';
 
-    export let href: string | undefined = undefined;
-    export let heading = false;
 
-    export let matchActiveRegex: RegExp | undefined = undefined;
-    export let matchActiveExact = href === '/';
+    interface Props {
+        href?: string | undefined;
+        heading?: boolean;
+        matchActiveRegex?: RegExp | undefined;
+        matchActiveExact?: any;
+        children?: import('svelte').Snippet;
+    }
 
-    $: fullHref = docsBaseUrl + href?.toLowerCase();
-    $: currentPath = $page.url.pathname.toLowerCase();
-    $: active =
-        !!href &&
+    let {
+        href = undefined,
+        heading = false,
+        matchActiveRegex = undefined,
+        matchActiveExact = href === '/',
+        children
+    }: Props = $props();
+
+    let fullHref = $derived(docsBaseUrl + href?.toLowerCase());
+    let currentPath = $derived(page.url.pathname.toLowerCase());
+    let active =
+        $derived(!!href &&
         (matchActiveRegex
             ? matchActiveRegex!.test(currentPath)
             : matchActiveExact
             ? currentPath === fullHref
-            : currentPath.startsWith(fullHref));
+            : currentPath.startsWith(fullHref)));
 </script>
 
 {#if href}
     <li>
         <a href={fullHref} class={active ? '!bg-primary-400 !text-black' : ''}>
-            <slot />
+            {@render children?.()}
         </a>
     </li>
 {:else if heading}
     <h5 class="font-bold px-4 text-2xl">
-        <slot />
+        {@render children?.()}
     </h5>
 {/if}

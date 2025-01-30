@@ -1,17 +1,20 @@
 <script lang="ts">
     import { apiReferenceCategories } from '../../apiReferenceMeta.js';
 
-    export let currentPath: string;
-    export let baseUrl = '/';
-    export let indexName = 'Home';
+    interface Props {
+        currentPath: string;
+        baseUrl?: string;
+        indexName?: string;
+    }
+
+    let { currentPath, baseUrl = '/', indexName = 'Home' }: Props = $props();
 
     type BreadcrumbData = {
         title: string;
         url: string;
     };
 
-    let breadcrumbs: BreadcrumbData[];
-    $: breadcrumbs = buildBreadcrumbs(currentPath);
+    let breadcrumbs: BreadcrumbData[] = $derived(buildBreadcrumbs(currentPath));
 
     function buildBreadcrumbs(currentPath: string): BreadcrumbData[] {
         currentPath = currentPath.startsWith(baseUrl) ? currentPath.substring(baseUrl.length) : currentPath;
@@ -55,6 +58,7 @@
 
         return value.substring(0, 1).toUpperCase() + value.substring(1);
     }
+    
 </script>
 
 <div class="">

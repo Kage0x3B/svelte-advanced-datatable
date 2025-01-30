@@ -8,9 +8,13 @@
 
     const format: Readable<MessageFormatter> = getContext(DATATABLE_MESSAGE_FORMATTER);
 
-    export let searchInput = '';
-    export let searchQuery: ParsedSearchQuery | undefined = undefined;
-    let inputElement: HTMLInputElement;
+    interface Props {
+        searchInput?: string;
+        searchQuery?: ParsedSearchQuery | undefined;
+    }
+
+    let { searchInput = $bindable(''), searchQuery = $bindable(undefined) }: Props = $props();
+    let inputElement: HTMLInputElement = $state();
 </script>
 
 <InternalSearchField {inputElement} bind:searchQuery {searchInput}>

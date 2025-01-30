@@ -3,7 +3,12 @@
     import { mapValue } from '$lib/util/generalUtil.js';
     import type { WrappedComponentColor } from '$lib/dataComponent/WrappedComponentProperty.js';
 
-    export let color: WrappedComponentColor;
+    interface Props {
+        color: WrappedComponentColor;
+        children?: import('svelte').Snippet;
+    }
+
+    let { color, children }: Props = $props();
 </script>
 
-<span class="badge-icon variant-filled-{mapValue(skeletonColorMap, color, true)}"><slot /></span>
+<span class="badge-icon variant-filled-{mapValue(skeletonColorMap, color, true)}">{@render children?.()}</span>

@@ -6,21 +6,33 @@
 
 	const config: FullDataTableConfig<unknown> = getContext(DATATABLE_CONFIG);
 
-	export let index: number;
-	export let openIndex: number;
 
-	export let onClick: (<T>(item: T) => MaybePromise<void>) | undefined;
-	export let item: unknown;
-	export let open: (index: number) => void;
 
 	const isExpandable = !!config.modalComponent;
 
-	let isOpen: boolean;
-	$: isOpen = isExpandable && index === openIndex;
+	let isOpen: boolean = $derived(isExpandable && index === openIndex);
 
-	export let toggle: () => void = () => {
+	interface Props {
+		index: number;
+		openIndex: number;
+		onClick: (<T>(item: T) => MaybePromise<void>) | undefined;
+		item: unknown;
+		open: (index: number) => void;
+		toggle?: () => void;
+		children?: import('svelte').Snippet<[any]>;
+	}
+
+	let {
+		index,
+		openIndex,
+		onClick,
+		item,
+		open,
+		toggle = () => {
 		isExpandable && item && open(isOpen ? -1 : index);
-	};
+	},
+		children
+	}: Props = $props();
 
 	async function rowOnClick() {
 		if (onClick) {
@@ -29,6 +41,7 @@
 			toggle();
 		}
 	}
+	
 </script>
 
-<slot {isOpen} {rowOnClick} {toggle} />
+{@render children?.({ isOpen, rowOnClick, toggle, })}
