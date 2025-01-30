@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { Alert, Col, Row } from 'skeleton';
+    import { Alert, Col, Row } from '@skeletonlabs/skeleton';
     import type { UserData } from '../../util/UserData.js';
 
     export let item: UserData;

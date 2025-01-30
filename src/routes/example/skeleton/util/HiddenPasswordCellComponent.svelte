@@ -1,5 +1,6 @@
 <script lang="ts">
-    import { Button, Icon } from 'skeleton';
+    import SkeletonIconWrapper from '$lib/skeleton/SkeletonIconWrapper.svelte';
+    import Button from '../../../util/Button.svelte';
 
     export let value: string;
 
@@ -19,7 +20,7 @@
 
 {#if isHidden}
     <Button color="danger" size="sm" on:click={toggle}>
-        <Icon name="eye-slash-fill" />
+        <SkeletonIconWrapper name="eye-slash-fill" />
     </Button>
 {:else}
     <code class="bg-light p-1 rounded-2" on:click={toggle}>{value}</code>
