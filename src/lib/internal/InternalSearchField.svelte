@@ -1,8 +1,7 @@
 <script lang="ts">
-    import { getContext, type Snippet } from 'svelte';
+    import { getConfigContext } from '$lib/util/context.js';
+    import type { Snippet } from 'svelte';
     import type { ParsedSearchQuery } from '$lib/searchParser/index.js';
-    import type { FullDataTableConfig } from '$lib/types/DataTableConfig.js';
-    import { DATATABLE_CONFIG } from '$lib/util/ContextKey.js';
     import { debounce } from '$lib/util/generalUtil.js';
 
     interface Props {
@@ -14,7 +13,7 @@
 
     let { searchInput = $bindable(''), searchQuery = $bindable(undefined), inputElement, children }: Props = $props();
 
-    const config: FullDataTableConfig<unknown> = getContext(DATATABLE_CONFIG);
+    let config = getConfigContext()();
 
     $effect(() => {
         updateSearch(searchInput);

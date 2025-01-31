@@ -1,6 +1,7 @@
-import { WrappedComponentColor, type WrappedIconName } from '$lib/dataComponent/WrappedComponentProperty.js';
+import type { DataTableIcon } from '$lib/daisyUi/daisyUiWrappedComponentPropertyMap.js';
+import { WrappedComponentColor } from '$lib/dataComponent/WrappedComponentProperty.js';
 
 export interface IconComponentProps {
-    name: WrappedIconName | `${WrappedIconName}`;
-    color: WrappedComponentColor | `${WrappedComponentColor}`;
+    name: DataTableIcon;
+    color?: WrappedComponentColor | `${WrappedComponentColor}`;
 }

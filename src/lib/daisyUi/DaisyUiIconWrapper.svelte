@@ -1,11 +1,13 @@
 <script lang="ts">
+    import { getIconMapContext } from '$lib/daisyUi/daisyUiContext.js';
+    import { defaultDaisyUiIconMap } from '$lib/daisyUi/daisyUiWrappedComponentPropertyMap.js';
     import type { IconComponentProps } from '$lib/types/IconComponentProps.js';
-    import CheckIcon from '$lib/daisyUi/icons/CheckIcon.svelte';
-    import XIcon from '$lib/daisyUi/icons/XIcon.svelte';
+
+    const iconMap = getIconMapContext();
 
     let { name, color }: IconComponentProps = $props();
 
-    let IconComponent = $derived(name === 'check' ? CheckIcon : XIcon);
+    let IconComponent = $derived(iconMap[name] ?? defaultDaisyUiIconMap[name]);
 </script>
 
 <IconComponent

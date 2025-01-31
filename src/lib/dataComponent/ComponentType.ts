@@ -77,8 +77,7 @@ export type ComponentTypeConfig<T, TP extends GenericComponentTypeProperties<T>>
     forcedTypeProperties?: Partial<TP>;
 };
 
-// eslint-disable-next-line @typescript-eslint/ban-types
-export type TableColumnConfig<Data> = Record<keyof Data | (string & {}), ComponentTypeProperties>;
+export type TableColumnConfig<Data> = Partial<Record<keyof Data | string, ComponentTypeProperties>>;
 
 /**
  * Config for all inbuilt component types, containing the default value the type has, as well as default and forced type properties

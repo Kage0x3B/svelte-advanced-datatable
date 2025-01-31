@@ -4,11 +4,13 @@
     interface Props {
         pageAmount: number;
         maxDisplayedItems?: number;
-        currentPage?: any;
-        children: Snippet<[{ createClickHandler: (page: number) => (event: MouseEvent) => void; pages: number[] }]>;
+        currentPage: number;
+        children: Snippet<
+            [{ createClickHandler: (page: number | 'prev' | 'next') => (event: MouseEvent) => void; pages: number[] }]
+        >;
     }
 
-    let { pageAmount, maxDisplayedItems = 5, currentPage = $bindable(-1), children }: Props = $props();
+    let { pageAmount, maxDisplayedItems = 5, currentPage = $bindable(), children }: Props = $props();
 
     function navigate(page: number | 'prev' | 'next') {
         if (pageAmount <= 0 || currentPage < 0 || page === currentPage) {
@@ -77,7 +79,7 @@
         }
     }
 
-    function createClickHandler(page: number) {
+    function createClickHandler(page: number | 'prev' | 'next') {
         return (event: MouseEvent) => {
             event.preventDefault();
 

@@ -1,6 +1,6 @@
-export { SvelteQueryDataSource } from './SvelteQueryDataSource.js';
+export { SvelteQueryDataSource } from './SvelteQueryDataSourceOld.svelte.js';
 export type {
-	DataTableQueryKey,
-	DataTableUseQueryOptions,
-	DataTableUseQueryStoreResult
-} from './SvelteQueryDataSource.js';
+    DataTableQueryKey,
+    DataTableUseQueryOptions,
+    DataTableUseQueryStoreResult
+} from './SvelteQueryDataSourceOld.svelte.js';

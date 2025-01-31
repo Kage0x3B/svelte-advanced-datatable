@@ -8,7 +8,7 @@
     ],
     "out": "./src/routes/(docs)/(api-reference)/api-reference",
     "json": "./src/routes/(docs)/(api-reference)/api-reference/api-reference-meta.json",
-    "name": "Svelte Advanced Datatable",
+    "name": "Svelte Advanced DataTable",
     "excludePrivate": true,
     "excludeProtected": true,
     "excludeInternal": true,

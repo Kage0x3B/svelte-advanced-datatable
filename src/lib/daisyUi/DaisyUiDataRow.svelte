@@ -1,18 +1,15 @@
 <script lang="ts">
-    import InternalDataColumn from '$lib/internal/InternalDataColumn.svelte';
-    import type { FullDataTableConfig } from '$lib/types/DataTableConfig.js';
-    import Datatable from '$lib/internal/index.js';
-    import { DATATABLE_CONFIG } from '$lib/util/ContextKey.js';
-    import { getContext } from 'svelte';
+    import DataTable from '$lib/internal/index.js';
+    import { getConfigContext } from '$lib/util/context.js';
     import { slide } from 'svelte/transition';
     import DaisyUiBadgeWrapper from '$lib/daisyUi/DaisyUiBadgeWrapper.svelte';
     import DaisyUiIconWrapper from '$lib/daisyUi/DaisyUiIconWrapper.svelte';
 
-    const config: FullDataTableConfig<unknown> = getContext(DATATABLE_CONFIG);
+    const config = getConfigContext()();
 
     interface Props {
         index: number;
-        openIndex: number;
+        openIndex: number | undefined;
         highlighted: boolean;
         onClick: (<T>(item: T) => void | Promise<void>) | undefined;
         item: Record<string, unknown>;
@@ -22,7 +19,7 @@
     let { index, openIndex, highlighted, onClick, item, open }: Props = $props();
 </script>
 
-<Datatable.Row {index} {openIndex} {onClick} {item} {open}>
+<DataTable.Row {index} {openIndex} {onClick} {item} {open}>
     {#snippet children({ isOpen, rowOnClick, toggle })}
         {#if isOpen}
             <tr class="margin-row top">
@@ -32,9 +29,9 @@
         <tr class="datatable-row" class:expanded={isOpen} class:highlighted onclick={rowOnClick}>
             {#if item}
                 {#each Object.entries(config.columnProperties) as [key, colProp]}
-                    {#if !colProp.hidden}
+                    {#if !colProp?.hidden}
                         <td>
-                            <InternalDataColumn
+                            <DataTable.Column
                                 IconComponent={DaisyUiIconWrapper}
                                 BadgeComponent={DaisyUiBadgeWrapper}
                                 {item}
@@ -60,7 +57,7 @@
             </tr>
         {/if}
     {/snippet}
-</Datatable.Row>
+</DataTable.Row>
 
 <style>
     .datatable-row {

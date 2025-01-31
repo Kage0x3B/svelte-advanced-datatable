@@ -1,34 +1,24 @@
 <script lang="ts">
-    import { page } from '$app/stores';
-    import '../css/app.pcss';
-    import { AppShell } from '@skeletonlabs/skeleton';
-    import MainNavbar from './util/MainNavbar.svelte';
-    interface Props {
-        children?: import('svelte').Snippet;
-    }
+    import { page } from '$app/state';
+    import '../css/app.css';
 
-    let { children }: Props = $props();
-
-    let message =
-        $derived($page.status === 404
+    let message = $derived(
+        page.status === 404
             ? "We couldn't find the page you were looking for!"
-            : $page.error?.message ?? 'An error occurred');
+            : (page.error?.message ?? 'An error occurred')
+    );
 </script>
 
-<AppShell slotPageContent="p-4">
+<!--<AppShell slotPageContent="p-4">
     {#snippet header()}
-    
-            <MainNavbar />
-        
+        <MainNavbar />
     {/snippet}
     {@render children?.()}
-</AppShell>
-
-{@render children?.()}
+</AppShell>-->
 
 <div class="flex flex-col justify-center items-center min-h-[60vh]">
     <h1 class="mb-5 text-primary-500">
-        {$page.status}
+        {page.status}
     </h1>
     <h2 class="text-surface-500">{message}</h2>
     <h3>

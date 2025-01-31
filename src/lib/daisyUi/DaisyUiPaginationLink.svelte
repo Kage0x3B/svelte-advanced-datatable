@@ -1,16 +1,10 @@
 <script lang="ts">
-    import { run, createBubbler } from 'svelte/legacy';
+    import { getMessageFormatterContext } from '$lib/util/context.js';
+    import { preventEvent } from '$lib/util/generalUtil.js';
+    import type { Snippet } from 'svelte';
 
-    const bubble = createBubbler();
-    import { getContext } from 'svelte';
-    import type { Readable } from 'svelte/store';
-    import type { MessageFormatter } from 'svelte-advanced-datatable';
-    import { DATATABLE_MESSAGE_FORMATTER } from 'svelte-advanced-datatable';
-    import { preventEvent } from '$lib/util.js';
+    let format = getMessageFormatterContext()();
 
-    const format: Readable<MessageFormatter> = getContext(DATATABLE_MESSAGE_FORMATTER);
-
-    
     interface Props {
         class?: string;
         next?: boolean;
@@ -18,8 +12,7 @@
         first?: boolean;
         last?: boolean;
         href?: string;
-        children?: import('svelte').Snippet;
-        [key: string]: any
+        children?: Snippet;
     }
 
     let {
@@ -33,35 +26,34 @@
         ...rest
     }: Props = $props();
 
-    let classes = $derived(`${className} page-link`);
-
-    let type: 'previous' | 'next' | 'first' | 'last' = $state();
-    let caretCharacter: string = $state();
-
-    run(() => {
+    let type: 'previous' | 'next' | 'first' | 'last' = $derived.by(() => {
         if (previous) {
-            type = 'previous';
-            caretCharacter = '\u2039';
+            return 'previous';
         } else if (next) {
-            type = 'next';
-            caretCharacter = '\u203A';
+            return 'next';
         } else if (first) {
-            type = 'first';
-            caretCharacter = '\u00ab';
-        } else if (last) {
-            type = 'last';
-            caretCharacter = '\u00bb';
+            return 'first';
+        } else {
+            return 'last';
         }
     });
+    let caretCharacter = $derived(
+        {
+            previous: '\u2039',
+            next: '\u203A',
+            first: '\u00ab',
+            last: '\u00bb'
+        }[type]
+    );
 </script>
 
-<a {...rest} class={classes} {href} onclick={bubble('click')} ondragstart={preventEvent}>
+<a {...rest} class={['page-link', className]} {href} ondragstart={preventEvent}>
     {#if previous || first}
-        <span aria-hidden="true">{#if children}{@render children()}{:else}{caretCharacter}{/if}</span><span class="d-none d-xl-inline sr-only"
-            >&nbsp;{$format(`pagination.${type}`)}</span
-        >
+        <span aria-hidden="true"
+            >{#if children}{@render children()}{:else}{caretCharacter}{/if}</span
+        ><span class="d-none d-xl-inline sr-only">&nbsp;{format(`pagination.${type}`)}</span>
     {:else if next || last}
-        <span class="d-none d-xl-inline sr-only">{$format(`pagination.${type}`)}&nbsp;</span><span aria-hidden="true"
+        <span class="d-none d-xl-inline sr-only">{format(`pagination.${type}`)}&nbsp;</span><span aria-hidden="true"
             >{#if children}{@render children()}{:else}{caretCharacter}{/if}</span
         >
     {:else}

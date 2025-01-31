@@ -8,7 +8,7 @@ export interface UserData {
     lastName: string;
     mailAddress: string;
     /**
-     * This is only example data for showcasing the datatables.
+     * This is only example data for showcasing the dataTables.
      * --> Never store passwords in plaintext anywhere!
      */
     password: string;
@@ -24,7 +24,7 @@ export const exampleUserList = createExampleData<UserData>(() => {
 
     return {
         id: idCounter++,
-        userName: faker.internet.userName({ firstName, lastName }),
+        userName: faker.internet.username({ firstName, lastName }),
         firstName,
         lastName,
         mailAddress: faker.internet.email({ firstName, lastName }),

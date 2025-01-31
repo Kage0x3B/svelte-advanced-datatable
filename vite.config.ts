@@ -1,21 +1,18 @@
 import { sveltekit } from '@sveltejs/kit/vite';
-import type { Plugin, UserConfig } from 'vite';
+import tailwindcss from '@tailwindcss/vite';
+import type { UserConfig } from 'vite';
 import Icons from 'unplugin-icons/vite';
 
 const config: UserConfig = {
     plugins: [
         sveltekit(),
-        ,
+        tailwindcss(),
         Icons({
             compiler: 'svelte'
-        }),
-        viteIgnoreStaticImport(['broadcast-channel'])
+        })
     ],
     optimizeDeps: {
-        include: ['highlight.js', 'highlight.js/lib/core'],
-        esbuildOptions: {
-            platform: 'node'
-        }
+        include: ['highlight.js', 'highlight.js/lib/core']
     },
     server: {
         host: true,
@@ -28,7 +25,7 @@ const config: UserConfig = {
         strictPort: true
     }
 };
-
+/*
 function viteIgnoreStaticImport(importKeys: string[]): Plugin {
     return {
         name: 'vite-plugin-ignore-static-import',
@@ -57,6 +54,6 @@ function viteIgnoreStaticImport(importKeys: string[]): Plugin {
             }
         }
     };
-}
+}*/
 
 export default config;

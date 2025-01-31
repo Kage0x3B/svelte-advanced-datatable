@@ -37,7 +37,7 @@
     import { AppShell } from '@skeletonlabs/skeleton';
     import { onDestroy } from 'svelte';
     import Footer from '../Footer.svelte';
-    import MainNavbar from '../MainNavbar.svelte';
+    import MainLayout from '../MainLayout.svelte';
     import ApiReferenceBreadcrumbs from './components/ApiReferenceBreadcrumbs.svelte';
 
     let { title = undefined, children } = $props();
@@ -46,19 +46,17 @@
 </script>
 
 <svelte:head>
-    <title>{title ?? 'Api Reference'} - Svelte Advanced Datatable</title>
+    <title>{title ?? 'Api Reference'} - Svelte Advanced DataTable</title>
 </svelte:head>
 
 <AppShell>
     {#snippet header()}
-    
-            <MainNavbar />
-        
+        <MainLayout />
     {/snippet}
     <div class="container xl:max-w-[80vw] mx-auto my-8">
         <ApiReferenceBreadcrumbs
             currentPath={page.url.pathname}
-            indexName="Svelte Advanced Datatable"
+            indexName="Svelte Advanced DataTable"
             baseUrl="/api-reference"
         />
         <div
@@ -68,8 +66,6 @@
         </div>
     </div>
     {#snippet footer()}
-    
-            <Footer />
-        
+        <Footer />
     {/snippet}
 </AppShell>

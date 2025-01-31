@@ -15,55 +15,51 @@
         "test:unit": "vitest"
     },
     "devDependencies": {
-        "@faker-js/faker": "^8.0.2",
-        "@iconify-json/fa6-brands": "^1.1.13",
-        "@iconify-json/mdi": "^1.1.54",
-        "@playwright/test": "^1.37.1",
-        "@skeletonlabs/skeleton": "1.12.0",
-        "@skeletonlabs/tw-plugin": "0.0.0",
-        "@sveltejs/adapter-auto": "^3.0.0",
-        "@sveltejs/adapter-static": "^3.0.0",
-        "@sveltejs/kit": "^2.12.0",
-        "@sveltejs/package": "^2.3.7",
-        "@sveltejs/vite-plugin-svelte": "^4.0.0",
-        "@tailwindcss/forms": "^0.5.4",
-        "@tailwindcss/typography": "^0.5.9",
-        "@tanstack/svelte-query": "^4.33.0",
+        "@faker-js/faker": "^9.4.0",
+        "@iconify-json/fa6-brands": "^1.2.5",
+        "@iconify-json/mdi": "^1.2.3",
+        "@playwright/test": "^1.50.0",
+        "@sveltejs/adapter-static": "^3.0.8",
+        "@sveltejs/kit": "2.16.0",
+        "@sveltejs/package": "^2.3.9",
+        "@sveltejs/vite-plugin-svelte": "^5.0.3",
+        "@tailwindcss/forms": "^0.5.10",
+        "@tailwindcss/typography": "^0.5.16",
+        "@tailwindcss/vite": "^4.0.1",
+        "@tanstack/svelte-query": "^5.66.0",
         "@types/luxon": "^3.4.2",
-        "@types/marked": "^5.0.1",
-        "@types/node": "^20.5.1",
-        "@typescript-eslint/eslint-plugin": "^6.4.0",
-        "@typescript-eslint/parser": "^6.4.0",
-        "autoprefixer": "^10.4.15",
-        "eslint": "^8.47.0",
-        "eslint-config-prettier": "^9.0.0",
-        "eslint-plugin-svelte": "^2.45.1",
+        "@types/node": "^22.12.0",
+        "@typescript-eslint/eslint-plugin": "^8.22.0",
+        "@typescript-eslint/parser": "^8.22.0",
+        "autoprefixer": "^10.4.20",
+        "clsx": "^2.1.1",
+        "daisyui": "5.0.0-beta.6",
+        "eslint": "^9.19.0",
+        "eslint-config-prettier": "^10.0.1",
+        "eslint-plugin-svelte": "^2.46.1",
         "github-slugger": "^2.0.0",
-        "highlight.js": "^11.8.0",
+        "highlight.js": "^11.11.1",
         "luxon": "^3.5.0",
-        "marked": "^7.0.3",
-        "mdsvex": "^0.11.0",
-        "postcss": "^8.4.28",
-        "postcss-import": "^15.1.0",
-        "postcss-load-config": "^4.0.1",
-        "prettier": "^3.1.0",
-        "prettier-plugin-svelte": "^3.2.6",
-        "sass": "^1.66.1",
-        "svelte": "^5.0.0",
-        "svelte-check": "^4.0.0",
-        "svelte-highlight": "^7.3.0",
-        "svelte-i18n": "^3.7.0",
-        "svelte-preprocess": "^6.0.0",
-        "tailwindcss": "^3.3.3",
-        "tslib": "^2.6.2",
-        "typedoc": "^0.24.8",
-        "typedoc-plugin-markdown": "^3.15.4",
-        "typedoc-plugin-mdn-links": "^3.0.3",
-        "typescript": "^5.5.0",
+        "marked": "^15.0.6",
+        "mdsvex": "^0.12.3",
+        "prettier": "^3.4.2",
+        "prettier-plugin-svelte": "^3.3.3",
+        "sass": "^1.83.4",
+        "svelte": "^5.19.6",
+        "svelte-check": "^4.1.4",
+        "svelte-highlight": "^7.8.2",
+        "svelte-i18n": "^4.0.1",
+        "svelte-preprocess": "^6.0.3",
+        "tailwindcss": "^4.0.1",
+        "tslib": "^2.8.1",
+        "typedoc": "^0.27.6",
+        "typedoc-plugin-markdown": "^4.4.1",
+        "typedoc-plugin-mdn-links": "^4.0.10",
+        "typescript": "^5.7.3",
         "unist-builder": "^4.0.0",
-        "unplugin-icons": "^0.16.5",
-        "vite": "^5.4.4",
-        "vitest": "^1.0.0"
+        "unplugin-icons": "^22.0.0",
+        "vite": "6.0.0",
+        "vitest": "^3.0.4"
     },
     "type": "module",
     "peerDependencies": {
@@ -86,9 +82,9 @@
             "optional": true
         }
     },
-    "homepage": "https://svelte-advanced-datatable.pages.dev",
+    "homepage": "https://svelte-advanced-dataTable.pages.dev",
     "bugs": {
-        "url": "https://github.com/Kage0x3B/svelte-advanced-datatable/issues",
+        "url": "https://github.com/Kage0x3B/svelte-advanced-dataTable/issues",
         "email": "moritz.hein@live.de"
     },
     "author": {
@@ -178,112 +174,15 @@
             "svelte": "./dist/index.js",
             "default": "./dist/index.js"
         },
-        "./internal/InternalDataColumn.svelte": {
-            "types": "./dist/internal/InternalDataColumn.svelte.d.ts",
-            "svelte": "./dist/internal/InternalDataColumn.svelte",
-            "default": "./dist/internal/InternalDataColumn.svelte"
-        },
-        "./internal/InternalDataRow.svelte": {
-            "types": "./dist/internal/InternalDataRow.svelte.d.ts",
-            "svelte": "./dist/internal/InternalDataRow.svelte",
-            "default": "./dist/internal/InternalDataRow.svelte"
-        },
-        "./internal/InternalDataTable.svelte": {
-            "types": "./dist/internal/InternalDataTable.svelte.d.ts",
-            "svelte": "./dist/internal/InternalDataTable.svelte",
-            "default": "./dist/internal/InternalDataTable.svelte"
-        },
-        "./internal/InternalDataTablePagination.svelte": {
-            "types": "./dist/internal/InternalDataTablePagination.svelte.d.ts",
-            "svelte": "./dist/internal/InternalDataTablePagination.svelte",
-            "default": "./dist/internal/InternalDataTablePagination.svelte"
-        },
-        "./internal/InternalSearchField.svelte": {
-            "types": "./dist/internal/InternalSearchField.svelte.d.ts",
-            "svelte": "./dist/internal/InternalSearchField.svelte",
-            "default": "./dist/internal/InternalSearchField.svelte"
-        },
         "./internal": {
             "types": "./dist/internal/index.d.ts",
             "svelte": "./dist/internal/index.js",
             "default": "./dist/internal/index.js"
         },
-        "./searchParser/AbstractSearchParser": {
-            "types": "./dist/searchParser/AbstractSearchParser.d.ts",
-            "default": "./dist/searchParser/AbstractSearchParser.js"
-        },
-        "./searchParser/AdvancedSearchParser": {
-            "types": "./dist/searchParser/AdvancedSearchParser.d.ts",
-            "default": "./dist/searchParser/AdvancedSearchParser.js"
-        },
-        "./searchParser/BasicTextSearchParser": {
-            "types": "./dist/searchParser/BasicTextSearchParser.d.ts",
-            "default": "./dist/searchParser/BasicTextSearchParser.js"
-        },
-        "./searchParser/ForcedSearchQuery": {
-            "types": "./dist/searchParser/ForcedSearchQuery.d.ts",
-            "default": "./dist/searchParser/ForcedSearchQuery.js"
-        },
-        "./searchParser/ISearchParser": {
-            "types": "./dist/searchParser/ISearchParser.d.ts",
-            "default": "./dist/searchParser/ISearchParser.js"
-        },
-        "./searchParser/ParsedSearchQuery": {
-            "types": "./dist/searchParser/ParsedSearchQuery.d.ts",
-            "default": "./dist/searchParser/ParsedSearchQuery.js"
-        },
-        "./searchParser/SearchError": {
-            "types": "./dist/searchParser/SearchError.d.ts",
-            "default": "./dist/searchParser/SearchError.js"
-        },
         "./searchParser": {
             "types": "./dist/searchParser/index.d.ts",
             "svelte": "./dist/searchParser/index.js",
             "default": "./dist/searchParser/index.js"
-        },
-        "./skeleton/SkeletonBadgeWrapper.svelte": {
-            "types": "./dist/skeleton/SkeletonBadgeWrapper.svelte.d.ts",
-            "svelte": "./dist/skeleton/SkeletonBadgeWrapper.svelte",
-            "default": "./dist/skeleton/SkeletonBadgeWrapper.svelte"
-        },
-        "./skeleton/SkeletonDataRow.svelte": {
-            "types": "./dist/skeleton/SkeletonDataRow.svelte.d.ts",
-            "svelte": "./dist/skeleton/SkeletonDataRow.svelte",
-            "default": "./dist/skeleton/SkeletonDataRow.svelte"
-        },
-        "./skeleton/SkeletonDataTable.svelte": {
-            "types": "./dist/skeleton/SkeletonDataTable.svelte.d.ts",
-            "svelte": "./dist/skeleton/SkeletonDataTable.svelte",
-            "default": "./dist/skeleton/SkeletonDataTable.svelte"
-        },
-        "./skeleton/SkeletonDataTablePagination.svelte": {
-            "types": "./dist/skeleton/SkeletonDataTablePagination.svelte.d.ts",
-            "svelte": "./dist/skeleton/SkeletonDataTablePagination.svelte",
-            "default": "./dist/skeleton/SkeletonDataTablePagination.svelte"
-        },
-        "./skeleton/SkeletonIconWrapper.svelte": {
-            "types": "./dist/skeleton/SkeletonIconWrapper.svelte.d.ts",
-            "svelte": "./dist/skeleton/SkeletonIconWrapper.svelte",
-            "default": "./dist/skeleton/SkeletonIconWrapper.svelte"
-        },
-        "./skeleton/SkeletonPaginationLink.svelte": {
-            "types": "./dist/skeleton/SkeletonPaginationLink.svelte.d.ts",
-            "svelte": "./dist/skeleton/SkeletonPaginationLink.svelte",
-            "default": "./dist/skeleton/SkeletonPaginationLink.svelte"
-        },
-        "./skeleton/SkeletonSearchField.svelte": {
-            "types": "./dist/skeleton/SkeletonSearchField.svelte.d.ts",
-            "svelte": "./dist/skeleton/SkeletonSearchField.svelte",
-            "default": "./dist/skeleton/SkeletonSearchField.svelte"
-        },
-        "./skeleton": {
-            "types": "./dist/skeleton/index.d.ts",
-            "svelte": "./dist/skeleton/index.js",
-            "default": "./dist/skeleton/index.js"
-        },
-        "./skeleton/skeletonWrappedComponentPropertyMap": {
-            "types": "./dist/skeleton/skeletonWrappedComponentPropertyMap.d.ts",
-            "default": "./dist/skeleton/skeletonWrappedComponentPropertyMap.js"
         },
         "./types/ApiFunction": {
             "types": "./dist/types/ApiFunction.d.ts",
@@ -316,10 +215,6 @@
         "./types/SvelteI18nTypes": {
             "types": "./dist/types/SvelteI18nTypes.d.ts",
             "default": "./dist/types/SvelteI18nTypes.js"
-        },
-        "./util/ContextKey": {
-            "types": "./dist/util/ContextKey.d.ts",
-            "default": "./dist/util/ContextKey.js"
         },
         "./util/dataTableConfigUtil": {
             "types": "./dist/util/dataTableConfigUtil.d.ts",
@@ -493,9 +388,6 @@
             ],
             "types/SvelteI18nTypes": [
                 "./dist/types/SvelteI18nTypes.d.ts"
-            ],
-            "util/ContextKey": [
-                "./dist/util/ContextKey.d.ts"
             ],
             "util/dataTableConfigUtil": [
                 "./dist/util/dataTableConfigUtil.d.ts"

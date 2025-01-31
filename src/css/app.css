@@ -1,0 +1,33 @@
+@import 'tailwindcss';
+@import "./font.css";
+@import "./_prism-theme.css";
+
+@plugin "@tailwindcss/typography";
+
+@plugin "daisyui" {
+    themes: emerald --default,
+    dracula --prefersdark;
+}
+
+@theme {
+    --font-body: "IBM Plex Sans", sans-serif;
+}
+
+html, body {
+    @apply h-full overflow-hidden;
+}
+
+img {
+    pointer-events: none;
+}
+
+a {
+    user-drag: none;
+    -webkit-user-drag: none;
+}
+
+pre[class*="language-"] {
+    margin: 1rem 0 2rem !important;
+    border: 1px solid #eee;
+    border-radius: 0.25rem;
+}

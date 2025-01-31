@@ -2,9 +2,10 @@ import type { TableColumnConfig } from '$lib/dataComponent/ComponentType.js';
 import type { IDataSource } from '$lib/dataSource/IDataSource.js';
 import type { ForcedSearchQuery } from '$lib/searchParser/ForcedSearchQuery.js';
 import type { ISearchParser } from '$lib/searchParser/ISearchParser.js';
+import type { ModalProps } from '$lib/types/ModalProps.js';
 import type { Component } from 'svelte';
 import type { Readable } from 'svelte/store';
-import type { MessageFormatter } from './MessageFormatter.js';
+import type { format as svelteI18nFormat } from 'svelte-i18n';
 import type { SortDirection } from './SortDirection.js';
 
 export interface ColumnMessageConfig {
@@ -30,7 +31,7 @@ export type MessageConfig<Data> = Partial<Record<keyof Data, ColumnMessageConfig
 
 export interface DataTableConfig<Data> {
     /**
-     * A unique identifier/name for this datatable. Should not contain whitespaces and non-ascii characters
+     * A unique identifier/name for this dataTable. Should not contain whitespaces and non-ascii characters
      */
     type: string;
 
@@ -40,11 +41,6 @@ export interface DataTableConfig<Data> {
     columnProperties: TableColumnConfig<Data>;
 
     /**
-     * The data source where the datatable requests the table data from
-     */
-    dataSource: IDataSource<Data>;
-
-    /**
      * The key of your items unique identifier.
      *
      * For example a user id or a counter value which increases by one for each item, as long as it's unique for each item
@@ -52,9 +48,9 @@ export interface DataTableConfig<Data> {
     dataUniquePropertyKey: keyof Data & string;
 
     /**
-     * Whether to use the messageConfig or the svelte-i18n library to provide all strings used by the datatable
+     * Set to `config` to use the messageConfig or pass the svelte-i18n formatter to provide all strings used by the dataTable
      */
-    messageFormatterType?: 'config' | 'svelte-i18n';
+    messageFormatter?: 'config' | typeof svelteI18nFormat;
 
     /**
      * Prefix for every message id. Only applies to external message formatters such as the svelte-i18n formatter.
@@ -62,21 +58,16 @@ export interface DataTableConfig<Data> {
     messageFormatterPrefix?: string;
 
     /**
-     * An object containing all strings used by the datatable, such as table headers, titles of buttons and more.
+     * An object containing all strings used by the dataTable, such as table headers, titles of buttons and more.
      *
-     * Ignored if svelte-i18n is enabled by the `messageFormatterType` option
+     * Ignored if svelte-i18n is enabled by using the the `messageFormatter` option
      */
     messageConfig?: MessageConfig<Data>;
 
     /**
-     * A custom message formatter which can return a replacement or undefined to default to the message provided by the internal formatter/svelte-i18n
-     */
-    additionalMessageFormatter?: MessageFormatter;
-
-    /**
      * A svelte component shown when a user clicks on a row to expand it
      */
-    modalComponent?: Component;
+    modalComponent?: Component<ModalProps>;
 
     /**
      * An onClick handler for a table row. Gets passed the data item which the clicked row displays
@@ -85,14 +76,14 @@ export interface DataTableConfig<Data> {
     onItemClick?: (item: Data) => void;
 
     /**
-     * A search query which overwrites any values by the users current search. Can be used to apply a forced filter to the whole datatable
+     * A search query which overwrites any values by the users current search. Can be used to apply a forced filter to the whole dataTable
      */
     forcedSearchQuery?: ForcedSearchQuery<Data>;
 
     /**
      * The identifier of any item which then gets assigned the `highlighted` class
      */
-    highlightedItemId?: string | Readable<string | undefined>;
+    highlightedItemId?: string;
 
     /**
      * Sort the table using the given key and direction by default
@@ -107,12 +98,12 @@ export interface DataTableConfig<Data> {
     enablePagination?: boolean;
 
     /**
-     * If the pagination component at the top of the datatable should be shown
+     * If the pagination component at the top of the dataTable should be shown
      */
     showTopPagination?: boolean;
 
     /**
-     * If the pagination component at the bottom of the datatable should be shown.
+     * If the pagination component at the bottom of the dataTable should be shown.
      *
      * Notice that the bottom pagination is always hidden when less than 10 rows are shown
      */

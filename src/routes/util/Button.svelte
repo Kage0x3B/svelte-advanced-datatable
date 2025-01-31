@@ -1,60 +1,110 @@
-<!-- @migration-task Error while migrating Svelte code: $$props is used together with named props in a way that cannot be automatically migrated. -->
 <script lang="ts">
-    import { ProgressRadial } from '@skeletonlabs/skeleton';
-    import { classnames } from './componentUtil.js';
-    import type { ButtonVariantList, ThemeButtonSize } from './theme.js';
+    import { clsx } from 'clsx';
+    import type { Snippet } from 'svelte';
+    import type { HTMLButtonAttributes } from 'svelte/elements';
+    import { getJoinGroupContext } from './context.js';
+    import type { ThemeButtonStyle, ThemeColor, ThemeSize } from './type/Theme.js';
 
-    let className = '';
-    export { className as class };
-    export let icon = false;
-    export let loading = false;
-    export let variant: ButtonVariantList;
-    export let size: ThemeButtonSize | 'base' | undefined = undefined;
-    export let submit = false;
-    export let disabled = false;
-    export let href = '';
-    export let element = undefined;
+    interface Props extends HTMLButtonAttributes {
+        class?: string;
+        active?: boolean;
+        btnStyle?: ThemeButtonStyle;
+        size?: ThemeSize;
+        block?: boolean;
+        wide?: boolean;
+        loading?: boolean;
+        hideContentWhileLoading?: boolean;
+        color?: ThemeColor;
+        submit?: boolean;
+        disabled?: boolean;
+        href?: string;
+        element?: HTMLButtonElement | HTMLAnchorElement;
+        children: Snippet;
+    }
 
-    $: ariaLabel = $$props['aria-label'];
+    let {
+        class: className = '',
+        active = false,
+        btnStyle,
+        size,
+        block = false,
+        wide = false,
+        loading = false,
+        hideContentWhileLoading = false,
+        color = 'secondary',
+        submit = false,
+        disabled = false,
+        href = '',
+        element = $bindable(undefined),
+        children,
+        ...restProps
+    }: Props = $props();
 
-    $: classes = classnames(className, 'btn', variant, {
-        // Sizes
-        'btn-sm': !icon && size === 'sm',
-        'btn-base': !icon && (!size || size === 'base'),
-        'btn-lg': !icon && size === 'lg',
-        'btn-xl': !icon && size === 'xl',
-        'btn-icon-sm': !icon && size === 'sm',
-        'btn-icon-base': (icon && !size) || size === 'base',
-        'btn-icon-lg': icon && size === 'lg',
-        'btn-icon-xl': icon && size === 'xl'
-    });
+    const isJoinGroup = getJoinGroupContext();
+    let isDisabled = $derived(disabled || loading);
+
+    let ignoreColors = $derived(btnStyle === 'link');
+    let classes = $derived(
+        clsx(className, 'btn', {
+            'btn-active': active,
+            // Styles
+            'btn-ghost': btnStyle === 'ghost',
+            'btn-link': btnStyle === 'link',
+            'btn-outline': btnStyle === 'outline',
+            'btn-square': btnStyle === 'square',
+            'btn-circle': btnStyle === 'circle',
+            'btn-dash': btnStyle === 'dash',
+            // Colors
+            'btn-primary': color === 'primary' && !ignoreColors,
+            'btn-secondary': color === 'secondary' && !ignoreColors,
+            'btn-accent': color === 'accent' && !ignoreColors,
+            'btn-info': color === 'info' && !ignoreColors,
+            'btn-success': color === 'success' && !ignoreColors,
+            'btn-warning': color === 'warning' && !ignoreColors,
+            'btn-error': color === 'error' && !ignoreColors,
+            // Sizes
+            'btn-xs': size === 'xs',
+            'btn-sm': size === 'sm',
+            'btn-lg': size === 'lg',
+            'btn-xl': size === 'xl',
+            'btn-wide': wide,
+            'btn-block': block,
+            'btn-disabled': isDisabled,
+            'join-item': isJoinGroup
+        })
+    );
 </script>
 
 {#if href}
     <a
-        {...$$restProps}
+        {...restProps}
         class={classes}
-        disabled={disabled ? true : undefined}
+        aria-disabled={isDisabled}
+        role="button"
+        tabindex={disabled ? -1 : undefined}
         bind:this={element}
-        on:click
         {href}
-        aria-label={ariaLabel}
     >
-        <slot />
+        {#if loading}
+            <span class="loading loading-spinner"></span>
+        {/if}
+        {#if !(loading && hideContentWhileLoading)}
+            {@render children()}
+        {/if}
     </a>
 {:else}
     <button
-        {...$$restProps}
+        {...restProps}
         type={submit ? 'submit' : 'button'}
         class={classes}
-        disabled={disabled ? true : undefined}
+        disabled={isDisabled ? true : undefined}
         bind:this={element}
-        on:click
-        aria-label={ariaLabel}
     >
         {#if loading}
-            <ProgressRadial width="w-6" stroke="70" class="me-2" />
+            <span class="loading loading-spinner"></span>
         {/if}
-        <slot />
+        {#if !(loading && hideContentWhileLoading)}
+            {@render children()}
+        {/if}
     </button>
 {/if}

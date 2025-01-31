@@ -1,21 +1,21 @@
 import type { FullDataTableConfig } from '$lib/types/DataTableConfig.js';
 import type { PaginatedListRequest } from '$lib/types/PaginatedListRequest.js';
-import type { QueryObserver } from './QueryObserver.js';
+import type { QueryResult } from './QueryResult.js';
 
 export interface IDataSource<Data> {
-    init?(config: FullDataTableConfig<Data>): void;
+    readonly queryResult: QueryResult<Data>;
+
+    setConfig?(config: FullDataTableConfig<Data>): void;
 
     /**
-     * Called to retrieve the initial datatable entries and everytime the request changes, for example when
+     * Called to retrieve the initial dataTable entries and everytime the request changes, for example when
      * the user loads the next page, sorts the entries or searches for something
      * @param data the request data to be passed through to the server
      */
     requestData(data: PaginatedListRequest<Data>): void;
 
-    getQueryObserver(): QueryObserver<Data>;
-
     /**
-     * Called by the datatable svelte component when it is mounted
+     * Called by the dataTable svelte component when it is mounted
      */
     onMount?(): void;
 

@@ -9,7 +9,7 @@
         </div>
         <div>
             <a
-                href="https://github.com/Kage0x3B/svelte-advanced-datatable"
+                href="https://github.com/Kage0x3B/svelte-advanced-dataTable"
                 rel="external"
                 target="_blank"
                 class="text-surface-400 hover:text-surface-700"

@@ -1,19 +1,14 @@
 <script lang="ts">
     import { ComponentType } from '$lib/dataComponent/ComponentType.js';
     import type { ComponentTypeProperties } from '$lib/dataComponent/ComponentType.js';
-    import type { WrappedIconName } from '$lib/dataComponent/WrappedComponentProperty.js';
     import type { BadgeComponentProps } from '$lib/types/BadgeComponentProps.js';
     import type { IconComponentProps } from '$lib/types/IconComponentProps.js';
+    import { getConfigContext, getMessageFormatterContext } from '$lib/util/context.js';
     import { isDateTime } from '$lib/util/generalUtil.js';
     import type { Component } from 'svelte';
-    import { getContext } from 'svelte';
-    import type { Readable } from 'svelte/store';
-    import type { FullDataTableConfig } from '$lib/types/DataTableConfig.js';
-    import type { MessageFormatter } from '$lib/types/MessageFormatter.js';
-    import { DATATABLE_CONFIG, DATATABLE_MESSAGE_FORMATTER } from '$lib/util/ContextKey.js';
 
-    const config: FullDataTableConfig<unknown> = getContext(DATATABLE_CONFIG);
-    const format: Readable<MessageFormatter> = getContext(DATATABLE_MESSAGE_FORMATTER);
+    let config = getConfigContext()();
+    let format = getMessageFormatterContext()();
 
     interface Props {
         IconComponent: Component<IconComponentProps>;
@@ -32,7 +27,7 @@
     <colProps.component {key} {colProps} {item} value={item[key]} />
 {:else if colProps.type === ComponentType.STRING || colProps.type === ComponentType.NUMBER}
     {#if typeof item[key] !== 'undefined' && item[key] !== null && item[key] !== 'null'}
-        {$format(`dataTable.${config.type}.${key}.format`, {
+        {format(`dataTable.${config.type}.${key}.format`, {
             default: String(item[key]),
             values: { value: String(item[key]) }
         })}
@@ -51,9 +46,9 @@
             : colProps.enumColorKey.unknown}
     >
         {#if colProps.values.includes(item[key])}
-            {$format(`dataTable.${config.type}.${key}.enumValue.${item[key]}`)}
+            {format(`dataTable.${config.type}.${key}.enumValue.${item[key]}`)}
         {:else}
-            {$format(`dataTable.${config.type}.${key}.enumValue.unknown`)}
+            {format(`dataTable.${config.type}.${key}.enumValue.unknown`)}
         {/if}
     </BadgeComponent>
 {:else if colProps.type === ComponentType.DATE}

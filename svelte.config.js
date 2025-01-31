@@ -1,15 +1,13 @@
 import adapter from '@sveltejs/adapter-static';
-import preprocess from 'svelte-preprocess';
 import { mdsvex } from 'mdsvex';
 import { u } from 'unist-builder';
+import { vitePreprocess } from '@sveltejs/vite-plugin-svelte';
 
 /** @type {import('@sveltejs/kit').Config} */
 const config = {
     extensions: ['.svelte', '.md', '.svx'],
     preprocess: [
-        preprocess({
-            postcss: true
-        }),
+        vitePreprocess(),
         mdsvex({
             extensions: ['.md', '.svx'],
             layout: {
@@ -26,6 +24,11 @@ const config = {
         }),
         prerender: {
             handleMissingId: 'ignore'
+        }
+    },
+    compilerOptions: {
+        warningFilter: (warning) => {
+            return !['a11y_no_noninteractive_element_interactions'].includes(warning.code);
         }
     }
 };

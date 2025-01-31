@@ -1,10 +1,10 @@
-# Svelte Advanced Datatable
+# Svelte Advanced DataTable
 
 (Documentation is still WIP)
 
 ## Features
 
-* Highly configurable datatable
+* Highly configurable dataTable
 * Data pagination
 * Sorting, searching/filtering the data
 * Compatible with the [sveltestrap](https://sveltestrap.js.org) (Bootstrap) component framework or your own UI styles by
@@ -14,11 +14,11 @@ implementing a few components
 
 ## Quick Links
 
-* [Documentation](https://svelte-advanced-datatable.pages.dev/docs), or jump directly to information on the usage with:
-  * [Bootstrap + Sveltestrap UI](https://svelte-advanced-datatable.pages.dev/docs/getting-started/quick-start)
-  * [Svelte Query as a datasource](https://svelte-advanced-datatable.pages.dev/docs/configuration/data-sources#using-svelte-query)
-  * [svelte-i18n for localisation](https://svelte-advanced-datatable.pages.dev)
-* [API Reference](https://svelte-advanced-datatable.pages.dev/api-reference)
+* [Documentation](https://svelte-advanced-dataTable.pages.dev/docs), or jump directly to information on the usage with:
+  * [Bootstrap + Sveltestrap UI](https://svelte-advanced-dataTable.pages.dev/docs/getting-started/quick-start)
+  * [Svelte Query as a datasource](https://svelte-advanced-dataTable.pages.dev/docs/configuration/data-sources#using-svelte-query)
+  * [svelte-i18n for localisation](https://svelte-advanced-dataTable.pages.dev)
+* [API Reference](https://svelte-advanced-dataTable.pages.dev/api-reference)
 
 ## Usage
 
@@ -26,24 +26,24 @@ implementing a few components
 
 ```bash
 # Install the npm package
-npm i svelte-advanced-datatable
+npm i svelte-advanced-dataTable
 
 # As well as the ui library and data source you want to use
 npm i skeleton @sveltestack/svelte-query
 ```
 
-### Basic Datatable
+### Basic DataTable
 
-After installing the svelte-advanced-datatable library, import the DataTable component from the package for your ui
+After installing the svelte-advanced-dataTable library, import the DataTable component from the package for your ui
 library.
 
 To use the component, pass the config object with all required properties to it:
 
 ```html
 <script lang='ts'>
-	import type { DataTableConfig } from 'svelte-advanced-datatable';
-	import { ComponentType, FetchApiDataSource } from 'svelte-advanced-datatable';
-	import { DataTable } from 'svelte-advanced-datatable/skeleton';
+	import type { DataTableConfig } from 'svelte-advanced-dataTable';
+	import { ComponentType, FetchApiDataSource } from 'svelte-advanced-dataTable';
+	import { DataTable } from 'svelte-advanced-dataTable/daisyUi';
 
 	interface UserData {
 		id: number;
@@ -76,4 +76,4 @@ To use the component, pass the config object with all required properties to it:
 <DataTable {config} />
 ```
 
-## [View the documentation](https://svelte-advanced-datatable.pages.dev/docs) for all supported config options and more examples
+## [View the documentation](https://svelte-advanced-dataTable.pages.dev/docs) for all supported config options and more examples

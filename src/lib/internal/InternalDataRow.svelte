@@ -1,21 +1,22 @@
 <script lang="ts">
-    import { getContext, type Snippet } from 'svelte';
-    import type { FullDataTableConfig } from '$lib/types/DataTableConfig.js';
-    import { DATATABLE_CONFIG } from '$lib/util/ContextKey.js';
+    import { getConfigContext } from '$lib/util/context.js';
+    import type { Snippet } from 'svelte';
 
-    const config: FullDataTableConfig<unknown> = getContext(DATATABLE_CONFIG);
+    const config = getConfigContext()();
 
     type OnClickFunction = (<T>(item: T) => void | Promise<void>) | undefined;
 
     interface Props {
         index: number;
-        openIndex: number;
+        openIndex: number | undefined;
         onClick: OnClickFunction;
         item: unknown;
         open: (index: number) => void;
         toggle?: () => void;
         children: Snippet<[{ isOpen: boolean; rowOnClick: OnClickFunction; toggle: () => void }]>;
     }
+
+    let isExpandable = $derived(Boolean(config.modalComponent));
 
     let {
         index,
@@ -24,12 +25,12 @@
         item,
         open,
         toggle = () => {
-            isExpandable && item && open(isOpen ? -1 : index);
+            if (isExpandable && item) {
+                open(isOpen ? -1 : index);
+            }
         },
         children
     }: Props = $props();
-
-    const isExpandable = !!config.modalComponent;
 
     let isOpen: boolean = $derived(isExpandable && index === openIndex);
 

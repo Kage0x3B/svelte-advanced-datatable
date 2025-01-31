@@ -1,80 +1,61 @@
 <script lang="ts">
-    import ButtonGroup from '$lib/ButtonGroup.svelte';
-    import Button from '$lib/Button.svelte';
-    import { InternalDataTablePagination } from 'svelte-advanced-datatable/internal';
-    import AnglesLeftIcon from '$lib/dataTable/icons/AnglesLeftIcon.svelte';
-    import AngleLeftIcon from '$lib/dataTable/icons/AngleLeftIcon.svelte';
-    import AngleRightIcon from '$lib/dataTable/icons/AngleRightIcon.svelte';
-    import AnglesRightIcon from '$lib/dataTable/icons/AnglesRightIcon.svelte';
+    import DataTable from '$lib/internal/index.js';
+    import AnglesLeftIcon from '$lib/daisyUi/icons/AnglesLeftIcon.svelte';
+    import AngleLeftIcon from '$lib/daisyUi/icons/AngleLeftIcon.svelte';
+    import AngleRightIcon from '$lib/daisyUi/icons/AngleRightIcon.svelte';
+    import AnglesRightIcon from '$lib/daisyUi/icons/AnglesRightIcon.svelte';
 
     interface Props {
         pageAmount: number;
         maxDisplayedItems?: number;
-        currentPage?: any;
+        currentPage: number;
     }
 
-    let { pageAmount, maxDisplayedItems = 5, currentPage = $bindable(-1) }: Props = $props();
+    let { pageAmount, maxDisplayedItems = 5, currentPage = $bindable() }: Props = $props();
 </script>
 
-<InternalDataTablePagination
-    
-    
-    {pageAmount}
-    {maxDisplayedItems}
-    bind:currentPage
-    on:navigate
->
+<DataTable.Pagination {pageAmount} {maxDisplayedItems} bind:currentPage>
     {#snippet children({ createClickHandler, pages })}
-        <ButtonGroup class="flex items-center">
-            <Button
+        <div class="join">
+            <button
                 disabled={currentPage === 1}
-                on:click={createClickHandler(1)}
-                size="sm"
-                color="primary"
-                btnStyle="outline"
+                onclick={createClickHandler(1)}
+                class="btn join-item btn-sm btn-primary btn-outline"
             >
                 <AnglesLeftIcon />
-            </Button>
-            <Button
+            </button>
+            <button
                 disabled={currentPage === 1}
-                on:click={createClickHandler('prev')}
-                size="sm"
-                color="primary"
-                btnStyle="outline"
+                onclick={createClickHandler('prev')}
+                class="btn join-item btn-sm btn-primary btn-outline"
             >
                 <AngleLeftIcon />
-            </Button>
+            </button>
             {#each pages as page}
-                <Button
-                    class="{page < 10 ? 'px-4' : ''}"
-                    active={page === currentPage}
-                    disabled={page === '...'}
-                    on:click={createClickHandler(page)}
-                    size="sm"
-                    color="primary"
-                    btnStyle="outline"
+                <button
+                    disabled={page === -1}
+                    onclick={createClickHandler(page)}
+                    class="{page < 10 ? 'px-4' : ''} btn {page === currentPage
+                        ? 'btn-active'
+                        : ''} join-item btn-sm btn-primary btn-outline"
                 >
                     {page}
-                </Button>
+                </button>
             {/each}
-            <Button
+            <button
                 disabled={currentPage === pageAmount}
-                on:click={createClickHandler('next')}
-                size="sm"
-                color="primary"
-                btnStyle="outline"
+                onclick={createClickHandler('next')}
+                class="btn join-item btn-sm btn-primary btn-outline"
             >
                 <AngleRightIcon />
-            </Button>
-            <Button
+            </button>
+            <button
                 disabled={currentPage === pageAmount}
-                on:click={createClickHandler(pageAmount)}
-                size="sm"
-                color="primary"
-                btnStyle="outline"
+                onclick={createClickHandler(pageAmount)}
+                class="btn join-item btn-sm btn-primary btn-outline"
             >
                 <AnglesRightIcon />
-            </Button>
-        </ButtonGroup>
+            </button>
+        </div>
     {/snippet}
-</InternalDataTablePagination>
+</DataTable.Pagination>

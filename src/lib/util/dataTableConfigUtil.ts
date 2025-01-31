@@ -16,7 +16,7 @@ const defaultConfig: Partial<DataTableConfig<unknown>> = {
     showTopPagination: true,
     showBottomPagination: true,
     itemsPerPage: 50,
-    messageFormatterType: 'config',
+    messageFormatter: 'config',
     messageFormatterPrefix: '',
     messageConfig: {
         pagination: {
@@ -37,7 +37,7 @@ const defaultConfig: Partial<DataTableConfig<unknown>> = {
 
 export function mergeDataTableConfigDefaults<Data>(config: DataTableConfig<Data>): FullDataTableConfig<Data> {
     if (!config) {
-        throw new Error('You need to provide a datatable config!');
+        throw new Error('You need to provide a dataTable config!');
     }
 
     const enablePagination = config.enablePagination ?? defaultConfig.enablePagination;
@@ -54,7 +54,7 @@ export function mergeDataTableConfigDefaults<Data>(config: DataTableConfig<Data>
         }
     } as FullDataTableConfig<Data>;
 
-    if (fullConfig.messageFormatterType === 'config') {
+    if (fullConfig.messageFormatter === 'config') {
         if (!fullConfig.messageConfig) {
             throw new Error(
                 `The DataTable config is missing the messageConfig property, which is required when not using another i18n library.`

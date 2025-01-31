@@ -1,0 +1,79 @@
+---
+title: Quick Start
+---
+
+<script>
+	import ExampleTable from '../../../../util/ExampleTable.svelte';
+</script>
+
+# Quick Start
+
+Suppose you want to show a list of all of your users in a table. For this first example, the user only has an `id` and a `userName` field:
+
+```typescript
+type UserData = {
+	id: number;
+	userName: string;
+};
+
+const exampleUserData: UserData[] = [
+	{ id: 1, userName: 'Edmund.Rolfson21' },
+	{ id: 2, userName: 'Melody34' },
+	...otherUsers
+];
+```
+
+In this example, we will be using Tailwind with Daisy UI for the UI components, hardcoded data (in the example generated with faker-js)
+and no i18n library yet, all strings will be hardcoded in the config.
+
+Add the DataTable component as well as the accompanying config to your page:
+
+```html
+<script lang='ts'>
+	import type { DataTableConfig } from 'svelte-advanced-dataTable';
+	import { ComponentType, LocalDataSource } from 'svelte-advanced-dataTable';
+	// Notice that the DataTable component is imported from the /daisyUi package to support Daisy UI components
+	import { DataTable } from 'svelte-advanced-dataTable/daisyUi';
+
+	// Config for our dataTable
+	const config: DataTableConfig<UserData> = {
+		// Give it a name/identifier, required internally to manage multiple dataTables on one page
+		type: 'userData',
+		// Configure what type the data in each of the table columns has
+		columnProperties: {
+			id: {
+				type: ComponentType.NUMBER
+			},
+			userName: {
+				type: ComponentType.STRING
+			}
+		},
+		// The dataTable requires one key of the object to contain a unique identifier, such as a user id.
+		dataUniquePropertyKey: 'id',
+		// Where do we get the data from? In this example we just use the contents of the exampleUserData array from above.
+		dataSource: new LocalDataSource(exampleUserData, {
+			filtering: {
+				// Enable search for these columns
+				textSearchColumns: ['userName']
+			}
+		}),
+		// Give your columns fancier names to display in the table header
+		messageConfig: {
+			id: {
+				label: 'Id'
+			},
+			userName: {
+				label: 'Username'
+			}
+		}
+	};
+</script>
+
+<DataTable {config} />
+```
+
+This short code-snippet will already result in the following dataTable:
+
+
+<ExampleTable path='skeleton/basic/first-example' description='This is what your resulting dataTable will look like!' />
+
