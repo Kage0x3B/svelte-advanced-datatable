@@ -1,7 +1,8 @@
 <script lang="ts">
-    import { setContext } from 'svelte';
+    import { setContext, type Snippet } from 'svelte';
+
     interface Props {
-        children?: import('svelte').Snippet;
+        children: Snippet;
     }
 
     let { children }: Props = $props();
@@ -10,7 +11,7 @@
 </script>
 
 <li>
-    {@render children?.()}
+    {@render children()}
 </li>
 
 <style>

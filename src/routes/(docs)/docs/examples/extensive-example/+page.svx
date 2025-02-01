@@ -134,5 +134,5 @@ const config: DataTableConfig<UserData> = {
 
 Which results in the following dataTable:
 
-<ExampleTable path='skeleton/basic/extensive-example' description='This is what your resulting dataTable will look like!' />
+<ExampleTable path='daisy-ui/basic/extensive-example' description='This is what your resulting dataTable will look like!' />
 

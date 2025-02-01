@@ -23,7 +23,8 @@ const config = {
             fallback: 'spa.html'
         }),
         prerender: {
-            handleMissingId: 'ignore'
+            handleMissingId: 'ignore',
+            handleHttpError: 'warn'
         }
     },
     compilerOptions: {

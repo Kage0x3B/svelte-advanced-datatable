@@ -1,3 +1,24 @@
+<script module>
+    let consoleWarn: typeof console.warn | undefined = undefined;
+
+    if (!consoleWarn) {
+        console.log('overwriting console.warn');
+        consoleWarn = console.warn.bind(console);
+        console.warn = (...args) => {
+            if (
+                args.length >= 1 &&
+                typeof args[0] === 'string' &&
+                args[0].includes('ownership_invalid_mutation') &&
+                (args[0].includes('QueryClientProvider') || args[0].includes('InternalDataTable'))
+            ) {
+                return;
+            }
+
+            consoleWarn(...args);
+        };
+    }
+</script>
+
 <script lang="ts">
     import type { ComponentTypeProperties } from '$lib/dataComponent/ComponentType.js';
     import type { QueryResult } from '$lib/dataSource/QueryResult.js';

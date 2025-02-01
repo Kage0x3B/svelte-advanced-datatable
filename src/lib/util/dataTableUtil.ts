@@ -7,7 +7,12 @@ export function buildColumnPropertyData<Data>(
     const internalColumnProperties: Record<string, ComponentTypeProperties> = {};
 
     for (const key of Object.keys(columnProperties)) {
-        let colProp: ComponentTypeProperties = columnProperties[key as keyof typeof columnProperties];
+        let colProp: ComponentTypeProperties | undefined = columnProperties[key as keyof typeof columnProperties];
+
+        if (!colProp) {
+            continue;
+        }
+
         colProp = Object.assign({}, componentTypes.generic.defaultTypeProperties, colProp);
 
         if (!colProp.type) {

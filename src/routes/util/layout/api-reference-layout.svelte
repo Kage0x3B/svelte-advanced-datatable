@@ -34,9 +34,7 @@
 
 <script lang="ts">
     import { page } from '$app/state';
-    import { AppShell } from '@skeletonlabs/skeleton';
     import { onDestroy } from 'svelte';
-    import Footer from '../Footer.svelte';
     import MainLayout from '../MainLayout.svelte';
     import ApiReferenceBreadcrumbs from './components/ApiReferenceBreadcrumbs.svelte';
 
@@ -49,23 +47,15 @@
     <title>{title ?? 'Api Reference'} - Svelte Advanced DataTable</title>
 </svelte:head>
 
-<AppShell>
-    {#snippet header()}
-        <MainLayout />
-    {/snippet}
-    <div class="container xl:max-w-[80vw] mx-auto my-8">
-        <ApiReferenceBreadcrumbs
-            currentPath={page.url.pathname}
-            indexName="Svelte Advanced DataTable"
-            baseUrl="/api-reference"
-        />
-        <div
-            class="mt-4 prose lg:prose-lg dark:prose-invert prose-headings:font-normal prose-a:text-primary-500 prose-a:no-underline prose-ul:border prose-ul:rounded prose-ul:p-0 prose-li:border-b prose-li:list-none prose-li:m-0 prose-li:px-4 prose-li:py-2 prose-code:text-error-400 before:prose-code:hidden after:prose-code:hidden"
-        >
-            {@render children?.()}
-        </div>
+<MainLayout>
+    <ApiReferenceBreadcrumbs
+        currentPath={page.url.pathname}
+        indexName="Svelte Advanced DataTable"
+        baseUrl="/api-reference"
+    />
+    <div
+        class="mt-4 prose lg:prose-lg dark:prose-invert prose-headings:font-normal prose-a:text-primary-500 prose-a:no-underline prose-ul:border prose-ul:rounded prose-ul:p-0 prose-li:border-b prose-li:list-none prose-li:m-0 prose-li:px-4 prose-li:py-2 prose-code:text-error-400 before:prose-code:hidden after:prose-code:hidden"
+    >
+        {@render children?.()}
     </div>
-    {#snippet footer()}
-        <Footer />
-    {/snippet}
-</AppShell>
+</MainLayout>

@@ -29,9 +29,7 @@
 </script>
 
 <script lang="ts">
-    import { AppShell } from '@skeletonlabs/skeleton';
     import { onDestroy } from 'svelte';
-    import Footer from '../Footer.svelte';
     import MainLayout from '../MainLayout.svelte';
     import { slugger } from './api-reference-layout.svelte';
     import DocsSidebar from './components/docs/DocsSidebar.svelte';
@@ -45,19 +43,13 @@
     <title>{title ?? 'Documentation'} - Svelte Advanced DataTable</title>
 </svelte:head>
 
-<AppShell slotPageContent="p-4" slotSidebarLeft="w-full md:w-1/4 lg:w-1/5 xl:w-1/6 pl-4">
-    {#snippet header()}
-        <MainLayout />
-    {/snippet}
-    {#snippet sidebarLeft()}
+<MainLayout>
+    {#snippet sidebar()}
         <DocsSidebar />
     {/snippet}
     <div
-        class="prose container xl:max-w-[80%] mx-auto lg:prose-lg dark:prose-invert prose-headings:font-normal prose-a:text-primary-500 prose-a:no-underline"
+        class="prose lg:prose-lg dark:prose-invert prose-headings:font-normal prose-a:text-primary-500 prose-a:no-underline"
     >
         {@render children?.()}
     </div>
-    {#snippet pageFooter()}
-        <Footer />
-    {/snippet}
-</AppShell>
+</MainLayout>

@@ -9,13 +9,17 @@ export type { NumberComponentTypeProperties } from './dataComponent/NumberCompon
 export type { StringComponentTypeProperties } from './dataComponent/StringComponentTypeProperties.js';
 export { WrappedIconName, WrappedComponentColor } from './dataComponent/WrappedComponentProperty.js';
 
-export { AbstractDataSource } from './dataSource/AbstractDataSource.js';
-export { ApiFunctionDataSource } from './dataSource/ApiFunctionDataSource.js';
-export { FetchApiDataSource } from './dataSource/FetchApiDataSource.js';
+export { AbstractDataSource } from './dataSource/AbstractDataSource.svelte.js';
+export { ApiFunctionDataSource } from './dataSource/ApiFunctionDataSource.svelte.js';
+export { FetchApiDataSource } from './dataSource/FetchApiDataSource.svelte.js';
 export type { IDataSource } from './dataSource/IDataSource.js';
-export { LocalDataSource } from './dataSource/LocalDataSource.js';
-export type { LocalDataSourceOptions } from './dataSource/LocalDataSource.js';
-export type { QueryObserver } from './dataSource/QueryObserver.js';
+export { LocalDataSource, type LocalDataSourceOptions } from './dataSource/LocalDataSource.svelte.js';
+export {
+    QueryResult,
+    type SuccessQueryResult,
+    type LoadingQueryResult,
+    type ErrorQueryResult
+} from './dataSource/QueryResult.js';
 
 export type { ApiFunction } from './types/ApiFunction.js';
 export type {
@@ -25,6 +29,7 @@ export type {
     ColumnMessageConfig
 } from './types/DataTableConfig.js';
 export type { MessageFormatter, InterpolationValues } from './types/MessageFormatter.js';
+export type { ModalProps } from './types/ModalProps.js';
 export type { PaginatedListRequest } from './types/PaginatedListRequest.js';
 export type { PaginatedListResponse } from './types/PaginatedListResponse.js';
 export type { SearchFilter } from './types/SearchFilter.js';

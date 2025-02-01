@@ -1,10 +1,8 @@
 import type { TableColumnConfig } from '$lib/dataComponent/ComponentType.js';
-import type { IDataSource } from '$lib/dataSource/IDataSource.js';
 import type { ForcedSearchQuery } from '$lib/searchParser/ForcedSearchQuery.js';
 import type { ISearchParser } from '$lib/searchParser/ISearchParser.js';
 import type { ModalProps } from '$lib/types/ModalProps.js';
 import type { Component } from 'svelte';
-import type { Readable } from 'svelte/store';
 import type { format as svelteI18nFormat } from 'svelte-i18n';
 import type { SortDirection } from './SortDirection.js';
 
@@ -67,7 +65,7 @@ export interface DataTableConfig<Data> {
     /**
      * A svelte component shown when a user clicks on a row to expand it
      */
-    modalComponent?: Component<ModalProps>;
+    modalComponent?: Component<ModalProps<Data>>;
 
     /**
      * An onClick handler for a table row. Gets passed the data item which the clicked row displays

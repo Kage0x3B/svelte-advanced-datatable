@@ -66,5 +66,5 @@ const config: DataTableConfig<UserData> = {
 ```
 
 
-<ExampleTable path='skeleton/modal' description='This is what your resulting dataTable will look like!' />
+<ExampleTable path='daisy-ui/modal' description='This is what your resulting dataTable will look like!' />
 

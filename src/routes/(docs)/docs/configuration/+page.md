@@ -8,8 +8,8 @@ The most important part of getting your dataTable ready to be used is the proper
 The DataTable component accepts a `config` object, which has the following shape:
 
 ```typescript
-import type { DataTableConfig } from 'svelte-advanced-dataTable';
-import { ComponentType } from 'svelte-advanced-dataTable'; import { UserData } from './UserData.js';
+import type { DataTableConfig } from 'svelte-advanced-datatable';
+import { ComponentType } from 'svelte-advanced-datatable'; import { UserData } from './UserData.js';
 
 const config: DataTableConfig<UserData> = {
 	type: 'userData',

@@ -95,8 +95,5 @@ function validateMessageConfig<Data>(config: FullDataTableConfig<Data>): void {
                 `DataTable ${config.type} message config doesn't provide any enumValue names for enum type column ${columnKey}`
             );
         }
-
-        // @ts-ignore
-        config.messageConfig[columnKey] = columnMessageConfig;
     }
 }

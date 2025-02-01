@@ -10,6 +10,6 @@
 
 ## Quick Links
 
-* [Bootstrap + Sveltestrap UI](https://svelte-advanced-dataTable.js.org/todo)
-* [Svelte Query as a datasource](https://svelte-advanced-dataTable.js.org/todo)
-* [Svelte Query as a datasource](https://svelte-advanced-dataTable.js.org/todo)
+* [Bootstrap + Sveltestrap UI](https://svelte-advanced-datatable.js.org/todo)
+* [Svelte Query as a datasource](https://svelte-advanced-datatable.js.org/todo)
+* [Svelte Query as a datasource](https://svelte-advanced-datatable.js.org/todo)

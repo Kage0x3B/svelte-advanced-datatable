@@ -1,6 +1,6 @@
 <script lang="ts">
     import type { DataTableIcon } from '$lib/daisyUi/daisyUiWrappedComponentPropertyMap.js';
-    import type { IDataSource } from '$lib/dataSource/index.js';
+    import type { IDataSource } from '$lib/dataSource/IDataSource.js';
     import DataTable from '$lib/internal/index.js';
     import type { ParsedSearchQuery } from '$lib/searchParser/ParsedSearchQuery.js';
     import type { DataTableConfig, FullDataTableConfig } from '$lib/types/DataTableConfig.js';
@@ -42,7 +42,7 @@
 
     let {
         config: configExport,
-        dataSource,
+        dataSource = $bindable(),
         size = 'md',
         striped = false,
         hoverable = true,

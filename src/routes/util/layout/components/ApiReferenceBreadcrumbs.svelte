@@ -42,7 +42,7 @@
 
             breadcrumbs.push({
                 title: capitalize(pathPart),
-                url: baseUrl + parentPath + '/' + (isCategory ? 'modules/' : '') + pathPart
+                url: baseUrl + parentPath + '/' + pathPart
             });
 
             parentPath += '/' + pathPart;
@@ -58,18 +58,16 @@
 
         return value.substring(0, 1).toUpperCase() + value.substring(1);
     }
-    
 </script>
 
-<div class="">
-    <ol class="breadcrumb">
+<div class="breadcrumbs text-sm">
+    <ul>
         {#each breadcrumbs as breadcrumb, i (breadcrumb.url)}
             {#if i < breadcrumbs.length - 1}
-                <li class="crumb"><a class="anchor no-underline" href={breadcrumb.url}>{breadcrumb.title}</a></li>
-                <li class="crumb-separator" aria-hidden>&rsaquo;</li>
+                <li><a href={breadcrumb.url}>{breadcrumb.title}</a></li>
             {:else}
-                <li class="crumb">{breadcrumb.title}</li>
+                <li>{breadcrumb.title}</li>
             {/if}
         {/each}
-    </ol>
+    </ul>
 </div>

@@ -26,7 +26,7 @@
         "@tailwindcss/forms": "^0.5.10",
         "@tailwindcss/typography": "^0.5.16",
         "@tailwindcss/vite": "^4.0.1",
-        "@tanstack/svelte-query": "^5.66.0",
+        "@tanstack/svelte-query": "https://pkg.pr.new/@tanstack/svelte-query@56f67c7",
         "@types/luxon": "^3.4.2",
         "@types/node": "^22.12.0",
         "@typescript-eslint/eslint-plugin": "^8.22.0",
@@ -64,7 +64,6 @@
     "type": "module",
     "peerDependencies": {
         "@tanstack/query-core": "4.x",
-        "@tanstack/svelte-query": "4.x",
         "svelte": "4.x",
         "svelte-i18n": "3.x"
     },
@@ -82,9 +81,9 @@
             "optional": true
         }
     },
-    "homepage": "https://svelte-advanced-dataTable.pages.dev",
+    "homepage": "https://svelte-advanced-datatable.pages.dev",
     "bugs": {
-        "url": "https://github.com/Kage0x3B/svelte-advanced-dataTable/issues",
+        "url": "https://github.com/Kage0x3B/svelte-advanced-datatable/issues",
         "email": "moritz.hein@live.de"
     },
     "author": {
@@ -337,33 +336,6 @@
             ],
             "searchParser": [
                 "./dist/searchParser/index.d.ts"
-            ],
-            "skeleton/SkeletonBadgeWrapper.svelte": [
-                "./dist/skeleton/SkeletonBadgeWrapper.svelte.d.ts"
-            ],
-            "skeleton/SkeletonDataRow.svelte": [
-                "./dist/skeleton/SkeletonDataRow.svelte.d.ts"
-            ],
-            "skeleton/SkeletonDataTable.svelte": [
-                "./dist/skeleton/SkeletonDataTable.svelte.d.ts"
-            ],
-            "skeleton/SkeletonDataTablePagination.svelte": [
-                "./dist/skeleton/SkeletonDataTablePagination.svelte.d.ts"
-            ],
-            "skeleton/SkeletonIconWrapper.svelte": [
-                "./dist/skeleton/SkeletonIconWrapper.svelte.d.ts"
-            ],
-            "skeleton/SkeletonPaginationLink.svelte": [
-                "./dist/skeleton/SkeletonPaginationLink.svelte.d.ts"
-            ],
-            "skeleton/SkeletonSearchField.svelte": [
-                "./dist/skeleton/SkeletonSearchField.svelte.d.ts"
-            ],
-            "skeleton": [
-                "./dist/skeleton/index.d.ts"
-            ],
-            "skeleton/skeletonWrappedComponentPropertyMap": [
-                "./dist/skeleton/skeletonWrappedComponentPropertyMap.d.ts"
             ],
             "types/ApiFunction": [
                 "./dist/types/ApiFunction.d.ts"

@@ -1,12 +1,14 @@
 <script lang="ts">
-	import MarkdownHeading from './MarkdownHeading.svelte';
-	interface Props {
-		children?: import('svelte').Snippet;
-	}
+    import type { Snippet } from 'svelte';
+    import MarkdownHeading from './MarkdownHeading.svelte';
 
-	let { children }: Props = $props();
+    interface Props {
+        children: Snippet;
+    }
+
+    let { children }: Props = $props();
 </script>
 
 <MarkdownHeading h4>
-	{@render children?.()}
+    {@render children()}
 </MarkdownHeading>

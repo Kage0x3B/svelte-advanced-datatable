@@ -1,4 +1,4 @@
-import type { IDataSource } from '$lib/dataSource/index.js';
+import type { IDataSource } from '$lib/dataSource/IDataSource.js';
 import type { MessageFormatter } from '$lib/types/MessageFormatter.js';
 import type { FullDataTableConfig } from '$lib/types/DataTableConfig.js';
 import { getContext, setContext } from 'svelte';

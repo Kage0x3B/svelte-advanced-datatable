@@ -1,10 +1,10 @@
 import type { PaginatedListResponse } from '$lib/types/PaginatedListResponse.js';
 
-type LoadingQueryResult<Data> = Omit<QueryResult<Data>, 'data' | 'error'>;
-type SuccessQueryResult<Data> = Omit<QueryResult<Data>, 'data' | 'error'> & {
+export type LoadingQueryResult<Data> = Omit<QueryResult<Data>, 'data' | 'error'>;
+export type SuccessQueryResult<Data> = Omit<QueryResult<Data>, 'data' | 'error'> & {
     readonly data: PaginatedListResponse<Data>;
 };
-type ErrorQueryResult<Data> = Omit<QueryResult<Data>, 'data' | 'error'> & {
+export type ErrorQueryResult<Data> = Omit<QueryResult<Data>, 'data' | 'error'> & {
     readonly error: Error;
 };
 

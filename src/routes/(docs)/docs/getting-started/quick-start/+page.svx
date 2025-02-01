@@ -30,10 +30,10 @@ Add the DataTable component as well as the accompanying config to your page:
 
 ```html
 <script lang='ts'>
-	import type { DataTableConfig } from 'svelte-advanced-dataTable';
-	import { ComponentType, LocalDataSource } from 'svelte-advanced-dataTable';
+	import type { DataTableConfig } from 'svelte-advanced-datatable';
+	import { ComponentType, LocalDataSource } from 'svelte-advanced-datatable';
 	// Notice that the DataTable component is imported from the /daisyUi package to support Daisy UI components
-	import { DataTable } from 'svelte-advanced-dataTable/daisyUi';
+	import { DataTable } from 'svelte-advanced-datatable/daisyUi';
 
 	// Config for our dataTable
 	const config: DataTableConfig<UserData> = {
@@ -75,5 +75,5 @@ Add the DataTable component as well as the accompanying config to your page:
 This short code-snippet will already result in the following dataTable:
 
 
-<ExampleTable path='skeleton/basic/first-example' description='This is what your resulting dataTable will look like!' />
+<ExampleTable path='daisy-ui/basic/first-example' description='This is what your resulting dataTable will look like!' />
 
