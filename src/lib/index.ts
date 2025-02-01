@@ -9,18 +9,6 @@ export type { NumberComponentTypeProperties } from './dataComponent/NumberCompon
 export type { StringComponentTypeProperties } from './dataComponent/StringComponentTypeProperties.js';
 export { WrappedIconName, WrappedComponentColor } from './dataComponent/WrappedComponentProperty.js';
 
-export { AbstractDataSource } from './dataSource/AbstractDataSource.svelte.js';
-export { ApiFunctionDataSource } from './dataSource/ApiFunctionDataSource.svelte.js';
-export { FetchApiDataSource } from './dataSource/FetchApiDataSource.svelte.js';
-export type { IDataSource } from './dataSource/IDataSource.js';
-export { LocalDataSource, type LocalDataSourceOptions } from './dataSource/LocalDataSource.svelte.js';
-export {
-    QueryResult,
-    type SuccessQueryResult,
-    type LoadingQueryResult,
-    type ErrorQueryResult
-} from './dataSource/QueryResult.js';
-
 export type { ApiFunction } from './types/ApiFunction.js';
 export type {
     DataTableConfig,
