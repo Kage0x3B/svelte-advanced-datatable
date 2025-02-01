@@ -14,7 +14,7 @@
                 return;
             }
 
-            consoleWarn(...args);
+            consoleWarn?.(...args);
         };
     }
 </script>
@@ -35,7 +35,7 @@
     let forcedSearchQuery = $derived(config.forcedSearchQuery);
     let dataSource = getDataSourceContext()();
 
-    interface Props {
+    export interface Props {
         currentPage: number;
         searchQuery: ParsedSearchQuery | undefined;
         children: Snippet<
