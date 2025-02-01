@@ -81,11 +81,6 @@
     --noise: 1;
 }
 
-
-html, body {
-    @apply h-full overflow-hidden;
-}
-
 img {
     pointer-events: none;
 }

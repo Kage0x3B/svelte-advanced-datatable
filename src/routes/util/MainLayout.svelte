@@ -2,6 +2,7 @@
     import '../../css/app.css';
     import type { Snippet } from 'svelte';
     import IconGithub from '~icons/fa6-brands/github';
+    import Footer from './Footer.svelte';
 
     interface Props {
         sidebar?: Snippet;
@@ -29,7 +30,7 @@
     </li>
 {/snippet}
 
-<div class="navbar bg-primary">
+<div class="navbar bg-primary fixed z-10">
     <div class="navbar-start">
         <div class="dropdown">
             <div tabindex="0" role="button" class="btn btn-ghost md:hidden">
@@ -56,11 +57,15 @@
     </div>
 </div>
 
-<div class={{ flex: Boolean(sidebar) }}>
-    {#if sidebar}
-        <aside class="w-full md:w-1/4 lg:w-1/5 xl:w-1/6 pl-4">
-            {@render sidebar()}
-        </aside>
-    {/if}
-    <main class="container mx-auto pt-16 pb-16 min-h-screen">{@render children()}</main>
+<div class="flex flex-col min-h-screen justify-between">
+    <div class="flex">
+        {#if sidebar}
+            <aside class="w-full md:w-1/4 lg:w-1/5 xl:w-1/6 pl-4 pt-8 fixed">
+                {@render sidebar()}
+            </aside>
+            <div class="w-full md:w-1/4 lg:w-1/5 xl:w-1/6 pl-4 pt-8"></div>
+        {/if}
+        <main class="w-full container mx-auto pt-24 pb-16">{@render children()}</main>
+    </div>
+    <Footer />
 </div>
