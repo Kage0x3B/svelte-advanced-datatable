@@ -1,8 +1,8 @@
 <script lang="ts">
-    import { getConfigContext } from '$lib/util/context.js';
+    import { configContext } from '$lib/util/context.js';
     import type { Snippet } from 'svelte';
 
-    const config = getConfigContext()();
+    const config = $derived(configContext.get().current);
 
     type OnClickFunction = (<T>(item: T) => void | Promise<void>) | undefined;
 

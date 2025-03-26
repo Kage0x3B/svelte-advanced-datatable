@@ -7,7 +7,9 @@
     import { exampleUserList, type UserData } from '../../../util/UserData.js';
     import HiddenPasswordCellComponent from '../../util/HiddenPasswordCellComponent.svelte';
 
-    const config: DataTableConfig<UserData> = {
+    type ListItem = UserData;
+
+    const config = $derived({
         type: 'userData',
         columnProperties: {
             id: {
@@ -69,7 +71,7 @@
                 }
             }
         }
-    };
+    } satisfies DataTableConfig<ListItem>);
 
     const dataSource = new LocalDataSource(exampleUserList, {
         filtering: {
@@ -78,4 +80,4 @@
     });
 </script>
 
-<DataTable {config} {dataSource} highlight hoverable responsive striped />
+<DataTable {config} {dataSource} hoverable striped />

@@ -1,9 +1,9 @@
 <script lang="ts">
     import InternalSearchField from '$lib/internal/InternalSearchField.svelte';
     import type { ParsedSearchQuery } from '$lib/searchParser/ParsedSearchQuery.js';
-    import { getMessageFormatterContext } from '$lib/util/context.js';
+    import { messageFormatterContext } from '$lib/util/context.js';
 
-    let format = getMessageFormatterContext()();
+    const format = $derived(messageFormatterContext.get().current);
 
     interface Props {
         searchInput?: string;

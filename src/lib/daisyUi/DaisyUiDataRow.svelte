@@ -1,11 +1,12 @@
 <script lang="ts">
+    import type { CustomSnippetProps } from '$lib/dataComponent/CustomComponentTypeProperties.js';
     import DataTable from '$lib/internal/index.js';
-    import { getConfigContext } from '$lib/util/context.js';
+    import { configContext } from '$lib/util/context.js';
     import { slide } from 'svelte/transition';
     import DaisyUiBadgeWrapper from '$lib/daisyUi/DaisyUiBadgeWrapper.svelte';
     import DaisyUiIconWrapper from '$lib/daisyUi/DaisyUiIconWrapper.svelte';
 
-    const config = getConfigContext()();
+    const config = $derived(configContext.get().current);
 
     interface Props {
         index: number;
@@ -14,9 +15,11 @@
         onClick: (<T>(item: T) => void | Promise<void>) | undefined;
         item: Record<string, unknown>;
         open: (index: number) => void;
+
+        customSnippets?: CustomSnippetProps;
     }
 
-    let { index, openIndex, highlighted, onClick, item, open }: Props = $props();
+    let { index, openIndex, highlighted, onClick, item, open, customSnippets }: Props = $props();
 </script>
 
 <DataTable.Row {index} {openIndex} {onClick} {item} {open}>
@@ -36,6 +39,7 @@
                                 BadgeComponent={DaisyUiBadgeWrapper}
                                 {item}
                                 {key}
+                                {customSnippets}
                             />
                         </td>
                     {/if}

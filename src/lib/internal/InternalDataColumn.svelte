@@ -1,30 +1,40 @@
 <script lang="ts">
     import { ComponentType } from '$lib/dataComponent/ComponentType.js';
     import type { ComponentTypeProperties } from '$lib/dataComponent/ComponentType.js';
+    import type { CustomSnippetProps } from '$lib/dataComponent/CustomComponentTypeProperties.js';
     import type { BadgeComponentProps } from '$lib/types/BadgeComponentProps.js';
     import type { IconComponentProps } from '$lib/types/IconComponentProps.js';
-    import { getConfigContext, getMessageFormatterContext } from '$lib/util/context.js';
+    import { configContext, messageFormatterContext } from '$lib/util/context.js';
     import { isDateTime } from '$lib/util/generalUtil.js';
     import type { Component } from 'svelte';
 
-    let config = getConfigContext()();
-    let format = getMessageFormatterContext()();
+    const config = $derived(configContext.get().current);
+    const format = $derived(messageFormatterContext.get().current);
 
     interface Props {
         IconComponent: Component<IconComponentProps>;
         BadgeComponent: Component<BadgeComponentProps>;
         item: Record<string, unknown>;
         key: string;
+
+        customSnippets?: CustomSnippetProps;
     }
 
-    let { IconComponent, BadgeComponent, item, key }: Props = $props();
+    let { IconComponent, BadgeComponent, item, key, customSnippets }: Props = $props();
 
-    const colProps = config.columnProperties[key] as unknown as ComponentTypeProperties;
+    const colProps = $derived(config.columnProperties[key] as unknown as ComponentTypeProperties);
 </script>
 
 <!-- It's better for performance to generate some fields for easy types (string, int, enum, bool, ..) with a simple if -->
-{#if colProps.type === ComponentType.CUSTOM}
-    <colProps.component {key} {colProps} {item} value={item[key]} />
+{#if customSnippets[key + 'Snippet']}
+    {@const columnSnippet = customSnippets[key + 'Snippet']}
+    {@render columnSnippet({ key, value: item[key], item, colProps })}
+{:else if colProps.type === ComponentType.CUSTOM}
+    {#if colProps.snippet}
+        {@render colProps.snippet({ key, value: item[key], item, colProps })}
+    {:else if colProps.component}
+        <colProps.component {key} {colProps} {item} value={item[key]} />
+    {/if}
 {:else if colProps.type === ComponentType.STRING || colProps.type === ComponentType.NUMBER}
     {#if typeof item[key] !== 'undefined' && item[key] !== null && item[key] !== 'null'}
         {format(`dataTable.${config.type}.${key}.format`, {

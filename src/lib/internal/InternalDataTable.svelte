@@ -1,7 +1,7 @@
-<script module>
+<script module lang="ts">
     let consoleWarn: typeof console.warn | undefined = undefined;
 
-    if (!consoleWarn) {
+    if (!consoleWarn && false) {
         console.log('overwriting console.warn');
         consoleWarn = console.warn.bind(console);
         console.warn = (...args) => {
@@ -24,16 +24,14 @@
     import type { QueryResult } from '$lib/dataSource/QueryResult.js';
     import type { ParsedSearchQuery } from '$lib/searchParser/ParsedSearchQuery.js';
     import type { PaginatedListRequest } from '$lib/types/PaginatedListRequest.js';
-    import type { PaginatedListResponse } from '$lib/types/PaginatedListResponse.js';
     import type { SortDirection } from '$lib/types/SortDirection.js';
-    import { getConfigContext, getDataSourceContext } from '$lib/util/context.js';
+    import { configContext, dataSourceContext } from '$lib/util/context.js';
     import { buildColumnPropertyData } from '$lib/util/dataTableUtil.js';
-    import { browser } from '$lib/util/generalUtil.js';
-    import { type Snippet, untrack } from 'svelte';
+    import type { Snippet } from 'svelte';
 
-    let config = getConfigContext()();
-    let forcedSearchQuery = $derived(config.forcedSearchQuery);
-    let dataSource = getDataSourceContext()();
+    const config = $derived(configContext.get().current);
+    const forcedSearchQuery = $derived(config.forcedSearchQuery);
+    const dataSource = $derived(dataSourceContext.get().current);
 
     export interface Props {
         currentPage: number;
@@ -59,9 +57,26 @@
 
     let { currentPage, searchQuery, children }: Props = $props();
 
-    let itemAmount = $state(-1);
-    let pageAmount = $derived(Math.ceil(Math.max(1, itemAmount / config.itemsPerPage)));
-    let items: Record<string, unknown>[] = $state([]);
+    dataSource.setConfig?.(config);
+    $effect(() => dataSource.setConfig?.(config));
+    $effect(() => dataSource.onMount?.());
+
+    const queryResult = $derived(dataSource.queryResult);
+    const queryData = $derived(queryResult.data);
+    const itemAmount = $derived.by(() => {
+        if (!queryData) {
+            return -1;
+        }
+
+        const calculatedMaxItemAmount = (currentPage - 1) * config.itemsPerPage + queryData.items.length;
+
+        return calculatedMaxItemAmount >= config.itemsPerPage
+            ? queryData.totalCount
+            : Math.min(queryData.totalCount, calculatedMaxItemAmount);
+    });
+
+    const pageAmount = $derived(Math.ceil(Math.max(1, itemAmount / config.itemsPerPage)));
+    const items: Record<string, unknown>[] = $derived((queryData?.items ?? []) as Record<string, unknown>[]);
     let currentOpenIndex: number | undefined = $state();
 
     let sortColumnKey: string | undefined = $state(config.defaultSort?.columnKey);
@@ -69,38 +84,15 @@
 
     let highlightedItemId = $derived(config.highlightedItemId);
 
-    dataSource.setConfig?.(config);
-    let queryResult = $derived(dataSource.queryResult);
-
-    $effect(() => dataSource.onMount?.());
-
-    function updateData(data: PaginatedListResponse<unknown>) {
-        untrack(() => {
-            const calculatedMaxItemAmount = (currentPage - 1) * config.itemsPerPage + data.items.length;
-
-            itemAmount =
-                calculatedMaxItemAmount >= config.itemsPerPage
-                    ? data.totalCount
-                    : Math.min(data.totalCount, calculatedMaxItemAmount);
-            items = data.items as Record<string, unknown>[];
-
-            currentOpenIndex = items.length === 1 ? 0 : -1;
-        });
-    }
-
     $effect(() => {
-        if (queryResult.isSuccess()) {
-            updateData(queryResult.data);
+        if (items.length === 1 && currentOpenIndex === undefined) {
+            currentOpenIndex = 0;
         }
     });
 
-    let internalColumnProperties = $derived(buildColumnPropertyData(config.columnProperties));
+    const internalColumnProperties = $derived(buildColumnPropertyData(config.columnProperties));
 
     function refresh() {
-        if (!browser) {
-            return;
-        }
-
         let orderBy: PaginatedListRequest<unknown>['orderBy'] | undefined;
 
         if (sortColumnKey && sortDirection) {

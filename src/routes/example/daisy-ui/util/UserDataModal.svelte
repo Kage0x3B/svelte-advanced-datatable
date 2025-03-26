@@ -2,7 +2,7 @@
     import type { ModalProps } from '$lib/types/ModalProps.js';
     import type { UserData } from '../../util/UserData.js';
 
-    let { item, toggle }: ModalProps<UserData> = $props();
+    let { item }: ModalProps<UserData> = $props();
 
     const lastOnlineAmount = Math.ceil(Math.random() * 60);
     const lastOnlineUnit = Math.random() > 0.5 ? 'hours' : 'minutes';

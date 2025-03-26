@@ -57,7 +57,6 @@ export class SvelteQueryDataSource<Data> implements IDataSource<Data> {
         this.dataTableConfig = config;
 
         this.queryKeyPrefix = `dataTable-${config.type}`;
-        this.dataQuery = createQuery(() => this.queryOptions);
 
         this.initialized = true;
     }

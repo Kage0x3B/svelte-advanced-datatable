@@ -5,9 +5,8 @@ import type { GenericComponentTypeProperties } from './GenericComponentTypePrope
 /**
  * @see {@link ComponentType.ENUM}
  */
-export interface EnumComponentTypeProperties<Enum extends string> extends GenericComponentTypeProperties<string> {
-    type: ComponentType.ENUM;
-
+export interface EnumComponentTypeProperties<Enum extends string>
+    extends GenericComponentTypeProperties<ComponentType.ENUM, string> {
     /**
      * An array listing all possible values of this enum
      */

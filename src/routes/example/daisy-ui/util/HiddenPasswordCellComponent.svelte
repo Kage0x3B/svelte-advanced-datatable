@@ -1,12 +1,8 @@
 <script lang="ts">
-    import DaisyUiIconWrapper from '$lib/daisyUi/DaisyUiIconWrapper.svelte';
+    import type { CustomComponentProps } from '$lib/dataComponent/CustomComponentTypeProperties.js';
     import Button from '../../../util/Button.svelte';
 
-    interface Props {
-        value: string;
-    }
-
-    let { value }: Props = $props();
+    let { value }: CustomComponentProps<string> = $props();
 
     let isHidden = $state(true);
 

@@ -4,9 +4,7 @@ import type { GenericComponentTypeProperties } from './GenericComponentTypePrope
 /**
  * @see {@link ComponentType.BOOLEAN}
  */
-export interface BooleanComponentTypeProperties extends GenericComponentTypeProperties<boolean> {
-    type: ComponentType.BOOLEAN;
-
+export interface BooleanComponentTypeProperties extends GenericComponentTypeProperties<ComponentType.BOOLEAN, boolean> {
     /**
      * The columns value is loosely checked against this value to determine if it's `true` or `false`.
      *

@@ -10,7 +10,7 @@
         userName: string;
     }
 
-    const config: DataTableConfig<UserData> = Object.freeze({
+    const config = {
         type: 'userData',
         columnProperties: {
             id: {
@@ -29,9 +29,9 @@
                 label: 'Username'
             }
         }
-    });
+    } satisfies DataTableConfig<UserData>;
 
-    let dataSource = new SvelteQueryDataSource(wrapFetchToThrow(() => fetch('/example-data/users.json')));
+    const dataSource = new SvelteQueryDataSource(wrapFetchToThrow(() => fetch('/example-data/users.json')));
 </script>
 
-<DataTable {config} bind:dataSource />
+<DataTable {config} {dataSource} />

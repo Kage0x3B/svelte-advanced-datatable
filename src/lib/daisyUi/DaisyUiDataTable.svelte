@@ -1,32 +1,34 @@
 <script lang="ts">
     import type { DataTableIcon } from '$lib/daisyUi/daisyUiWrappedComponentPropertyMap.js';
+    import type { CustomSnippetProps } from '$lib/dataComponent/CustomComponentTypeProperties.js';
     import type { IDataSource } from '$lib/dataSource/IDataSource.js';
     import DataTable from '$lib/internal/index.js';
     import type { ParsedSearchQuery } from '$lib/searchParser/ParsedSearchQuery.js';
     import type { DataTableConfig, FullDataTableConfig } from '$lib/types/DataTableConfig.js';
     import type { MessageFormatter } from '$lib/types/MessageFormatter.js';
-    import { setConfigContext, setDataSourceContext, setMessageFormatterContext } from '$lib/util/context.js';
+    import { configContext, dataSourceContext, messageFormatterContext } from '$lib/util/context.js';
     import { mergeDataTableConfigDefaults } from '$lib/util/dataTableConfigUtil.js';
     import { clamp } from '$lib/util/generalUtil.js';
     import { createMessageFormatter } from '$lib/util/messageFormatterUtil.svelte.js';
     import type { Component, Snippet } from 'svelte';
+    import { box } from 'svelte-toolbelt';
     import type { ClassValue } from 'svelte/elements';
     import { fade } from 'svelte/transition';
     import type { ThemeSize } from '../../routes/util/type/Theme.js';
-    import DataRow from './DaisyUiDataRow.svelte';
+    import DaisyUiDataRow from './DaisyUiDataRow.svelte';
     import DaisyUiDataTablePagination from './DaisyUiDataTablePagination.svelte';
     import SearchField from './DaisyUiSearchField.svelte';
     import SortUpIcon from '$lib/daisyUi/icons/SortUpIcon.svelte';
     import SortDownIcon from '$lib/daisyUi/icons/SortDownIcon.svelte';
     import SortIcon from '$lib/daisyUi/icons/SortIcon.svelte';
 
-    interface Props {
+    interface Props extends CustomSnippetProps {
         config: DataTableConfig<any>;
 
         /**
          * The data source where the dataTable requests the table data from
          */
-        dataSource: IDataSource<any>;
+        dataSource: IDataSource<unknown>;
 
         icons?: Partial<Record<DataTableIcon, Component>>;
 
@@ -49,15 +51,16 @@
         class: classExport,
         headerFirst,
         headerAfterSearch,
-        headerMiddle
+        headerMiddle,
+        ...customSnippets
     }: Props = $props();
 
-    let config: FullDataTableConfig<unknown> = $derived(mergeDataTableConfigDefaults<unknown>(configExport));
-    let format: MessageFormatter = $derived(createMessageFormatter<unknown>(config));
+    const config: FullDataTableConfig<unknown> = $derived(mergeDataTableConfigDefaults<unknown>(configExport));
+    const format: MessageFormatter = $derived(createMessageFormatter<unknown>(config));
 
-    setConfigContext(() => config);
-    setDataSourceContext(() => dataSource);
-    setMessageFormatterContext(() => format);
+    configContext.set(box.with(() => config));
+    dataSourceContext.set(box.with(() => dataSource));
+    messageFormatterContext.set(box.with(() => format));
 
     let currentPage = $state(1);
     let searchInput = $state('');
@@ -163,13 +166,14 @@
                 {/if}
                 <tbody>
                     {#each items as item, index (item[config.dataUniquePropertyKey])}
-                        <DataRow
+                        <DaisyUiDataRow
                             {item}
                             {index}
                             openIndex={currentOpenIndex}
                             {open}
                             onClick={config.onItemClick}
                             highlighted={highlightedItemId === item[config.dataUniquePropertyKey]}
+                            {customSnippets}
                         />
                     {/each}
                 </tbody>

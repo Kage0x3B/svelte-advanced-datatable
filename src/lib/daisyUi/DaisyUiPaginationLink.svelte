@@ -1,9 +1,9 @@
 <script lang="ts">
-    import { getMessageFormatterContext } from '$lib/util/context.js';
+    import { messageFormatterContext } from '$lib/util/context.js';
     import { preventEvent } from '$lib/util/generalUtil.js';
     import type { Snippet } from 'svelte';
 
-    let format = getMessageFormatterContext()();
+    const format = $derived(messageFormatterContext.get().current);
 
     interface Props {
         class?: string;

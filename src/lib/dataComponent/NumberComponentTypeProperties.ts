@@ -4,6 +4,4 @@ import type { GenericComponentTypeProperties } from './GenericComponentTypePrope
 /**
  * @see {@link ComponentType.NUMBER}
  */
-export interface NumberComponentTypeProperties extends GenericComponentTypeProperties<number> {
-    type: ComponentType.NUMBER;
-}
+export type NumberComponentTypeProperties = GenericComponentTypeProperties<ComponentType.NUMBER, number>;

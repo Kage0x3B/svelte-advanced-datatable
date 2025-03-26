@@ -4,6 +4,4 @@ import type { GenericComponentTypeProperties } from './GenericComponentTypePrope
 /**
  * @see {@link ComponentType.STRING}
  */
-export interface StringComponentTypeProperties extends GenericComponentTypeProperties<string> {
-	type: ComponentType.STRING;
-}
+export type StringComponentTypeProperties = GenericComponentTypeProperties<ComponentType.STRING, string>;

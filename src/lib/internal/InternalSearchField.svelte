@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { getConfigContext } from '$lib/util/context.js';
+    import { configContext } from '$lib/util/context.js';
     import type { Snippet } from 'svelte';
     import type { ParsedSearchQuery } from '$lib/searchParser/index.js';
     import { debounce } from '$lib/util/generalUtil.js';
@@ -13,12 +13,10 @@
 
     let { searchInput = $bindable(''), searchQuery = $bindable(undefined), inputElement, children }: Props = $props();
 
-    let config = getConfigContext()();
+    const config = $derived(configContext.get().current);
 
-    $effect(() => {
-        updateSearch(searchInput);
-    });
     const updateSearch = debounce((searchInput: string) => _updateSearch(searchInput), 200);
+    $effect(() => updateSearch(searchInput));
 
     function _updateSearch(searchInput: string) {
         try {
@@ -34,12 +32,12 @@
         if (event.ctrlKey && event.key == 'f') {
             event.preventDefault();
 
-            inputElement && inputElement.focus();
+            inputElement?.focus();
         } else if (event.key === 'Escape' && document.activeElement === inputElement) {
             event.preventDefault();
 
             searchInput = '';
-            inputElement && inputElement.blur();
+            inputElement?.blur();
         }
     }
 </script>

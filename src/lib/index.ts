@@ -1,7 +1,11 @@
 export type { BooleanComponentTypeProperties } from './dataComponent/BooleanComponentTypeProperties.js';
 export { ComponentType } from './dataComponent/ComponentType.js';
 export type { ComponentTypeProperties, TableColumnConfig } from './dataComponent/ComponentType.js';
-export type { CustomComponentTypeProperties } from './dataComponent/CustomComponentTypeProperties.js';
+export type {
+    CustomComponentTypeProperties,
+    CustomComponentProps,
+    CustomComponentSnippet
+} from './dataComponent/CustomComponentTypeProperties.js';
 export type { DateComponentTypeProperties } from './dataComponent/DateComponentTypeProperties.js';
 export type { EnumComponentTypeProperties } from './dataComponent/EnumComponentTypeProperties.js';
 export type { GenericComponentTypeProperties } from './dataComponent/GenericComponentTypeProperties.js';
@@ -23,12 +27,7 @@ export type { PaginatedListResponse } from './types/PaginatedListResponse.js';
 export type { SearchFilter } from './types/SearchFilter.js';
 export type { SortDirection } from './types/SortDirection.js';
 
-export {
-    getConfigContext,
-    setConfigContext,
-    getMessageFormatterContext,
-    setMessageFormatterContext
-} from './util/context.js';
+export { configContext, dataSourceContext, messageFormatterContext } from './util/context.js';
 export { wrapFetchToThrow } from './util/generalUtil.js';
 export { mergeDataTableConfigDefaults } from './util/dataTableConfigUtil.js';
 export { createMessageFormatter } from './util/messageFormatterUtil.svelte.js';
