@@ -7,7 +7,7 @@
 
     let { name, color }: IconComponentProps = $props();
 
-    let IconComponent = $derived(iconMap[name] ?? defaultDaisyUiIconMap[name]);
+    let IconComponent = $derived(iconMap?.[name] ?? defaultDaisyUiIconMap[name]);
 </script>
 
 <IconComponent

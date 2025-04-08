@@ -13,6 +13,7 @@ export interface UserData {
      */
     password: string;
     gender: 'male' | 'female';
+    isTestUser: boolean;
 }
 
 let idCounter = 1;
@@ -29,6 +30,7 @@ export const exampleUserList = createExampleData<UserData>(() => {
         lastName,
         mailAddress: faker.internet.email({ firstName, lastName }),
         password: faker.internet.password(),
-        gender
+        gender,
+        isTestUser: faker.datatype.boolean()
     };
 });

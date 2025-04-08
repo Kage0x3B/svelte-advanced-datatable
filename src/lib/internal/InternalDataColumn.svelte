@@ -44,7 +44,7 @@
     {/if}
 {:else if colProps.type === ComponentType.BOOLEAN}
     <!-- Comparison with two equals intended!! -->
-    {#if (!colProps.inverted && item[key] == colProps.truthy) || (colProps.inverted && item[key] != colProps.truthy)}
+    {#if (!colProps.inverted && item[key] == (colProps.truthy ?? true)) || (colProps.inverted && item[key] != (colProps.truthy ?? true))}
         <IconComponent name="check" color="green" />
     {:else}
         <IconComponent name="cross" color="red" />

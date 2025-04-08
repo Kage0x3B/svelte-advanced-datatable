@@ -9,8 +9,8 @@ importers:
   .:
     dependencies:
       '@tanstack/query-core':
-        specifier: 4.x
-        version: 4.26.1
+        specifier: 5.x
+        version: 5.62.7
     devDependencies:
       '@faker-js/faker':
         specifier: ^9.4.0
@@ -893,8 +893,8 @@ packages:
     peerDependencies:
       vite: ^5.2.0 || ^6
 
-  '@tanstack/query-core@4.26.1':
-    resolution: {integrity: sha512-Zrx2pVQUP4ndnsu6+K/m8zerXSVY8QM+YSbxA1/jbBY21GeCd5oKfYl92oXPK0hPEUtoNuunIdiq0ZMqLos+Zg==}
+  '@tanstack/query-core@5.62.7':
+    resolution: {integrity: sha512-fgpfmwatsrUal6V+8EC2cxZIQVl9xvL7qYa03gsdsCy985UTUlS4N+/3hCzwR0PclYDqisca2AqR1BVgJGpUDA==}
 
   '@tanstack/query-core@https://pkg.pr.new/TanStack/query/@tanstack/query-core@56f67c7d62d60b26a3dfbf8e359f12257dcbc8eb':
     resolution: {tarball: https://pkg.pr.new/TanStack/query/@tanstack/query-core@56f67c7d62d60b26a3dfbf8e359f12257dcbc8eb}
@@ -2808,7 +2808,7 @@ snapshots:
       tailwindcss: 4.0.1
       vite: 6.0.0(@types/node@22.12.0)(jiti@2.4.2)(lightningcss@1.29.1)(sass@1.83.4)(yaml@2.7.0)
 
-  '@tanstack/query-core@4.26.1': {}
+  '@tanstack/query-core@5.62.7': {}
 
   '@tanstack/query-core@https://pkg.pr.new/TanStack/query/@tanstack/query-core@56f67c7d62d60b26a3dfbf8e359f12257dcbc8eb': {}
 

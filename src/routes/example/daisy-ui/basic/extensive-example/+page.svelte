@@ -1,4 +1,5 @@
 <script lang="ts">
+    import type { BooleanComponentTypeProperties } from '$lib';
     import { ComponentType } from '$lib/dataComponent/ComponentType.js';
     import type { EnumComponentTypeProperties } from '$lib/dataComponent/EnumComponentTypeProperties.js';
     import { LocalDataSource } from '$lib/dataSource/LocalDataSource.svelte.js';
@@ -41,7 +42,10 @@
                     default: 'gray',
                     unknown: 'gray'
                 }
-            } as EnumComponentTypeProperties<'male' | 'female'>
+            } as EnumComponentTypeProperties<'male' | 'female'>,
+            isTestUser: {
+                type: ComponentType.BOOLEAN
+            } satisfies BooleanComponentTypeProperties
         },
         dataUniquePropertyKey: 'id',
         messageConfig: {
