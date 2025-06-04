@@ -64,7 +64,7 @@
     const queryResult = $derived(dataSource.queryResult);
     const queryData = $derived(queryResult.data);
     const itemAmount = $derived.by(() => {
-        if (!queryData) {
+        if (!queryData?.items) {
             return -1;
         }
 
