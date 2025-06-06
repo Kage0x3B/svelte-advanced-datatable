@@ -58,14 +58,16 @@
 </div>
 
 <div class="flex flex-col min-h-screen justify-between">
-    <div class="flex">
+    <div class="flex flex-col md:flex-row">
         {#if sidebar}
-            <aside class="w-full md:w-1/4 lg:w-1/5 xl:w-1/6 pl-4 pt-8 fixed">
+            <aside class="w-full md:w-[25vw] lg:w-[20vw] xl:w-[17vw] md:pl-4 pt-14 md:fixed">
                 {@render sidebar()}
             </aside>
-            <div class="w-full md:w-1/4 lg:w-1/5 xl:w-1/6 pl-4 pt-8"></div>
+            <div
+                class="hidden md:block w-full md:min-w-[28vw] lg:min-w-[23vw] xl:min-w-[20vw] md:w-[28vw] lg:w-[23vw] xl:w-[20vw] pl-4 pt-8"
+            ></div>
         {/if}
-        <main class="w-full container mx-auto pt-24 pb-16">{@render children()}</main>
+        <main class="w-full container mx-auto pt-4 md:pt-24 pb-16 px-2 md:px-0">{@render children()}</main>
     </div>
     <Footer />
 </div>

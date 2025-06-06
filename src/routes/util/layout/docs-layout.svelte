@@ -48,7 +48,7 @@
         <DocsSidebar />
     {/snippet}
     <div
-        class="prose lg:prose-lg dark:prose-invert prose-headings:font-normal prose-a:text-primary-500 prose-a:no-underline"
+        class="prose max-w-full lg:prose-lg dark:prose-invert prose-headings:font-normal prose-a:text-primary-500 prose-a:no-underline"
     >
         {@render children?.()}
     </div>
