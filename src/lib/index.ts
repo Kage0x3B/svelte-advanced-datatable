@@ -14,6 +14,7 @@ export type { StringComponentTypeProperties } from './dataComponent/StringCompon
 export { WrappedIconName, WrappedComponentColor } from './dataComponent/WrappedComponentProperty.js';
 
 export type { ApiFunction } from './types/ApiFunction.js';
+export type { DataTableState } from './types/DataTableState.js';
 export type {
     DataTableConfig,
     FullDataTableConfig,

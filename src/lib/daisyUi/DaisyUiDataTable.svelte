@@ -1,4 +1,5 @@
 <script lang="ts">
+    import type { DataTableState } from '$lib/types/DataTableState.js';
     import type { DataTableIcon } from '$lib/daisyUi/daisyUiWrappedComponentPropertyMap.js';
     import type { CustomSnippetProps } from '$lib/dataComponent/CustomComponentTypeProperties.js';
     import type { IDataSource } from '$lib/dataSource/IDataSource.js';
@@ -40,6 +41,9 @@
         headerFirst?: Snippet;
         headerAfterSearch?: Snippet;
         headerMiddle?: Snippet;
+
+        initialState?: DataTableState;
+        captureState?: (state: DataTableState) => void;
     }
 
     let {
@@ -52,6 +56,8 @@
         headerFirst,
         headerAfterSearch,
         headerMiddle,
+        initialState,
+        captureState,
         ...customSnippets
     }: Props = $props();
 
@@ -62,9 +68,30 @@
     dataSourceContext.set(box.with(() => dataSource));
     messageFormatterContext.set(box.with(() => format));
 
-    let currentPage = $state(1);
-    let searchInput = $state('');
+    let currentPage = $state(initialState?.currentPage ?? 1);
+    let searchInput = $state(initialState?.searchInput ?? '');
     let searchQuery = $state<ParsedSearchQuery | undefined>(undefined);
+
+    export function capture(): DataTableState {
+        return {
+            currentPage,
+            searchInput
+        };
+    }
+
+    export function restore(snapshot: DataTableState | undefined) {
+        if (snapshot && ((snapshot.currentPage && snapshot.currentPage !== 1) || snapshot.searchInput)) {
+            currentPage = snapshot.currentPage ?? 1;
+            searchInput = snapshot.searchInput ?? '';
+        }
+    }
+
+    $effect(() =>
+        captureState?.({
+            currentPage,
+            searchInput
+        })
+    );
 </script>
 
 <DataTable.Root {searchQuery} {currentPage}>
