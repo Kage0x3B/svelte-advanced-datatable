@@ -25,15 +25,26 @@
 <DataTable.Row {index} {openIndex} {onClick} {item} {open}>
     {#snippet children({ isOpen, rowOnClick, toggle })}
         {#if isOpen}
-            <tr class="margin-row top">
+            <tr class="margin-row top border-b-0">
                 <td colspan={Object.keys(config.columnProperties).length} transition:slide|local>&nbsp;</td>
             </tr>
         {/if}
-        <tr class="datatable-row" class:expanded={isOpen} class:highlighted onclick={rowOnClick}>
+        <tr
+            class={[
+                'datatable-row cursor-pointer whitespace-nowrap transition-colors duration-200',
+                {
+                    'bg-base-300': highlighted,
+                    'border-0 rounded-t-box': isOpen
+                }
+            ]}
+            class:expanded={isOpen}
+            class:highlighted
+            onclick={rowOnClick}
+        >
             {#if item}
                 {#each Object.entries(config.columnProperties) as [key, colProp]}
                     {#if !colProp?.hidden}
-                        <td>
+                        <td class={[isOpen && 'bg-base-300 border-0 first:rounded-tl-box last:rounded-tr-box']}>
                             <DataTable.Column
                                 IconComponent={DaisyUiIconWrapper}
                                 BadgeComponent={DaisyUiBadgeWrapper}
@@ -49,69 +60,19 @@
             {/if}
         </tr>
         {#if isOpen}
-            <tr class="datatable-modal-container">
+            <tr class="datatable-modal-container border-0 shadow-md">
                 <td colspan={Object.keys(config.columnProperties).length} transition:slide|local>
-                    <div class="datatable-modal" transition:slide|local>
+                    <div
+                        class="datatable-modal border-b border-l border-r border-base-content/5 rounded-b-box"
+                        transition:slide|local
+                    >
                         <config.modalComponent {item} {toggle} />
                     </div>
                 </td>
             </tr>
-            <tr class="margin-row bottom">
+            <tr class="margin-row bottom border-b-0">
                 <td colspan={Object.keys(config.columnProperties).length} transition:slide|local>&nbsp;</td>
             </tr>
         {/if}
     {/snippet}
 </DataTable.Row>
-
-<style>
-    .datatable-row {
-        cursor: pointer;
-        transition: background-color 0.2s;
-        white-space: nowrap;
-    }
-
-    .datatable-row.highlighted {
-        background-color: #f0f;
-    }
-
-    .datatable-modal-container > td:hover,
-    .margin-row > td:hover {
-        box-shadow: none;
-    }
-
-    .datatable-row.expanded td {
-        background-color: rgba(0, 0, 0, 0.075);
-        border-bottom: 0;
-    }
-
-    .datatable-row.expanded td:first-child {
-        border-left: 1px solid #dee2e6;
-        border-top-left-radius: 10px;
-    }
-
-    .datatable-row.expanded td:last-child {
-        border-right: 1px solid #dee2e6;
-        border-top-right-radius: 10px;
-    }
-
-    .datatable-modal-container {
-        box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
-        border-bottom-left-radius: 10px;
-        border-bottom-right-radius: 10px;
-    }
-
-    .datatable-modal-container td {
-        border-top: 0;
-        border-bottom: 1px solid #dee2e6;
-        border-left: 1px solid #dee2e6;
-        border-right: 1px solid #dee2e6;
-
-        border-bottom-left-radius: 10px;
-        border-bottom-right-radius: 10px;
-    }
-
-    .margin-row td {
-        border-top: 0;
-        border-bottom: 0;
-    }
-</style>
