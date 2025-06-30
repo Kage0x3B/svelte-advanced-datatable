@@ -166,7 +166,7 @@
                     {:else}
                         <span class="text-base-content/80 whitespace-nowrap">0 - 0 von {Math.max(0, itemAmount)}</span>
                     {/if}
-                    <DaisyUiDataTablePagination bind:currentPage={state.currentPage} {pageAmount} />
+                    <DaisyUiDataTablePagination {state} bind:currentPage={state.currentPage} {pageAmount} />
                 {/if}
             </div>
         </div>
@@ -246,7 +246,7 @@
                             - {clamp(state.currentPage * config.itemsPerPage, config.itemsPerPage, itemAmount)} von {itemAmount}</span
                         >
                     {/if}
-                    <DaisyUiDataTablePagination bind:currentPage={state.currentPage} {pageAmount} />
+                    <DaisyUiDataTablePagination {state} bind:currentPage={state.currentPage} {pageAmount} />
                 </div>
             </div>
         {/if}

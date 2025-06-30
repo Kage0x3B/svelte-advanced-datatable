@@ -1,7 +1,9 @@
 <script lang="ts">
+    import type { InternalDataTableState } from '$lib/types/DataTableState.js';
     import type { Snippet } from 'svelte';
 
     interface Props {
+        state: InternalDataTableState;
         pageAmount: number;
         maxDisplayedItems?: number;
         currentPage: number;
@@ -10,7 +12,7 @@
         >;
     }
 
-    let { pageAmount, maxDisplayedItems = 5, currentPage = $bindable(), children }: Props = $props();
+    let { state, pageAmount, maxDisplayedItems = 5, currentPage = $bindable(), children }: Props = $props();
 
     function navigate(page: number | 'prev' | 'next') {
         if (pageAmount <= 0 || currentPage < 0 || page === currentPage) {
@@ -27,6 +29,7 @@
 
         page = Math.min(Math.max(page as number, 1), pageAmount);
         currentPage = page;
+        state.currentOpenIndex = undefined;
     }
 
     let pages = $derived(computePages());

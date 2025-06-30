@@ -20,8 +20,8 @@
     let isExpandable = $derived(Boolean(config.modalComponent));
 
     let {
+        state,
         index,
-        openIndex,
         onClick,
         item,
         open,
@@ -33,7 +33,7 @@
         children
     }: Props = $props();
 
-    let isOpen: boolean = $derived(isExpandable && index === openIndex);
+    let isOpen: boolean = $derived(isExpandable && index === state.currentOpenIndex);
 
     async function rowOnClick() {
         if (onClick) {

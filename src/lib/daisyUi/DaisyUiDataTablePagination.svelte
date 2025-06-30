@@ -4,17 +4,19 @@
     import AngleLeftIcon from '$lib/daisyUi/icons/AngleLeftIcon.svelte';
     import AngleRightIcon from '$lib/daisyUi/icons/AngleRightIcon.svelte';
     import AnglesRightIcon from '$lib/daisyUi/icons/AnglesRightIcon.svelte';
+    import type { InternalDataTableState } from '$lib/types/DataTableState.js';
 
     interface Props {
+        state: InternalDataTableState;
         pageAmount: number;
         maxDisplayedItems?: number;
         currentPage: number;
     }
 
-    let { pageAmount, maxDisplayedItems = 5, currentPage = $bindable() }: Props = $props();
+    let { state, pageAmount, maxDisplayedItems = 5, currentPage = $bindable() }: Props = $props();
 </script>
 
-<DataTable.Pagination {pageAmount} {maxDisplayedItems} bind:currentPage>
+<DataTable.Pagination {state} {pageAmount} {maxDisplayedItems} bind:currentPage>
     {#snippet children({ createClickHandler, pages })}
         <div class="join">
             <button
