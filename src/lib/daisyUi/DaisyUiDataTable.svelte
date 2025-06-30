@@ -70,9 +70,9 @@
     const state: InternalDataTableState = box.flatten({
         currentPage: box(initialState?.currentPage ?? 1),
         searchInput: box(initialState?.searchInput ?? ''),
-        currentOpenIndex: box(undefined),
-        sortColumnKey: box(config.defaultSort?.columnKey),
-        sortDirection: box(config.defaultSort?.direction ?? false)
+        currentOpenIndex: box(initialState?.currentOpenIndex ?? undefined),
+        sortColumnKey: box(initialState?.sortColumnKey ?? config.defaultSort?.columnKey),
+        sortDirection: box(initialState?.sortDirection ?? config.defaultSort?.direction ?? false)
     });
 
     const searchQuery = $derived.by(() => {
