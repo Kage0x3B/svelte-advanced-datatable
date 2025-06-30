@@ -1,4 +1,5 @@
 <script lang="ts">
+    import type { InternalDataTableState } from '$lib/types/DataTableState.js';
     import { configContext } from '$lib/util/context.js';
     import type { Snippet } from 'svelte';
 
@@ -7,8 +8,8 @@
     type OnClickFunction = (<T>(item: T) => void | Promise<void>) | undefined;
 
     interface Props {
+        state: InternalDataTableState;
         index: number;
-        openIndex: number | undefined;
         onClick: OnClickFunction;
         item: unknown;
         open: (index: number) => void;

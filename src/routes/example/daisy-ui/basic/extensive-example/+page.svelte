@@ -73,6 +73,9 @@
                     male: 'Male',
                     female: 'Female'
                 }
+            },
+            isTestUser: {
+                label: 'Test User'
             }
         }
     } satisfies DataTableConfig<ListItem>);

@@ -1,6 +1,7 @@
 <script lang="ts">
     import type { CustomSnippetProps } from '$lib/dataComponent/CustomComponentTypeProperties.js';
     import DataTable from '$lib/internal/index.js';
+    import type { InternalDataTableState } from '$lib/types/DataTableState.js';
     import { configContext } from '$lib/util/context.js';
     import { slide } from 'svelte/transition';
     import DaisyUiBadgeWrapper from '$lib/daisyUi/DaisyUiBadgeWrapper.svelte';
@@ -9,8 +10,8 @@
     const config = $derived(configContext.get().current);
 
     interface Props {
+        state: InternalDataTableState;
         index: number;
-        openIndex: number | undefined;
         highlighted: boolean;
         onClick: (<T>(item: T) => void | Promise<void>) | undefined;
         item: Record<string, unknown>;
@@ -19,10 +20,10 @@
         customSnippets?: CustomSnippetProps;
     }
 
-    let { index, openIndex, highlighted, onClick, item, open, customSnippets }: Props = $props();
+    let { state, index, highlighted, onClick, item, open, customSnippets }: Props = $props();
 </script>
 
-<DataTable.Row {index} {openIndex} {onClick} {item} {open}>
+<DataTable.Row {state} {index} {onClick} {item} {open}>
     {#snippet children({ isOpen, rowOnClick, toggle })}
         {#if isOpen}
             <tr class="margin-row top border-b-0">

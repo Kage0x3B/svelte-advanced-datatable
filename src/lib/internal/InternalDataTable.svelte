@@ -23,6 +23,7 @@
     import type { ComponentTypeProperties } from '$lib/dataComponent/ComponentType.js';
     import type { QueryResult } from '$lib/dataSource/QueryResult.js';
     import type { ParsedSearchQuery } from '$lib/searchParser/ParsedSearchQuery.js';
+    import type { InternalDataTableState } from '$lib/types/DataTableState.js';
     import type { PaginatedListRequest } from '$lib/types/PaginatedListRequest.js';
     import type { SortDirection } from '$lib/types/SortDirection.js';
     import { configContext, dataSourceContext } from '$lib/util/context.js';
@@ -34,7 +35,7 @@
     const dataSource = $derived(dataSourceContext.get().current);
 
     export interface Props {
-        currentPage: number;
+        state: InternalDataTableState;
         searchQuery: ParsedSearchQuery | undefined;
         children: Snippet<
             [
@@ -44,18 +45,15 @@
                     itemAmount: number;
                     pageAmount: number;
                     items: Record<string, unknown>[];
-                    sortDirection: SortDirection;
                     toggleSorting: (columnKey: string) => void;
-                    sortColumnKey: string | undefined;
                     open: (index: number) => void;
-                    currentOpenIndex: number | undefined;
                     highlightedItemId: string | undefined;
                 }
             ]
         >;
     }
 
-    let { currentPage, searchQuery, children }: Props = $props();
+    let { state, searchQuery, children }: Props = $props();
 
     dataSource.setConfig?.(config);
     $effect(() => dataSource.setConfig?.(config));
@@ -68,7 +66,7 @@
             return -1;
         }
 
-        const calculatedMaxItemAmount = (currentPage - 1) * config.itemsPerPage + queryData.items.length;
+        const calculatedMaxItemAmount = ((state.currentPage ?? 1) - 1) * config.itemsPerPage + queryData.items.length;
 
         return calculatedMaxItemAmount >= config.itemsPerPage
             ? queryData.totalCount
@@ -77,16 +75,12 @@
 
     const pageAmount = $derived(Math.ceil(Math.max(1, itemAmount / config.itemsPerPage)));
     const items: Record<string, unknown>[] = $derived((queryData?.items ?? []) as Record<string, unknown>[]);
-    let currentOpenIndex: number | undefined = $state();
 
-    let sortColumnKey: string | undefined = $state(config.defaultSort?.columnKey);
-    let sortDirection: SortDirection = $state(config.defaultSort?.direction ?? false);
-
-    let highlightedItemId = $derived(config.highlightedItemId);
+    const highlightedItemId = $derived(config.highlightedItemId);
 
     $effect(() => {
-        if (items.length === 1 && currentOpenIndex === undefined) {
-            currentOpenIndex = 0;
+        if (items.length === 1 && state.currentOpenIndex === undefined) {
+            state.currentOpenIndex = 0;
         }
     });
 
@@ -95,10 +89,10 @@
     function refresh() {
         let orderBy: PaginatedListRequest<unknown>['orderBy'] | undefined;
 
-        if (sortColumnKey && sortDirection) {
+        if (state.sortColumnKey && state.sortDirection) {
             orderBy = {
-                column: sortColumnKey,
-                order: sortDirection
+                column: state.sortColumnKey,
+                order: state.sortDirection
             };
         }
 
@@ -108,7 +102,7 @@
         ];
 
         const requestData: PaginatedListRequest<unknown> = {
-            start: (currentPage - 1) * config.itemsPerPage,
+            start: (state.currentPage - 1) * config.itemsPerPage,
             amount: config.itemsPerPage,
             orderBy: forcedSearchQuery?.orderBy ?? orderBy,
             searchQuery: {
@@ -131,16 +125,17 @@
             return;
         }
 
-        if (sortColumnKey === columnKey) {
-            sortDirection = sortDirection === 'desc' ? 'asc' : sortDirection === 'asc' ? false : 'desc';
+        if (state.sortColumnKey === columnKey) {
+            state.sortDirection =
+                state.sortDirection === 'desc' ? 'asc' : state.sortDirection === 'asc' ? false : 'desc';
         } else {
-            sortColumnKey = columnKey;
-            sortDirection = 'desc';
+            state.sortColumnKey = columnKey;
+            state.sortDirection = 'desc';
         }
     }
 
     const open = (index: number) => {
-        currentOpenIndex = items.length <= 1 ? 0 : index;
+        state.currentOpenIndex = items.length <= 1 ? 0 : index;
     };
 </script>
 
@@ -150,10 +145,7 @@
     itemAmount,
     pageAmount,
     items,
-    sortDirection,
     toggleSorting,
-    sortColumnKey,
     open,
-    currentOpenIndex,
     highlightedItemId
 })}

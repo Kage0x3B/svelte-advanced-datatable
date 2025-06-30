@@ -4,6 +4,7 @@ import type { ApiFunction } from '$lib/types/ApiFunction.js';
 import type { FullDataTableConfig } from '$lib/types/DataTableConfig.js';
 import type { PaginatedListRequest } from '$lib/types/PaginatedListRequest.js';
 import type { PaginatedListResponse } from '$lib/types/PaginatedListResponse.js';
+import { debounce } from '$lib/util/generalUtil.js';
 import type { CreateQueryOptions, CreateQueryResult } from '@tanstack/svelte-query';
 import { createQuery } from '@tanstack/svelte-query';
 

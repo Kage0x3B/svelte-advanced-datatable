@@ -1,10 +1,9 @@
 <script lang="ts">
-    import type { DataTableState } from '$lib/types/DataTableState.js';
+    import type { DataTableState, InternalDataTableState } from '$lib/types/DataTableState.js';
     import type { DataTableIcon } from '$lib/daisyUi/daisyUiWrappedComponentPropertyMap.js';
     import type { CustomSnippetProps } from '$lib/dataComponent/CustomComponentTypeProperties.js';
     import type { IDataSource } from '$lib/dataSource/IDataSource.js';
     import DataTable from '$lib/internal/index.js';
-    import type { ParsedSearchQuery } from '$lib/searchParser/ParsedSearchQuery.js';
     import type { DataTableConfig, FullDataTableConfig } from '$lib/types/DataTableConfig.js';
     import type { MessageFormatter } from '$lib/types/MessageFormatter.js';
     import { configContext, dataSourceContext, messageFormatterContext } from '$lib/util/context.js';
@@ -68,51 +67,78 @@
     dataSourceContext.set(box.with(() => dataSource));
     messageFormatterContext.set(box.with(() => format));
 
-    let currentPage = $state(initialState?.currentPage ?? 1);
-    let searchInput = $state(initialState?.searchInput ?? '');
-    let searchQuery = $state<ParsedSearchQuery | undefined>(undefined);
+    const state: InternalDataTableState = box.flatten({
+        currentPage: box(initialState?.currentPage ?? 1),
+        searchInput: box(initialState?.searchInput ?? ''),
+        currentOpenIndex: box(undefined),
+        sortColumnKey: box(config.defaultSort?.columnKey),
+        sortDirection: box(config.defaultSort?.direction ?? false)
+    });
+
+    const searchQuery = $derived.by(() => {
+        try {
+            return config.searchParser.parseSearchQuery(state.searchInput);
+        } catch (err) {
+            console.log(err);
+
+            return undefined;
+        }
+    });
 
     export function capture(): DataTableState {
         return {
-            currentPage,
-            searchInput
+            currentPage: state.currentPage,
+            searchInput: state.searchInput,
+            currentOpenIndex: state.currentOpenIndex,
+            sortColumnKey: state.sortColumnKey,
+            sortDirection: state.sortDirection
         };
     }
 
     export function restore(snapshot: DataTableState | undefined) {
-        if (snapshot && ((snapshot.currentPage && snapshot.currentPage !== 1) || snapshot.searchInput)) {
-            currentPage = snapshot.currentPage ?? 1;
-            searchInput = snapshot.searchInput ?? '';
+        if (
+            snapshot &&
+            ((snapshot.currentPage && snapshot.currentPage !== 1) ||
+                snapshot.searchInput ||
+                snapshot.currentOpenIndex !== undefined ||
+                snapshot.sortColumnKey !== config.defaultSort?.columnKey ||
+                snapshot.sortDirection !== config.defaultSort?.direction)
+        ) {
+            state.currentPage = snapshot.currentPage ?? 1;
+            state.searchInput = snapshot.searchInput ?? '';
+            state.currentOpenIndex = snapshot.currentOpenIndex ?? undefined;
+            state.sortColumnKey = snapshot.sortColumnKey ?? config.defaultSort?.columnKey;
+            state.sortDirection = snapshot.sortDirection ?? config.defaultSort?.direction;
         }
     }
 
     $effect(() =>
         captureState?.({
-            currentPage,
-            searchInput
+            currentPage: state.currentPage,
+            searchInput: state.searchInput,
+            currentOpenIndex: state.currentOpenIndex,
+            sortColumnKey: state.sortColumnKey,
+            sortDirection: state.sortDirection
         })
     );
 </script>
 
-<DataTable.Root {searchQuery} {currentPage}>
+<DataTable.Root {state} {searchQuery}>
     {#snippet children({
         queryResult,
         columnProperties,
         itemAmount,
         pageAmount,
         items,
-        sortDirection,
         toggleSorting,
-        sortColumnKey,
         open,
-        currentOpenIndex,
         highlightedItemId
     })}
         <div class="mb-3 flex w-full flex-wrap items-center justify-between gap-3">
             <div class="flex flex-row items-center gap-3">
                 {@render headerFirst?.()}
                 {#if config.enableSearch}
-                    <SearchField bind:searchInput bind:searchQuery />
+                    <SearchField bind:searchInput={state.searchInput} />
                 {/if}
                 {@render headerAfterSearch?.()}
                 {@render headerMiddle?.()}
@@ -125,9 +151,9 @@
                 {/if}
                 {#if config.enablePagination && config.showTopPagination}
                     {#if itemAmount >= 0}
-                        {@const startItemIndex = (currentPage - 1) * config.itemsPerPage + 1}
+                        {@const startItemIndex = (state.currentPage - 1) * config.itemsPerPage + 1}
                         {@const endItemIndex = clamp(
-                            currentPage * config.itemsPerPage,
+                            state.currentPage * config.itemsPerPage,
                             config.itemsPerPage,
                             itemAmount
                         )}
@@ -140,7 +166,7 @@
                     {:else}
                         <span class="text-base-content/80 whitespace-nowrap">0 - 0 von {Math.max(0, itemAmount)}</span>
                     {/if}
-                    <DaisyUiDataTablePagination bind:currentPage {pageAmount} />
+                    <DaisyUiDataTablePagination bind:currentPage={state.currentPage} {pageAmount} />
                 {/if}
             </div>
         </div>
@@ -176,9 +202,9 @@
                                                 {format(`dataTable.${config.type}.${key}.label`)}
                                             </span>
                                             {#if colProp.sortable && items.length > 1}
-                                                {#if sortColumnKey === key && sortDirection === 'asc'}
+                                                {#if state.sortColumnKey === key && state.sortDirection === 'asc'}
                                                     <SortUpIcon />
-                                                {:else if sortColumnKey === key && sortDirection === 'desc'}
+                                                {:else if state.sortColumnKey === key && state.sortDirection === 'desc'}
                                                     <SortDownIcon />
                                                 {:else}
                                                     <SortIcon />
@@ -194,9 +220,9 @@
                 <tbody>
                     {#each items as item, index (item[config.dataUniquePropertyKey])}
                         <DaisyUiDataRow
+                            {state}
                             {item}
                             {index}
-                            openIndex={currentOpenIndex}
                             {open}
                             onClick={config.onItemClick}
                             highlighted={highlightedItemId === item[config.dataUniquePropertyKey]}
@@ -216,11 +242,11 @@
                 <div class="flex flex-row items-baseline">
                     {#if itemAmount >= 0}
                         <span class="text-base-content/80 mr-3 whitespace-nowrap"
-                            >{(currentPage - 1) * config.itemsPerPage + 1}
-                            - {clamp(currentPage * config.itemsPerPage, config.itemsPerPage, itemAmount)} von {itemAmount}</span
+                            >{(state.currentPage - 1) * config.itemsPerPage + 1}
+                            - {clamp(state.currentPage * config.itemsPerPage, config.itemsPerPage, itemAmount)} von {itemAmount}</span
                         >
                     {/if}
-                    <DaisyUiDataTablePagination bind:currentPage {pageAmount} />
+                    <DaisyUiDataTablePagination bind:currentPage={state.currentPage} {pageAmount} />
                 </div>
             </div>
         {/if}

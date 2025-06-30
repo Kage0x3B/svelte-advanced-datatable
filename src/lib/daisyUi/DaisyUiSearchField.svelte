@@ -2,6 +2,7 @@
     import InternalSearchField from '$lib/internal/InternalSearchField.svelte';
     import type { ParsedSearchQuery } from '$lib/searchParser/ParsedSearchQuery.js';
     import { messageFormatterContext } from '$lib/util/context.js';
+    import { debounce } from '$lib/util/generalUtil.js';
 
     const format = $derived(messageFormatterContext.get().current);
 
@@ -10,18 +11,23 @@
         searchQuery?: ParsedSearchQuery | undefined;
     }
 
-    let { searchInput = $bindable(''), searchQuery = $bindable(undefined) }: Props = $props();
+    let { searchInput = $bindable('') }: Props = $props();
+
     let inputElement: HTMLInputElement | undefined = $state();
+    let internalSearchInput = $state('');
+
+    const updateSearchInputDebounced = debounce((newSearchInput: string) => (searchInput = newSearchInput), 200);
+    $effect(() => updateSearchInputDebounced(internalSearchInput));
 </script>
 
-<InternalSearchField {inputElement} bind:searchQuery {searchInput}>
+<InternalSearchField {inputElement} {searchInput}>
     <div class="mr-2">
         <input
-            aria-label={format(`search.ariaLabel`)}
+            aria-label={format('search.ariaLabel')}
             bind:this={inputElement}
-            bind:value={searchInput}
+            bind:value={internalSearchInput}
             class="search-box input"
-            placeholder={format(`search.placeholder`)}
+            placeholder={format('search.placeholder')}
             type="search"
         />
     </div>
