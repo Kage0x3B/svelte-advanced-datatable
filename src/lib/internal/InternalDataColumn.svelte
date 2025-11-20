@@ -17,17 +17,25 @@
         item: Record<string, unknown>;
         key: string;
 
-        customSnippets?: CustomSnippetProps;
+        customSnippets: CustomSnippetProps;
     }
 
     let { IconComponent, BadgeComponent, item, key, customSnippets }: Props = $props();
 
     const colProps = $derived(config.columnProperties[key] as unknown as ComponentTypeProperties);
+    const columnSnippetName = $derived((key + 'Snippet') as `${string}Snippet`);
 </script>
 
 <!-- It's better for performance to generate some fields for easy types (string, int, enum, bool, ..) with a simple if -->
-{#if customSnippets[key + 'Snippet']}
-    {@const columnSnippet = customSnippets[key + 'Snippet']}
+{#if colProps.formatValue}
+    {#if colProps.formatValueEnableHtml}
+        <!-- eslint-disable-next-line svelte/no-at-html-tags -->
+        {@html colProps.formatValue(item[key], item)}
+    {:else}
+        {colProps.formatValue(item[key], item)}
+    {/if}
+{:else if customSnippets[columnSnippetName]}
+    {@const columnSnippet = customSnippets[columnSnippetName]}
     {@render columnSnippet({ key, value: item[key], item, colProps })}
 {:else if colProps.type === ComponentType.CUSTOM}
     {#if colProps.snippet}

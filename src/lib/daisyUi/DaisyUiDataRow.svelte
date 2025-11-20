@@ -18,7 +18,7 @@
         item: Record<string, unknown>;
         open: (index: number) => void;
 
-        customSnippets?: CustomSnippetProps;
+        customSnippets: CustomSnippetProps;
     }
 
     let { state, index, highlighted, onClick, href, item, open, customSnippets }: Props = $props();
