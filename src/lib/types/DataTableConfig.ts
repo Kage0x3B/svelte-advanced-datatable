@@ -74,6 +74,12 @@ export interface DataTableConfig<Data> {
     onItemClick?: (item: Data) => void;
 
     /**
+     * Build a url which table row. Gets passed the data item which the clicked row displays
+     * @param item
+     */
+    buildItemUrl?: (item: Data) => string;
+
+    /**
      * A search query which overwrites any values by the users current search. Can be used to apply a forced filter to the whole dataTable
      */
     forcedSearchQuery?: ForcedSearchQuery<Data>;

@@ -174,7 +174,7 @@
         <div class="table-container overflow-x-auto">
             <table
                 class={[
-                    'table-sm table w-full',
+                    'table w-full',
                     {
                         'table-zebra': striped,
                         'table-hover': hoverable,
@@ -225,6 +225,7 @@
                             {index}
                             {open}
                             onClick={config.onItemClick}
+                            href={config.buildItemUrl ? config.buildItemUrl(item) : undefined}
                             highlighted={highlightedItemId === item[config.dataUniquePropertyKey]}
                             {customSnippets}
                         />
@@ -258,16 +259,72 @@
         width: 100%;
     }
 
-    :global(.table-container td) {
+    .table-container :global(td) {
         max-width: 0;
         overflow: hidden;
         text-overflow: ellipsis;
         white-space: nowrap;
     }
 
-    :global(.table-container td:last-child) {
+    .table-container :global(td:last-child) {
         width: 3rem !important;
         padding: 0 !important;
         text-align: center;
+    }
+
+    /* Apply the padding to the a tag instead inside the td if it's present */
+    .table-lg :global(td:has(> a)) {
+        padding-inline: 0;
+        padding-block: 0;
+    }
+
+    .table-lg :global(td > a) {
+        display: block;
+        padding-inline: calc(0.25rem * 5);
+        padding-block: calc(0.25rem * 4);
+    }
+
+    .table-md :global(td:has(> a)) {
+        padding-inline: 0;
+        padding-block: 0;
+    }
+
+    .table-md :global(td > a) {
+        display: block;
+        padding-inline: calc(0.25rem * 4);
+        padding-block: calc(0.25rem * 3);
+    }
+
+    .table-sm :global(td:has(> a)) {
+        padding-inline: 0;
+        padding-block: 0;
+    }
+
+    .table-sm :global(td > a) {
+        display: block;
+        padding-inline: calc(0.25rem * 3);
+        padding-block: calc(0.25rem * 2);
+    }
+
+    .table-xl :global(td:has(> a)) {
+        padding-inline: 0;
+        padding-block: 0;
+    }
+
+    .table-xl :global(td > a) {
+        display: block;
+        padding-inline: calc(0.25rem * 6);
+        padding-block: calc(0.25rem * 5);
+    }
+
+    .table-xs :global(td:has(> a)) {
+        padding-inline: 0;
+        padding-block: 0;
+    }
+
+    .table-xs :global(td > a) {
+        display: block;
+        padding-inline: calc(0.25rem * 2);
+        padding-block: calc(0.25rem * 1);
     }
 </style>

@@ -6,6 +6,7 @@ import { hasOwnProperty } from './generalUtil.js';
 const defaultConfig: Partial<DataTableConfig<unknown>> = {
     modalComponent: undefined,
     onItemClick: undefined,
+    buildItemUrl: undefined,
     forcedSearchQuery: undefined,
     highlightedItemId: undefined,
     defaultSort: {

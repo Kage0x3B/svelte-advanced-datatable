@@ -47,6 +47,7 @@
                 type: ComponentType.BOOLEAN
             } satisfies BooleanComponentTypeProperties
         },
+        buildItemUrl: (item) => `/example/daisy-ui/basic/extensive-example#${item.id}`,
         dataUniquePropertyKey: 'id',
         messageConfig: {
             id: {

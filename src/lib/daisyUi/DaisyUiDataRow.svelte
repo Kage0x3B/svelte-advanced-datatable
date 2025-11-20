@@ -14,13 +14,14 @@
         index: number;
         highlighted: boolean;
         onClick: (<T>(item: T) => void | Promise<void>) | undefined;
+        href: string | undefined;
         item: Record<string, unknown>;
         open: (index: number) => void;
 
         customSnippets?: CustomSnippetProps;
     }
 
-    let { state, index, highlighted, onClick, item, open, customSnippets }: Props = $props();
+    let { state, index, highlighted, onClick, href, item, open, customSnippets }: Props = $props();
 </script>
 
 <DataTable.Row {state} {index} {onClick} {item} {open}>
@@ -46,13 +47,25 @@
                 {#each Object.entries(config.columnProperties) as [key, colProp]}
                     {#if !colProp?.hidden}
                         <td class={[isOpen && 'bg-base-300 border-0 first:rounded-tl-box last:rounded-tr-box']}>
-                            <DataTable.Column
-                                IconComponent={DaisyUiIconWrapper}
-                                BadgeComponent={DaisyUiBadgeWrapper}
-                                {item}
-                                {key}
-                                {customSnippets}
-                            />
+                            {#if href}
+                                <a {href}>
+                                    <DataTable.Column
+                                        IconComponent={DaisyUiIconWrapper}
+                                        BadgeComponent={DaisyUiBadgeWrapper}
+                                        {item}
+                                        {key}
+                                        {customSnippets}
+                                    />
+                                </a>
+                            {:else}
+                                <DataTable.Column
+                                    IconComponent={DaisyUiIconWrapper}
+                                    BadgeComponent={DaisyUiBadgeWrapper}
+                                    {item}
+                                    {key}
+                                    {customSnippets}
+                                />
+                            {/if}
                         </td>
                     {/if}
                 {/each}

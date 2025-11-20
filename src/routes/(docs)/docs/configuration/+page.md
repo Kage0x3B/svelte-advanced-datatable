@@ -9,28 +9,30 @@ The DataTable component accepts a `config` object, which has the following shape
 
 ```typescript
 import type { DataTableConfig } from 'svelte-advanced-datatable';
-import { ComponentType } from 'svelte-advanced-datatable'; import { UserData } from './UserData.js';
+import { ComponentType } from 'svelte-advanced-datatable';
+import { UserData } from './UserData.js';
 
 const config: DataTableConfig<UserData> = {
-	type: 'userData',
-	columnProperties: {
-		id: {
-			type: ComponentType.NUMBER
-		},
-		userName: {
-			type: ComponentType.STRING
-		}
-	},
-	...additionalConfigOptions
+    type: 'userData',
+    columnProperties: {
+        id: {
+            type: ComponentType.NUMBER
+        },
+        userName: {
+            type: ComponentType.STRING
+        }
+    },
+    ...additionalConfigOptions
 };
 ```
 
-!> If you use TypeScript, you can annotate your config with the [DataTableConfig](/api-reference/interfaces/DataTableConfig) type to get autocompletion tips and errors from your IDE.
+!> If you use TypeScript, you can annotate your config with
+the [DataTableConfig](/api-reference/interfaces/DataTableConfig) type to get autocompletion tips and errors from your
+IDE.
 
 ## Configuration Reference
 
 The configuration has the following options:
-
 
 | Key                          | Type                                                | Description                                                                                                                                                                           | Default Value                     |
 |:-----------------------------|:----------------------------------------------------|:--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|:----------------------------------|
@@ -44,6 +46,7 @@ The configuration has the following options:
 | `additionalMessageFormatter` | `MessageFormatter`                                  | A custom message formatter which can return a replacement or undefined to default to the message provided by the internal formatter/svelte-i18n                                       | `undefined`                       |
 | `modalComponent`             | `SvelteComponent`                                   | A svelte component shown when a user clicks on a row to expand it                                                                                                                     | `undefined`                       |
 | `onItemClick`                | `(item: YourData) => void`                          | An onClick handler for a table row. Gets passed the data item which the clicked row displays                                                                                          | `undefined`                       |
+| `buildItemUrl`               | `(item: YourData) => string`                        | Build the url for that row, which turns it into a clickable link instead of using the onClick handler. Gets passed the data item which the clicked row displays                       | `undefined`                       |
 | `forcedSearchQuery`          | `ForcedSearchQuery`                                 | A search query which overwrites any values by the users current search. Can be used to apply a forced filter to the whole dataTable                                                   | `undefined`                       |
 | `highlightedItemId`          | `string⎮ Readable<string>`                          | The identifier of any item which then gets assigned the `highlighted` class                                                                                                           | `undefined`                       |
 | `defaultSort`                | `{ columnKey?: string; direction?: SortDirection }` | Sort the table using the given key and direction by default                                                                                                                           | `undefined`                       |
