@@ -8,6 +8,8 @@ export function createMessageFormatter<Data>(dataTableConfig: FullDataTableConfi
         return createConfigMessageFormatter(dataTableConfig, dataTableConfig.messageConfig);
     } else if (typeof dataTableConfig.messageFormatter === 'object') {
         return createSvelteI18nMessageFormatter(dataTableConfig, dataTableConfig.messageFormatter);
+    } else if (typeof dataTableConfig.messageFormatter === 'function') {
+        return dataTableConfig.messageFormatter;
     } else {
         throw new Error(
             `Invalid message formatter ${dataTableConfig.messageFormatter} in dataTable ${dataTableConfig.type}`

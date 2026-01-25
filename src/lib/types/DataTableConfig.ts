@@ -1,6 +1,7 @@
 import type { TableColumnConfig } from '$lib/dataComponent/ComponentType.js';
 import type { ForcedSearchQuery } from '$lib/searchParser/ForcedSearchQuery.js';
 import type { ISearchParser } from '$lib/searchParser/ISearchParser.js';
+import type { MessageFormatter } from '$lib/types/MessageFormatter.js';
 import type { ModalProps } from '$lib/types/ModalProps.js';
 import type { Component } from 'svelte';
 import type { format as svelteI18nFormat } from 'svelte-i18n';
@@ -46,9 +47,9 @@ export interface DataTableConfig<Data> {
     dataUniquePropertyKey: keyof Data & string;
 
     /**
-     * Set to `config` to use the messageConfig or pass the svelte-i18n formatter to provide all strings used by the dataTable
+     * Set to `config` to use the messageConfig, pass a {@link MessageFormatter} function or the svelte-i18n formatter to provide all strings used by the dataTable
      */
-    messageFormatter?: 'config' | typeof svelteI18nFormat;
+    messageFormatter?: 'config' | typeof svelteI18nFormat | MessageFormatter;
 
     /**
      * Prefix for every message id. Only applies to external message formatters such as the svelte-i18n formatter.
@@ -58,7 +59,7 @@ export interface DataTableConfig<Data> {
     /**
      * An object containing all strings used by the dataTable, such as table headers, titles of buttons and more.
      *
-     * Ignored if svelte-i18n is enabled by using the the `messageFormatter` option
+     * Ignored if svelte-i18n is enabled by using the `messageFormatter` option
      */
     messageConfig?: MessageConfig<Data>;
 
