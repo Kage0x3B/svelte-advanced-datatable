@@ -32,16 +32,38 @@ export function clamp(value: number, min: number, max: number): number {
     return Math.min(Math.max(value, min), max);
 }
 
+export interface DebouncedFunction<ArgsType extends unknown[]> {
+    (...args: ArgsType): void;
+    /**
+     * Cancel a pending invocation. Safe to call multiple times.
+     */
+    cancel(): void;
+}
+
 export function debounce<ArgsType extends unknown[]>(
     func: (...args: ArgsType) => void,
     waitTime: number
-): (...args: ArgsType) => void {
-    let timer: NodeJS.Timeout;
+): DebouncedFunction<ArgsType> {
+    let timer: ReturnType<typeof setTimeout> | undefined;
 
-    return (...args: ArgsType) => {
-        clearTimeout(timer);
-        timer = setTimeout(() => func(...args), waitTime);
+    const debounced = ((...args: ArgsType) => {
+        if (timer !== undefined) {
+            clearTimeout(timer);
+        }
+        timer = setTimeout(() => {
+            timer = undefined;
+            func(...args);
+        }, waitTime);
+    }) as DebouncedFunction<ArgsType>;
+
+    debounced.cancel = () => {
+        if (timer !== undefined) {
+            clearTimeout(timer);
+            timer = undefined;
+        }
     };
+
+    return debounced;
 }
 
 export function preventEvent(e: Event): void {

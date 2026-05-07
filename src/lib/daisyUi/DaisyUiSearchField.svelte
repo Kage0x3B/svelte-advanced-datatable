@@ -21,6 +21,10 @@
         debounce((newSearchInput: string) => (searchInput = newSearchInput), config.searchDebounceMs)
     );
     $effect(() => updateSearchInputDebounced(internalSearchInput));
+    $effect(() => {
+        const current = updateSearchInputDebounced;
+        return () => current.cancel();
+    });
 </script>
 
 <InternalSearchField {inputElement} {searchInput}>
