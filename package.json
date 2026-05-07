@@ -105,6 +105,10 @@
             "types": "./dist/daisyUi/index.d.ts",
             "default": "./dist/daisyUi/index.js"
         },
+        "./dataComponent": {
+            "types": "./dist/dataComponent/index.d.ts",
+            "default": "./dist/dataComponent/index.js"
+        },
         "./dataSource/svelteQuery": {
             "types": "./dist/dataSource/svelteQuery/index.d.ts",
             "default": "./dist/dataSource/svelteQuery/index.js"
@@ -135,6 +139,9 @@
             ],
             "daisyUi": [
                 "./dist/daisyUi/index.d.ts"
+            ],
+            "dataComponent": [
+                "./dist/dataComponent/index.d.ts"
             ],
             "dataSource": [
                 "./dist/dataSource/index.d.ts"
