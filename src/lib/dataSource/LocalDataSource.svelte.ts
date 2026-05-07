@@ -101,14 +101,14 @@ export class LocalDataSource<Data> extends AbstractDataSource<Data> {
         const isNumber = !isNaN(exampleValue as unknown as number) && !isNaN(parseFloat(exampleValue));
 
         if (isNumber) {
-            return data.sort((a, b) => {
+            return [...data].sort((a, b) => {
                 const n1 = parseFloat(String(a[key as keyof typeof a]));
                 const n2 = parseFloat(String(b[key as keyof typeof b]));
 
                 return orderBy.order === 'asc' ? n1 - n2 : n2 - n1;
             });
         } else {
-            return data.sort((a, b) => {
+            return [...data].sort((a, b) => {
                 const s1 = String(a[key as keyof typeof a]);
                 const s2 = String(b[key as keyof typeof b]);
 
