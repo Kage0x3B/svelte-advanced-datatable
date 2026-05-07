@@ -188,9 +188,10 @@
                 ]}
             >
                 {#if config.showTableHeader}
+                    {@const columnEntries = Object.entries(columnProperties)}
                     <thead>
                         <tr>
-                            {#each Object.entries(columnProperties) as [key, colProp] (key)}
+                            {#each columnEntries as [key, colProp] (key)}
                                 {#if !colProp.hidden}
                                     <th
                                         class="whitespace-normal"

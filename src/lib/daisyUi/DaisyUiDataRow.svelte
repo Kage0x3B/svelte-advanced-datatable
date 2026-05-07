@@ -22,13 +22,16 @@
     }
 
     let { state, index, highlighted, onClick, href, item, open, customSnippets }: Props = $props();
+
+    const columnEntries = $derived(Object.entries(config.columnProperties));
+    const columnCount = $derived(columnEntries.length);
 </script>
 
 <DataTable.Row {state} {index} {onClick} {item} {open}>
     {#snippet children({ isOpen, rowOnClick, toggle })}
         {#if isOpen}
             <tr class="margin-row top border-b-0">
-                <td colspan={Object.keys(config.columnProperties).length} transition:slide|local>&nbsp;</td>
+                <td colspan={columnCount} transition:slide|local>&nbsp;</td>
             </tr>
         {/if}
         <tr
@@ -44,7 +47,7 @@
             onclick={rowOnClick}
         >
             {#if item}
-                {#each Object.entries(config.columnProperties) as [key, colProp]}
+                {#each columnEntries as [key, colProp]}
                     {#if !colProp?.hidden}
                         <td class={[isOpen && 'bg-base-300 border-0 first:rounded-tl-box last:rounded-tr-box']}>
                             {#if href}
@@ -75,7 +78,7 @@
         </tr>
         {#if isOpen}
             <tr class="datatable-modal-container border-0 shadow-md">
-                <td colspan={Object.keys(config.columnProperties).length} transition:slide|local>
+                <td colspan={columnCount} transition:slide|local>
                     <div
                         class="datatable-modal border-b border-l border-r border-base-content/5 rounded-b-box"
                         transition:slide|local
@@ -85,7 +88,7 @@
                 </td>
             </tr>
             <tr class="margin-row bottom border-b-0">
-                <td colspan={Object.keys(config.columnProperties).length} transition:slide|local>&nbsp;</td>
+                <td colspan={columnCount} transition:slide|local>&nbsp;</td>
             </tr>
         {/if}
     {/snippet}
