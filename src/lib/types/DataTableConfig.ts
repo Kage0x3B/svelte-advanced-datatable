@@ -143,6 +143,15 @@ export interface DataTableConfig<Data> {
      * Defaults to `false`.
      */
     autoOpenSingleItem?: boolean;
+
+    /**
+     * Delay in milliseconds before a change to the search input is committed to
+     * the active search query. Higher values send fewer requests at the cost of
+     * a noticeable input lag.
+     *
+     * Defaults to `200`.
+     */
+    searchDebounceMs?: number;
 }
 
 export type FullDataTableConfig<Data> = Required<DataTableConfig<Data>>;
