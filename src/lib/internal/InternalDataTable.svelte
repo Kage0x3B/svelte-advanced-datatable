@@ -120,6 +120,14 @@
 
     $effect(() => refresh());
 
+    let lastReportedError: Error | undefined = undefined;
+    $effect(() => {
+        if (queryResult.isError() && queryResult.error !== lastReportedError) {
+            lastReportedError = queryResult.error;
+            config.onError?.(queryResult.error);
+        }
+    });
+
     function toggleSorting(columnKey: string): void {
         if (!items.length || items.length <= 1) {
             return;

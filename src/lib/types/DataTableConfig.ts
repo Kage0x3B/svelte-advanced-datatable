@@ -152,6 +152,13 @@ export interface DataTableConfig<Data> {
      * Defaults to `200`.
      */
     searchDebounceMs?: number;
+
+    /**
+     * Callback fired whenever the active data source reports an error. Use it
+     * to surface fetch failures via a toast or logging system. The callback is
+     * invoked at most once per distinct error instance.
+     */
+    onError?: (error: Error) => void;
 }
 
 export type FullDataTableConfig<Data> = Required<DataTableConfig<Data>>;
