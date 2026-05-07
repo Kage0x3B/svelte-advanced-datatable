@@ -135,6 +135,14 @@ export interface DataTableConfig<Data> {
      * Tables without a header are not sortable!
      */
     showTableHeader?: boolean;
+
+    /**
+     * If `true`, the modal for the single visible item is opened automatically
+     * whenever the dataTable result contains exactly one row.
+     *
+     * Defaults to `false`.
+     */
+    autoOpenSingleItem?: boolean;
 }
 
 export type FullDataTableConfig<Data> = Required<DataTableConfig<Data>>;

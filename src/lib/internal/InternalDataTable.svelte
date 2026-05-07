@@ -79,7 +79,7 @@
     const highlightedItemId = $derived(config.highlightedItemId);
 
     $effect(() => {
-        if (items.length === 1 && state.currentOpenIndex === undefined) {
+        if (config.autoOpenSingleItem && items.length === 1 && state.currentOpenIndex === undefined) {
             state.currentOpenIndex = 0;
         }
     });
