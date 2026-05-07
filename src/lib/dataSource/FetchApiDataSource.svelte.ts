@@ -8,6 +8,8 @@ import { AbstractDataSource } from './AbstractDataSource.svelte.js';
  * Uses the {@link https://developer.mozilla.org/en-US/docs/Web/API/Fetch_API Fetch API} to request the data from an api endpoint via HTTP POST requests
  */
 export class FetchApiDataSource<Data> extends AbstractDataSource<Data> {
+    private abortController: AbortController | undefined;
+
     /**
      * Create a new data source to fetch your paginated table data from an api endpoint.
      *
@@ -24,13 +26,18 @@ export class FetchApiDataSource<Data> extends AbstractDataSource<Data> {
     }
 
     requestData(data: PaginatedListRequest<Data>): void {
+        this.abortController?.abort();
+        const controller = new AbortController();
+        this.abortController = controller;
+
         fetch(this.url, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
             },
             body: JSON.stringify(data),
-            ...this.options
+            ...this.options,
+            signal: controller.signal
         })
             .then(async (response) => {
                 let resData: Data | undefined = undefined;
@@ -38,10 +45,13 @@ export class FetchApiDataSource<Data> extends AbstractDataSource<Data> {
                 try {
                     resData = await response.json();
                 } catch (error) {
+                    if (controller.signal.aborted) return;
                     this.queryResult = QueryResult.buildError(error as Error);
 
                     return;
                 }
+
+                if (controller.signal.aborted) return;
 
                 if (response.ok && typeof resData !== 'undefined') {
                     this.queryResult = QueryResult.buildSuccess(resData as unknown as PaginatedListResponse<Data>);
@@ -59,6 +69,7 @@ export class FetchApiDataSource<Data> extends AbstractDataSource<Data> {
                 }
             })
             .catch((error) => {
+                if (controller.signal.aborted) return;
                 this.queryResult = QueryResult.buildError(error as Error);
             });
     }
