@@ -103,7 +103,6 @@ export class SvelteQueryDataSource<Data> implements IDataSource<Data> {
         queryKey: DataTableQueryKey<Data>;
     }) => Promise<PaginatedListResponse<Data>> {
         return ({ queryKey }) => {
-            console.log('calling api with', $state.snapshot(queryKey[1]));
             return this.apiFunction!(queryKey[1]);
         };
     }
