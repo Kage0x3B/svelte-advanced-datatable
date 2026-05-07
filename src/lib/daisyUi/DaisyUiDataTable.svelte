@@ -85,6 +85,14 @@
         }
     });
 
+    let lastObservedSearchInput = state.searchInput;
+    $effect(() => {
+        if (state.searchInput !== lastObservedSearchInput) {
+            lastObservedSearchInput = state.searchInput;
+            state.currentPage = 1;
+        }
+    });
+
     export function capture(): DataTableState {
         return {
             currentPage: state.currentPage,
@@ -109,6 +117,7 @@
             state.currentOpenIndex = snapshot.currentOpenIndex ?? undefined;
             state.sortColumnKey = snapshot.sortColumnKey ?? config.defaultSort?.columnKey;
             state.sortDirection = snapshot.sortDirection ?? config.defaultSort?.direction;
+            lastObservedSearchInput = state.searchInput;
         }
     }
 
