@@ -16,6 +16,10 @@
             userName: {
                 type: ComponentType.STRING,
                 sortable: true
+            },
+            mailAddress: {
+                type: ComponentType.STRING,
+                sortable: true
             }
         },
         dataUniquePropertyKey: 'id',
@@ -25,13 +29,19 @@
             },
             userName: {
                 label: 'Username'
+            },
+            mailAddress: {
+                label: 'Email'
             }
         },
         // Persist transient state (page/search/sort) into URL search params so the
         // current view is shareable, refresh-survivable, and back/forward-aware.
-        // URL keys are namespaced as `dt-page`, `dt-q`, `dt-sortCol`, `dt-sortDir`.
+        // Persistent UI prefs (items-per-page, column visibility, column widths)
+        // go into localStorage under `userData-*` so they follow the user across
+        // pages and reloads.
         persistence: {
-            transient: 'url'
+            transient: 'url',
+            persistent: 'localStorage'
         }
     };
 
