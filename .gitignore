@@ -11,6 +11,9 @@ node_modules
 # Automatically generated documentation
 src/routes/(docs)/(api-reference)/api-reference/**
 
+# Local-only improvement backlog
+/IMPROVEMENTS.md
+
 
 # Created by https://www.toptal.com/developers/gitignore/api/webstorm
 # Edit at https://www.toptal.com/developers/gitignore?templates=webstorm
