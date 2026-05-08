@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.12.1](https://github.com/Kage0x3B/svelte-advanced-datatable/compare/v0.12.0...v0.12.1) (2026-05-08)
+
+
+### Documentation
+
+* refresh README and docs for current feature set ([83dc4f8](https://github.com/Kage0x3B/svelte-advanced-datatable/commit/83dc4f887ef5968f6dcd1304e53bd1f34874fc6b))
+
 ## [0.12.0](https://github.com/Kage0x3B/svelte-advanced-datatable/compare/v0.11.0...v0.12.0) (2026-05-08)
 
 
