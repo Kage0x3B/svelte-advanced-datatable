@@ -7,6 +7,30 @@ export interface DataTableState {
     currentOpenIndex: number | undefined;
     sortColumnKey: string | undefined;
     sortDirection: SortDirection;
+
+    /**
+     * Reserved for future column-visibility feature (IMPROVEMENTS.md 1.2).
+     * Map of column key → visible flag. Persistent tier when wired.
+     */
+    columnVisibility?: Record<string, boolean>;
+
+    /**
+     * Reserved for future column-resizing feature (IMPROVEMENTS.md 1.4).
+     * Map of column key → width in pixels. Persistent tier when wired.
+     */
+    columnWidths?: Record<string, number>;
+
+    /**
+     * Reserved for future column-reordering feature (IMPROVEMENTS.md 1.3).
+     * Ordered list of column keys. Persistent tier when wired.
+     */
+    columnOrder?: string[];
+
+    /**
+     * Reserved for future density-toggle feature (IMPROVEMENTS.md 1.14).
+     * Persistent tier when wired.
+     */
+    density?: 'xs' | 'sm' | 'md' | 'lg' | 'xl';
 }
 
 type GetKeys<T, U> = {

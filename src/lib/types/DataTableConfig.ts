@@ -1,4 +1,5 @@
 import type { TableColumnConfig } from '$lib/dataComponent/ComponentType.js';
+import type { PersistenceOptions } from '$lib/persistence/createStores.svelte.js';
 import type { ForcedSearchQuery } from '$lib/searchParser/ForcedSearchQuery.js';
 import type { ISearchParser } from '$lib/searchParser/ISearchParser.js';
 import type { MessageFormatter } from '$lib/types/MessageFormatter.js';
@@ -159,6 +160,15 @@ export interface DataTableConfig<Data> {
      * invoked at most once per distinct error instance.
      */
     onError?: (error: Error) => void;
+
+    /**
+     * State persistence configuration. Two independent backends — one for
+     * short-lived state (page/search/sort/open) and one for longer-lived UI
+     * preferences. Defaults preserve current behavior: the snapshot backend
+     * is wired up for transient state (consumers can keep using the existing
+     * `capture()`/`restore()` API), and persistent storage is opt-in.
+     */
+    persistence?: PersistenceOptions;
 }
 
 export type FullDataTableConfig<Data> = Required<DataTableConfig<Data>>;

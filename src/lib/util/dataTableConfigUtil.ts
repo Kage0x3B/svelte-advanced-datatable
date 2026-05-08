@@ -36,7 +36,8 @@ const defaultConfig: Partial<DataTableConfig<unknown>> = {
     showTableHeader: true,
     autoOpenSingleItem: false,
     searchDebounceMs: 200,
-    onError: undefined
+    onError: undefined,
+    persistence: {}
 };
 
 export function mergeDataTableConfigDefaults<Data>(config: DataTableConfig<Data>): FullDataTableConfig<Data> {

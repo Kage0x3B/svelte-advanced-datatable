@@ -38,6 +38,7 @@
         "eslint-plugin-svelte": "^3.13.1",
         "github-slugger": "^2.0.0",
         "globals": "^17.6.0",
+        "happy-dom": "^20.9.0",
         "highlight.js": "^11.11.1",
         "luxon": "^3.7.2",
         "marked": "^15.0.12",
@@ -66,6 +67,7 @@
     },
     "type": "module",
     "peerDependencies": {
+        "@sveltejs/kit": "2.x",
         "@tanstack/query-core": "5.x",
         "svelte": "5.x",
         "svelte-i18n": "4.x"
@@ -73,6 +75,9 @@
     "peerDependenciesMeta": {
         "svelte": {
             "optional": false
+        },
+        "@sveltejs/kit": {
+            "optional": true
         },
         "svelte-i18n": {
             "optional": true
@@ -127,6 +132,11 @@
             "types": "./dist/searchParser/index.d.ts",
             "svelte": "./dist/searchParser/index.js",
             "default": "./dist/searchParser/index.js"
+        },
+        "./persistence": {
+            "types": "./dist/persistence/index.d.ts",
+            "svelte": "./dist/persistence/index.js",
+            "default": "./dist/persistence/index.js"
         }
     },
     "files": [
@@ -155,6 +165,9 @@
             ],
             "searchParser": [
                 "./dist/searchParser/index.d.ts"
+            ],
+            "persistence": [
+                "./dist/persistence/index.d.ts"
             ]
         }
     },

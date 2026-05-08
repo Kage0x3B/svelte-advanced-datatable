@@ -4,6 +4,7 @@
     import type { CustomSnippetProps } from '$lib/dataComponent/CustomComponentTypeProperties.js';
     import type { IDataSource } from '$lib/dataSource/IDataSource.js';
     import DataTable from '$lib/internal/index.js';
+    import { createPersistedState, createStores, registerNamespaceCollisions } from '$lib/persistence/index.js';
     import type { DataTableConfig, FullDataTableConfig } from '$lib/types/DataTableConfig.js';
     import type { MessageFormatter } from '$lib/types/MessageFormatter.js';
     import { configContext, dataSourceContext, messageFormatterContext } from '$lib/util/context.js';
@@ -67,13 +68,9 @@
     dataSourceContext.set(box.with(() => dataSource));
     messageFormatterContext.set(box.with(() => format));
 
-    const state: InternalDataTableState = box.flatten({
-        currentPage: box(initialState?.currentPage ?? 1),
-        searchInput: box(initialState?.searchInput ?? ''),
-        currentOpenIndex: box(initialState?.currentOpenIndex ?? undefined),
-        sortColumnKey: box(initialState?.sortColumnKey ?? config.defaultSort?.columnKey),
-        sortDirection: box(initialState?.sortDirection ?? config.defaultSort?.direction ?? false)
-    });
+    const stores = createStores(config);
+    const state: InternalDataTableState = createPersistedState(config, initialState, stores);
+    registerNamespaceCollisions(config, stores);
 
     const searchQuery = $derived.by(() => {
         try {
