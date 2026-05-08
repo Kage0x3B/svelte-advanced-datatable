@@ -1,0 +1,41 @@
+# Changelog
+
+## [0.9.0](https://github.com/Kage0x3B/svelte-advanced-datatable/compare/v0.8.10...v0.9.0) (2026-05-08)
+
+
+### Features
+
+* add dataComponent barrel export ([10ec804](https://github.com/Kage0x3B/svelte-advanced-datatable/commit/10ec80499907c30f21247ebf7ed18757d232d606))
+* configurable search debounce delay ([add46f1](https://github.com/Kage0x3B/svelte-advanced-datatable/commit/add46f1b4271f2a2d8fbce812bd619ca88155bac))
+* **daisyUi:** table settings popover, empty/error slots, column resizing ([5c07a0a](https://github.com/Kage0x3B/svelte-advanced-datatable/commit/5c07a0adb7311cbffd68365c0ec87157d0bdfafe))
+* make auto-open-single-item behaviour opt-in ([ac23a80](https://github.com/Kage0x3B/svelte-advanced-datatable/commit/ac23a808ff8192d52dcbea22793a658419935c83))
+* **persistence:** support object-shaped state via Codec.isEqual ([cb14c83](https://github.com/Kage0x3B/svelte-advanced-datatable/commit/cb14c837aa43bd1281d23a954306bbc4884108d3))
+* **persistence:** unified state-storage layer with URL/Snapshot/WebStorage backends ([c0d367a](https://github.com/Kage0x3B/svelte-advanced-datatable/commit/c0d367a5d85002e6f8bdb0c5907c181638893006))
+* surface data-source errors via an onError config callback ([6e7a813](https://github.com/Kage0x3B/svelte-advanced-datatable/commit/6e7a81327b7977c32ad5b2defeae087fd3ccafd9))
+
+
+### Bug Fixes
+
+* cancel pending search-debounce timer on unmount ([16cac65](https://github.com/Kage0x3B/svelte-advanced-datatable/commit/16cac658946af4fdafaed60418073943afc8aa1d))
+* **daisyUi:** mirror external searchInput prop changes into the input ([0783c0b](https://github.com/Kage0x3B/svelte-advanced-datatable/commit/0783c0b3f750a36356874ccf5e104c8d0b462ff1))
+* **docs:** resolve mdsvex layout paths absolutely ([ff88ca9](https://github.com/Kage0x3B/svelte-advanced-datatable/commit/ff88ca932e28cb5220a3959672150ded5462c2a5))
+* **persistence:** replace NoopStateStore with in-memory MemoryStateStore ([0679a6c](https://github.com/Kage0x3B/svelte-advanced-datatable/commit/0679a6c9cab924de26f110978444a65257870d19))
+* reset to page 1 when the search query changes ([0f50d4a](https://github.com/Kage0x3B/svelte-advanced-datatable/commit/0f50d4a5cd7284e5b7b55fab3a6698ac8c92eeef))
+* stop mutating the source array in LocalDataSource ([4a3f356](https://github.com/Kage0x3B/svelte-advanced-datatable/commit/4a3f356fa129aff0e3d221f98f78e3632ab66952))
+* **test:** scope vitest to src/ and point Playwright at the dev server ([10a548d](https://github.com/Kage0x3B/svelte-advanced-datatable/commit/10a548dfb6f2914ee54618b8f3aa93b6c2b97bee))
+
+
+### Performance
+
+* cancel in-flight fetch requests when a new one is sent ([59fdf7e](https://github.com/Kage0x3B/svelte-advanced-datatable/commit/59fdf7e9de4dad7b40f5fe9689db939f731ff28f))
+* memoize column property iteration ([cb45288](https://github.com/Kage0x3B/svelte-advanced-datatable/commit/cb452887cad34c7271149a9d1342eefbd98eba91))
+
+
+### Documentation
+
+* **examples:** add advanced-search example with filter syntax ([88e8aac](https://github.com/Kage0x3B/svelte-advanced-datatable/commit/88e8aaccfdae460c2b765d088fde78f33e25e462))
+* **examples:** add custom-columns example showcasing CUSTOM cells ([631b3f5](https://github.com/Kage0x3B/svelte-advanced-datatable/commit/631b3f5a21711853613508fdaf5856861ceaaf05))
+* **examples:** add error-handling example using onError callback ([926de10](https://github.com/Kage0x3B/svelte-advanced-datatable/commit/926de1019fa31552c7c15c531d111cf4b8dc4351))
+* **examples:** add url-state example with Playwright coverage ([0598ea1](https://github.com/Kage0x3B/svelte-advanced-datatable/commit/0598ea18e402f64620af38fad501b9e7118d0e32))
+* **examples:** exercise the persistent tier in the url-state example ([d00d452](https://github.com/Kage0x3B/svelte-advanced-datatable/commit/d00d4525817a8e8fb11e74f0a9b33e9c9f14a810))
+* surface the new examples in the docs sidebar ([871b586](https://github.com/Kage0x3B/svelte-advanced-datatable/commit/871b586cd6020c3830b1668c7e43c3a9a8660cc5))
