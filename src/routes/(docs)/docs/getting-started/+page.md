@@ -1,15 +1,27 @@
 # Overview
+
+A configurable, server-aware data table for Svelte 5 with first-class DaisyUI integration.
+
 ## Features
 
-* Highly configurable dataTable
-* Data pagination
-* Sorting, searching/filtering the data
-* Compatible with the <a href='https://sveltestrap.js.org'>sveltestrap</a> (Bootstrap) component framework or your own UI styles by implementing a few components
-* Supports <a href='https://github.com/kaisermann/svelte-i18n'>svelte-i18n</a> or a custom i18n library
-* Data can be loaded using <a href='https://developer.mozilla.org/en-US/docs/Web/API/Fetch_API'>Fetch-API</a> or the <a href='https://github.com/SvelteStack/svelte-query'>svelte-query</a> library
+- **Server-side or client-side data** via `FetchApiDataSource`, `ApiFunctionDataSource`, `SvelteQueryDataSource` or `LocalDataSource`.
+- **Pagination** with an items-per-page selector and configurable defaults.
+- **Sorting** — single column, or Shift-click for multi-column sort.
+- **Search and filtering** — basic text search or a structured query parser with field aliases.
+- **Row selection + actions** — multi-select, bulk-action toolbar, per-row dropdown, primary/destructive variants.
+- **Settings popover** — items per page, density toggle, column visibility, column reordering, reset persisted column widths.
+- **Column resizing and reordering** with persisted widths and order.
+- **Sticky header** that pins while the body scrolls.
+- **Export** — CSV / JSON with full delimiter / quoting / line-ending control. Use `buildExportUrl` to delegate large exports to the server.
+- **State persistence** with separate session and persistent tiers (sessionStorage / localStorage / custom backend).
+- **Internationalisation** through the built-in message config, [svelte-i18n](https://github.com/kaisermann/svelte-i18n) or a custom `MessageFormatter`.
+- **Error handling** — `onError` callback plus a customisable `errorState` slot.
+- **Custom column components** for fully bespoke cell rendering.
 
-## Quick Links
+## Quick links
 
-* [Bootstrap + Sveltestrap UI](https://svelte-advanced-datatable.js.org/todo)
-* [Svelte Query as a datasource](https://svelte-advanced-datatable.js.org/todo)
-* [Svelte Query as a datasource](https://svelte-advanced-datatable.js.org/todo)
+- [Installation](/docs/getting-started/installation)
+- [Configuration reference](/docs/configuration)
+- [Data source configuration](/docs/configuration/data-sources)
+- [Column configuration](/docs/configuration/column-config)
+- [API reference](/api-reference)

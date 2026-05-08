@@ -4,56 +4,106 @@ title: Configuration
 
 # Configuration
 
-The most important part of getting your dataTable ready to be used is the proper configuration.
-The DataTable component accepts a `config` object, which has the following shape:
+The most important part of getting your dataTable ready is the `config` object passed to the `DataTable` component:
 
 ```typescript
 import type { DataTableConfig } from 'svelte-advanced-datatable';
 import { ComponentType } from 'svelte-advanced-datatable';
-import { UserData } from './UserData.js';
 
 const config: DataTableConfig<UserData> = {
     type: 'userData',
     columnProperties: {
-        id: {
-            type: ComponentType.NUMBER
-        },
-        userName: {
-            type: ComponentType.STRING
-        }
+        id: { type: ComponentType.NUMBER },
+        userName: { type: ComponentType.STRING }
     },
-    ...additionalConfigOptions
+    dataUniquePropertyKey: 'id',
+    messageConfig: {
+        id: { label: 'Id' },
+        userName: { label: 'Username' }
+    }
 };
 ```
 
-!> If you use TypeScript, you can annotate your config with
-the [DataTableConfig](/api-reference/interfaces/DataTableConfig) type to get autocompletion tips and errors from your
-IDE.
+!> Annotate your config with [`DataTableConfig`](/api-reference/index/interfaces/DataTableConfig) to get autocompletion and type errors.
 
-## Configuration Reference
+## Configuration reference
 
-The configuration has the following options:
+### Required
 
-| Key                          | Type                                                | Description                                                                                                                                                                           | Default Value                     |
-|:-----------------------------|:----------------------------------------------------|:--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|:----------------------------------|
-| `type`                       | `string`                                            | A unique identifier/name for this dataTable. Should not contain whitespaces and non-ascii characters                                                                                  | required                          |
-| `columnProperties`           | `TableColumnConfig`                                 | An object with one key for each key in the data, containing configuration options for each table column                                                                               | required                          |
-| `dataSource`                 | `IDataSource`                                       | The data source where the dataTable requests the table data from. See [Data Source Configuration](/docs/configuration/data-sources) for more information                              | required                          |
-| `dataUniquePropertyKey`      | `string`                                            | The key of your items unique identifier. For example a user id or a counter value which increases by one for each item, as long as it's unique for each item                          | required                          |
-| `messageFormatterType`       | `'config' ⎮ 'svelte-i18n'`                          | Whether to use the messageConfig or the svelte-i18n library to provide all strings used by the dataTable                                                                              | `'config'`                        |
-| `messageFormatterPrefix`     | `string`                                            | Prefix for every message id. Only applies to external message formatters such as the svelte-i18n formatter.                                                                           | `''`                              |
-| `messageConfig`              | `string`                                            | An object containing all strings used by the dataTable, such as table headers, titles of buttons and more.<br/>Ignored if svelte-i18n is enabled by the `messageFormatterType` option | required if not using svelte-i18n |
-| `additionalMessageFormatter` | `MessageFormatter`                                  | A custom message formatter which can return a replacement or undefined to default to the message provided by the internal formatter/svelte-i18n                                       | `undefined`                       |
-| `modalComponent`             | `SvelteComponent`                                   | A svelte component shown when a user clicks on a row to expand it                                                                                                                     | `undefined`                       |
-| `onItemClick`                | `(item: YourData) => void`                          | An onClick handler for a table row. Gets passed the data item which the clicked row displays                                                                                          | `undefined`                       |
-| `buildItemUrl`               | `(item: YourData) => string`                        | Build the url for that row, which turns it into a clickable link instead of using the onClick handler. Gets passed the data item which the clicked row displays                       | `undefined`                       |
-| `forcedSearchQuery`          | `ForcedSearchQuery`                                 | A search query which overwrites any values by the users current search. Can be used to apply a forced filter to the whole dataTable                                                   | `undefined`                       |
-| `highlightedItemId`          | `string⎮ Readable<string>`                          | The identifier of any item which then gets assigned the `highlighted` class                                                                                                           | `undefined`                       |
-| `defaultSort`                | `{ columnKey?: string; direction?: SortDirection }` | Sort the table using the given key and direction by default                                                                                                                           | `undefined`                       |
-| `enablePagination`           | `boolean`                                           | Whether to enable or disable pagination entirely.<br/>Watch out that the server must send all table rows at once if this is disabled.                                                 | `true`                            |
-| `showTopPagination`          | `boolean`                                           | If the pagination component at the top of the dataTable should be shown                                                                                                               | `true`                            |
-| `showBottomPagination`       | `boolean`                                           | If the pagination component at the bottom of the dataTable should be shown. Notice that the bottom pagination is always hidden when less than 10 rows are shown                       | `true`                            |
-| `itemsPerPage`               | `number`                                            | Maximum amount of rows shown on one page                                                                                                                                              | `50`                              |
-| `enableSearch`               | `boolean`                                           | Whether to show the search textbox                                                                                                                                                    | `true`                            |
-| `searchParser`               | `ISearchParser`                                     | Which search parser to use to parse the users search text into search filters, categories and more                                                                                    | `BasicSearchTextParser`           |
+| Key                     | Type                | Description                                                                                                                              |
+|:------------------------|:--------------------|:-----------------------------------------------------------------------------------------------------------------------------------------|
+| `type`                  | `string`            | A unique identifier for this dataTable. Avoid whitespace and non-ASCII characters.                                                       |
+| `columnProperties`      | `TableColumnConfig` | One entry per data key. See [Column configuration](/docs/configuration/column-config).                                                   |
+| `dataUniquePropertyKey` | `keyof Data`        | Key of the row's stable identifier (e.g. `'id'`).                                                                                        |
+| `messageConfig`         | `MessageConfig`     | Object containing all strings used by the dataTable (column labels, button titles, ...). Required unless `messageFormatter` is provided. |
 
+The data source is passed as a separate `dataSource` prop on the `DataTable` component, not inside `config`. See [Data sources](/docs/configuration/data-sources).
+
+### Pagination
+
+| Key                    | Type      | Description                                                                                                  | Default |
+|:-----------------------|:----------|:-------------------------------------------------------------------------------------------------------------|:--------|
+| `enablePagination`     | `boolean` | Disable to render every row at once. The server must then return the entire dataset in a single response.    | `true`  |
+| `itemsPerPage`         | `number`  | Default page size. The user can override this through the settings popover; the chosen value is persisted.   | `50`    |
+| `itemsPerPageOptions`  | `number[]`| Options for the settings popover's "items per page" select. Pass `[]` to hide the selector.                  | `[10, 25, 50, 100, 250]` |
+| `showTopPagination`    | `boolean` | Show the pagination bar above the table.                                                                     | `true`  |
+| `showBottomPagination` | `boolean` | Show the pagination bar below the table. Hidden automatically when fewer than 10 rows are visible.           | `true`  |
+
+### Search and sorting
+
+| Key                | Type                                                  | Description                                                                                                  | Default                  |
+|:-------------------|:------------------------------------------------------|:-------------------------------------------------------------------------------------------------------------|:-------------------------|
+| `enableSearch`     | `boolean`                                             | Show the search textbox.                                                                                     | `true`                   |
+| `searchParser`     | `ISearchParser`                                       | Parses the search input. Use `BasicTextSearchParser` for plain search or `AdvancedSearchParser` for filters. | `BasicTextSearchParser`  |
+| `searchDebounceMs` | `number`                                              | Delay before committing the search input as a query.                                                         | `200`                    |
+| `forcedSearchQuery`| `ForcedSearchQuery`                                   | Search query that overrides the user's input — useful for permanent filters.                                 | `undefined`              |
+| `defaultSort`      | `{ columnKey?: string; direction?: SortDirection }`   | Initial sort applied on first render.                                                                        | `undefined`              |
+
+### Selection and actions
+
+| Key         | Type                  | Description                                                                                                                                        | Default     |
+|:------------|:----------------------|:---------------------------------------------------------------------------------------------------------------------------------------------------|:------------|
+| `actions`   | `DataTableAction[]`   | Registered actions. Adds a checkbox column, per-row dropdown and bulk toolbar automatically. See the [actions example](/example/daisy-ui/svelte-query-actions). | `[]`        |
+| `selection` | `SelectionOptions`    | Fine-grained tuning: `enabled`, `selectableRows`, `hideRowActionsColumn`, `primaryActionsCount`.                                                   | see below   |
+
+`SelectionOptions` defaults to `{ primaryActionsCount: 2, hideRowActionsColumn: false }`. Selection chrome is enabled automatically when `actions.length > 0`; set `selection.enabled = true` to enable it without registering any actions.
+
+The `DataTable` component additionally accepts `bind:selectedIds` and `onSelectionChange` props for two-way binding.
+
+### Export
+
+| Key               | Type             | Description                                                                                                                                | Default  |
+|:------------------|:-----------------|:-------------------------------------------------------------------------------------------------------------------------------------------|:---------|
+| `hideExport`      | `boolean`        | Hide the export popover button.                                                                                                            | `false`  |
+| `buildExportUrl`  | `BuildExportUrl` | Provide a server-side export URL builder. When set, the popover offers a download link instead of fetching all rows in the browser.       | `undefined` |
+| `exportChunkSize` | `number`         | Maximum rows per chunk during a local export.                                                                                              | `1000`   |
+
+### Persistence and state
+
+| Key            | Type                  | Description                                                                                                          | Default     |
+|:---------------|:----------------------|:---------------------------------------------------------------------------------------------------------------------|:------------|
+| `persistence`  | `PersistenceOptions`  | Configure session and persistent backends. Defaults preserve previous behaviour (transient state via the snapshot API). | `{}`        |
+
+The `DataTable` component also accepts `initialState` and `captureState` props for explicit snapshot/restore control.
+
+### Display and behaviour
+
+| Key                  | Type                                       | Description                                                                                                | Default     |
+|:---------------------|:-------------------------------------------|:-----------------------------------------------------------------------------------------------------------|:------------|
+| `showTableHeader`    | `boolean`                                  | Hide the table header row. Tables without a header are not sortable.                                       | `true`      |
+| `hideSettings`       | `boolean`                                  | Hide the settings popover (cog icon).                                                                      | `false`     |
+| `modalComponent`     | `Component<ModalProps<Data>>`              | Component shown when a row is clicked.                                                                     | `undefined` |
+| `onItemClick`        | `(item: Data) => void`                     | Click handler for a row. Mutually exclusive with `buildItemUrl`.                                           | `undefined` |
+| `buildItemUrl`       | `(item: Data) => string`                   | Turn each row into a link by returning the URL.                                                            | `undefined` |
+| `highlightedItemId`  | `string`                                   | The id of a row that gets the `highlighted` class applied.                                                 | `undefined` |
+| `autoOpenSingleItem` | `boolean`                                  | When the result has exactly one row, open the modal automatically.                                         | `false`     |
+| `onError`            | `(error: Error) => void`                   | Callback invoked when the data source surfaces an error. Fires once per distinct error.                    | `undefined` |
+
+The DaisyUI `DataTable` component also accepts `stickyHeader`, `striped`, `hoverable`, `size` and several snippet props (`empty`, `errorState`, `headerFirst`, `headerAfterSearch`, `headerMiddle`, `settingsExtra`).
+
+### Internationalisation
+
+| Key                       | Type                                                  | Description                                                                                                | Default     |
+|:--------------------------|:------------------------------------------------------|:-----------------------------------------------------------------------------------------------------------|:------------|
+| `messageFormatter`        | `'config' \| typeof svelteI18nFormat \| MessageFormatter` | Source of all translated strings. `'config'` uses `messageConfig`; pass the svelte-i18n `format` function to delegate to it; or supply a custom formatter. | `'config'`  |
+| `messageFormatterPrefix`  | `string`                                              | Prefix prepended to every message id when using an external formatter (e.g. svelte-i18n).                  | `''`        |
