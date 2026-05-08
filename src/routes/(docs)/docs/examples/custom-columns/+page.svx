@@ -1,0 +1,74 @@
+---
+title: Custom Column Components
+---
+
+<script>
+	import ExampleTable from '../../../../util/ExampleTable.svelte';
+</script>
+
+# Custom Column Components
+
+`ComponentType.CUSTOM` lets you render anything you like for a column. The component receives `{ key, value, item, colProps }` so it can format the cell value, look up related fields on the row, or even render interactive controls.
+
+Pair it with `formatValue` for cheap formatting (locale-aware currencies, dates) where you don't need a full component.
+
+```typescript
+import type { CustomComponentTypeProperties } from 'svelte-advanced-datatable/dataComponent';
+import AvatarCell from './AvatarCell.svelte';
+import ProgressCell from './ProgressCell.svelte';
+import ActionsCell from './ActionsCell.svelte';
+
+const config: DataTableConfig<Project> = {
+	type: 'projects',
+	columnProperties: {
+		owner: {
+			type: ComponentType.CUSTOM,
+			sortable: false,
+			component: AvatarCell
+		} satisfies CustomComponentTypeProperties<Project['owner']>,
+
+		progress: {
+			type: ComponentType.CUSTOM,
+			sortable: true,
+			component: ProgressCell
+		} satisfies CustomComponentTypeProperties<number>,
+
+		budget: {
+			type: ComponentType.NUMBER,
+			formatValue: (value) =>
+				new Intl.NumberFormat(undefined, {
+					style: 'currency',
+					currency: 'USD',
+					maximumFractionDigits: 0
+				}).format(value as number)
+		},
+
+		actions: {
+			type: ComponentType.CUSTOM,
+			sortable: false,
+			component: ActionsCell
+		} satisfies CustomComponentTypeProperties<unknown>
+	},
+	dataUniquePropertyKey: 'id'
+};
+```
+
+A custom cell that mounts an action button should call `event.stopPropagation()` in its handlers so clicks don't bubble up and toggle the row's modal:
+
+```svelte
+<script lang="ts">
+	import type { CustomComponentProps } from 'svelte-advanced-datatable/dataComponent';
+	import type { Project } from './projectData.js';
+
+	let { item }: CustomComponentProps<unknown, Project> = $props();
+
+	function archive(event: MouseEvent) {
+		event.stopPropagation();
+		// ...
+	}
+</script>
+
+<button onclick={archive}>Archive</button>
+```
+
+<ExampleTable path='daisy-ui/custom-columns' description='Five custom-cell flavours: hashed-colour avatar, tonal progress bar, relative-time badge, currency formatting, and a stopPropagation action button.' />

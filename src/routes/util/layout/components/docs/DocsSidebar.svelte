@@ -26,6 +26,9 @@
         {#snippet submenu()}
             <DocsSidebarItem href="examples/extensive-example">Extensive Example</DocsSidebarItem>
             <DocsSidebarItem href="examples/modal">Modal</DocsSidebarItem>
+            <DocsSidebarItem href="examples/custom-columns">Custom Column Components</DocsSidebarItem>
+            <DocsSidebarItem href="examples/advanced-search">Advanced Search</DocsSidebarItem>
+            <DocsSidebarItem href="examples/error-handling">Error Handling</DocsSidebarItem>
         {/snippet}
     </DocsSidebarItem>
 </ul>
