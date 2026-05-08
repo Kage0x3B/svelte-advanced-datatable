@@ -90,7 +90,11 @@
             "optional": true
         }
     },
-    "homepage": "https://svelte-advanced-datatable.pages.dev",
+    "homepage": "https://svelte-advanced-datatable.moritz.website",
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/Kage0x3B/svelte-advanced-datatable.git"
+    },
     "bugs": {
         "url": "https://github.com/Kage0x3B/svelte-advanced-datatable/issues",
         "email": "moritz.hein@live.de"
