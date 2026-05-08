@@ -5,7 +5,7 @@
 <footer class="p-4 container xl:max-w-[80%] mx-auto">
     <div class="flex justify-between">
         <div class="flex items-center text-success-900">
-            © 2023&nbsp;<a href="https://moritz.website" class="text-dark text-decoration-none">Moritz Hein</a>
+            © 2026&nbsp;<a href="https://moritz.website" class="text-dark text-decoration-none">Moritz Hein</a>
         </div>
         <div>
             <a
