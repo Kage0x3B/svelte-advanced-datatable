@@ -20,6 +20,7 @@ jobs:
             - uses: googleapis/release-please-action@v4
               id: release
               with:
+                  target-branch: stable
                   config-file: release-please-config.json
                   manifest-file: .release-please-manifest.json
 
@@ -32,14 +33,12 @@ jobs:
 
             - uses: pnpm/action-setup@v4
 
+            # Node 24 ships with npm >= 11.5.1, required for Trusted Publishing
             - uses: actions/setup-node@v4
               with:
-                  node-version: 22
+                  node-version: 24
                   registry-url: https://registry.npmjs.org
                   cache: pnpm
-
-            # Trusted Publishing requires npm >= 11.5.1
-            - run: npm install -g npm@latest
 
             - run: pnpm install --frozen-lockfile
 
