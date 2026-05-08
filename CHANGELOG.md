@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.11.0](https://github.com/Kage0x3B/svelte-advanced-datatable/compare/v0.10.0...v0.11.0) (2026-05-08)
+
+
+### Features
+
+* **daisyUi:** CSV/JSON export popover with mobile-aware toolbar ([b588e8b](https://github.com/Kage0x3B/svelte-advanced-datatable/commit/b588e8b7d2811f524dc9f0c5aba82845099785cd))
+
 ## [0.10.0](https://github.com/Kage0x3B/svelte-advanced-datatable/compare/v0.9.1...v0.10.0) (2026-05-08)
 
 
