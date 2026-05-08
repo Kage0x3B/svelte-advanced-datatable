@@ -39,6 +39,16 @@
         hoverable?: boolean;
         size?: ThemeSize;
 
+        /**
+         * Pin the table header row to the top of the nearest scrolling
+         * ancestor while the body scrolls. Applies DaisyUI's `table-pin-rows`
+         * class, so for the header to actually stick the table needs to be
+         * inside a height-constrained scroll container — without one,
+         * vertical scroll happens at page level and the header scrolls with
+         * it. Defaults to `true`.
+         */
+        stickyHeader?: boolean;
+
         headerFirst?: Snippet;
         headerAfterSearch?: Snippet;
         headerMiddle?: Snippet;
@@ -73,6 +83,7 @@
         size = 'md',
         striped = false,
         hoverable = true,
+        stickyHeader = true,
         class: classExport,
         headerFirst,
         headerAfterSearch,
@@ -425,6 +436,7 @@
                     {
                         'table-zebra': striped,
                         'table-hover': hoverable,
+                        'table-pin-rows': stickyHeader,
                         'table-xs': size === 'xs',
                         'table-sm': size === 'sm',
                         'table-md': size === 'md',
