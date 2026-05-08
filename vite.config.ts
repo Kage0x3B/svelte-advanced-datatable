@@ -1,3 +1,4 @@
+/// <reference types="vitest/config" />
 import { sveltekit } from '@sveltejs/kit/vite';
 import tailwindcss from '@tailwindcss/vite';
 import type { UserConfig } from 'vite';
@@ -23,6 +24,11 @@ const config: UserConfig = {
         host: true,
         port: 5173,
         strictPort: true
+    },
+    test: {
+        // Playwright owns `tests/`; vitest runs in-source unit specs only.
+        include: ['src/**/*.{test,spec}.{js,ts,mjs,cjs}'],
+        exclude: ['node_modules', 'dist', '.svelte-kit', 'tests']
     }
 };
 /*
