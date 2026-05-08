@@ -2,13 +2,21 @@
     import type { CustomSnippetProps } from '$lib/dataComponent/CustomComponentTypeProperties.js';
     import DataTable from '$lib/internal/index.js';
     import type { InternalDataTableState } from '$lib/types/DataTableState.js';
-    import { configContext } from '$lib/util/context.js';
+    import {
+        configContext,
+        rowActionsColumnEnabledContext,
+        selectionEnabledContext
+    } from '$lib/util/context.js';
     import { flip } from 'svelte/animate';
     import { slide } from 'svelte/transition';
     import DaisyUiBadgeWrapper from '$lib/daisyUi/DaisyUiBadgeWrapper.svelte';
     import DaisyUiIconWrapper from '$lib/daisyUi/DaisyUiIconWrapper.svelte';
+    import DaisyUiRowActionsCell from '$lib/daisyUi/DaisyUiRowActionsCell.svelte';
+    import DaisyUiSelectionCell from '$lib/daisyUi/DaisyUiSelectionCell.svelte';
 
     const config = $derived(configContext.get().current);
+    const selectionEnabled = $derived(selectionEnabledContext.get().current);
+    const rowActionsColumnEnabled = $derived(rowActionsColumnEnabledContext.get().current);
 
     interface Props {
         state: InternalDataTableState;
@@ -49,7 +57,15 @@
             .map((key) => [key, config.columnProperties[key]] as const)
             .filter(([key, colProp]) => !colProp?.hidden && state.columnVisibility[key] !== false);
     });
-    const columnCount = $derived(visibleColumnEntries.length);
+    /** Spans the data columns plus the leading selection column and trailing
+     * row-actions column when active. Used for the colspans of the
+     * open-modal margin/content rows so they stretch across the same width
+     * as the data row. */
+    const columnCount = $derived(
+        visibleColumnEntries.length +
+            (selectionEnabled ? 1 : 0) +
+            (rowActionsColumnEnabled ? 1 : 0)
+    );
 </script>
 
 <DataTable.Row {state} {index} {onClick} {item} {open}>
@@ -72,6 +88,9 @@
             onclick={rowOnClick}
         >
             {#if item}
+                {#if selectionEnabled}
+                    <DaisyUiSelectionCell {item} />
+                {/if}
                 {#each visibleColumnEntries as [key, _colProp] (key)}
                     <td
                         class={[isOpen && 'bg-base-300 border-0 first:rounded-tl-box last:rounded-tr-box']}
@@ -98,6 +117,9 @@
                         {/if}
                     </td>
                 {/each}
+                {#if rowActionsColumnEnabled}
+                    <DaisyUiRowActionsCell {item} />
+                {/if}
             {:else}
                 <td>No data</td>
             {/if}

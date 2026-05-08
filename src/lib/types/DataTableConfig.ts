@@ -2,6 +2,7 @@ import type { TableColumnConfig } from '$lib/dataComponent/ComponentType.js';
 import type { PersistenceOptions } from '$lib/persistence/createStores.svelte.js';
 import type { ForcedSearchQuery } from '$lib/searchParser/ForcedSearchQuery.js';
 import type { ISearchParser } from '$lib/searchParser/ISearchParser.js';
+import type { DataTableAction } from '$lib/types/DataTableAction.js';
 import type { BuildExportUrl } from '$lib/types/Export.js';
 import type { MessageFormatter } from '$lib/types/MessageFormatter.js';
 import type { ModalProps } from '$lib/types/ModalProps.js';
@@ -17,6 +18,47 @@ export interface ColumnMessageConfig {
     enumValue?: Record<string, string>;
 }
 
+/**
+ * Translated labels for the selection + actions UI. Per-action labels are
+ * keyed by {@link DataTableAction.key}; the surrounding chrome fields
+ * (`selectedCount`, `clearSelection`, ...) translate the UI around them.
+ *
+ * All chrome fields are optional — `mergeDataTableConfigDefaults` deep-merges
+ * built-in English defaults into whatever the consumer supplies, so a user
+ * who only wants to set per-action labels can write
+ * `{ actions: { delete: 'Delete' } }` without filling in the rest.
+ */
+export interface ActionMessageConfig {
+    /**
+     * Label rendered in the bulk toolbar. Receives an interpolated `{count}`
+     * placeholder (e.g. `'{count} selected'`).
+     */
+    selectedCount?: string;
+    /** Aria label for the "more actions" overflow button. */
+    moreActions?: string;
+    /** Aria label / tooltip for the "clear selection" close button. */
+    clearSelection?: string;
+    /** Aria label for the per-row three-dot menu trigger. */
+    rowActions?: string;
+    /** Aria label for the row checkbox. */
+    selectRow?: string;
+    /** Aria label for the header tri-state checkbox. */
+    selectAllOnPage?: string;
+
+    /**
+     * Per-action labels. The key matches {@link DataTableAction.key}; the
+     * value is the human-readable label shown in menu items, buttons, and
+     * tooltips. Both forms are accepted — bare string for the terse case,
+     * object form for parity with the per-column message shape.
+     */
+    [actionKey: string]:
+        | string
+        | undefined
+        | {
+              label: string;
+          };
+}
+
 export type MessageConfig<Data> = Partial<Record<keyof Data, ColumnMessageConfig>> & {
     pagination?: {
         previous: string;
@@ -28,6 +70,7 @@ export type MessageConfig<Data> = Partial<Record<keyof Data, ColumnMessageConfig
         placeholder: string;
         ariaLabel: string;
     };
+    actions?: ActionMessageConfig;
     export?: {
         button: string;
         title: string;
@@ -241,6 +284,57 @@ export interface DataTableConfig<Data> {
      * per-request payloads. Defaults to `1000`.
      */
     exportChunkSize?: number;
+
+    /**
+     * Registered row actions. When present, the dataTable automatically
+     * gains a leading checkbox column, a trailing three-dot row-actions
+     * column, and a bulk action toolbar that appears next to the search
+     * field once at least one row is selected.
+     *
+     * Each action provides exactly one of `onSingle` / `onMulti` (with
+     * `onMulti` doubling as the row handler when `onSingle` is omitted).
+     */
+    actions?: DataTableAction<Data>[];
+
+    /**
+     * Fine-grained tuning of the selection + actions UI.
+     */
+    selection?: SelectionOptions<Data>;
+}
+
+/**
+ * Tuning knobs for the selection/actions UI. The defaults work for the
+ * common case — only set these when you need to opt out of the auto-rendered
+ * row-actions column or shape how primary actions overflow.
+ */
+export interface SelectionOptions<Data> {
+    /**
+     * Force-enable the selection column even when no actions are registered.
+     * Useful when a consumer binds `selectedIds` for a custom UI but doesn't
+     * register any internal actions. Defaults to `true` whenever `actions`
+     * is non-empty.
+     */
+    enabled?: boolean;
+
+    /**
+     * Per-row predicate for whether the row may be selected. Rows where this
+     * returns `false` render a disabled checkbox.
+     */
+    selectableRows?: (item: Data) => boolean;
+
+    /**
+     * Hide the trailing row-actions (three-dot) column. Useful when actions
+     * should only fire from the bulk toolbar. Defaults to `false`.
+     */
+    hideRowActionsColumn?: boolean;
+
+    /**
+     * Maximum number of `primary: true` actions rendered as standalone
+     * buttons in the bulk toolbar. Surplus primaries fall into the "More
+     * actions" overflow dropdown alongside non-primary actions. Defaults
+     * to `2`.
+     */
+    primaryActionsCount?: number;
 }
 
 export type FullDataTableConfig<Data> = Required<DataTableConfig<Data>>;

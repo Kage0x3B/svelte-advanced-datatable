@@ -23,13 +23,17 @@ export type {
     ExportFormat,
     ExportRequest
 } from './types/Export.js';
+export type { DataTableAction, DataTableActionVariant } from './types/DataTableAction.js';
 export type { DataTableState } from './types/DataTableState.js';
 export type {
     DataTableConfig,
     FullDataTableConfig,
     MessageConfig,
-    ColumnMessageConfig
+    ColumnMessageConfig,
+    ActionMessageConfig,
+    SelectionOptions
 } from './types/DataTableConfig.js';
+export type { SelectionId } from './types/SelectionId.js';
 export type { MessageFormatter, InterpolationValues } from './types/MessageFormatter.js';
 export type { ModalProps } from './types/ModalProps.js';
 export type { PersistenceOptions } from './persistence/createStores.svelte.js';
@@ -38,7 +42,20 @@ export type { PaginatedListResponse } from './types/PaginatedListResponse.js';
 export type { SearchFilter } from './types/SearchFilter.js';
 export type { SortDirection } from './types/SortDirection.js';
 
-export { configContext, dataSourceContext, messageFormatterContext } from './util/context.js';
+export {
+    actionRunnerContext,
+    configContext,
+    dataSourceContext,
+    messageFormatterContext,
+    rowActionsColumnEnabledContext,
+    selectionContext,
+    selectionEnabledContext
+} from './util/context.js';
+export type { ActionRunner } from './util/context.js';
+export { invokeAction } from './util/invokeAction.js';
+export type { ActionInvocation, InvokeActionOptions } from './util/invokeAction.js';
+export { SelectionState } from './internal/selectionState.svelte.js';
+export type { SelectionStateOptions } from './internal/selectionState.svelte.js';
 export { wrapFetchToThrow } from './util/generalUtil.js';
 export { mergeDataTableConfigDefaults } from './util/dataTableConfigUtil.js';
 export { createMessageFormatter } from './util/messageFormatterUtil.svelte.js';

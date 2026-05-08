@@ -4,13 +4,27 @@
     import type { CustomSnippetProps } from '$lib/dataComponent/CustomComponentTypeProperties.js';
     import type { IDataSource } from '$lib/dataSource/IDataSource.js';
     import DataTable from '$lib/internal/index.js';
+    import { SelectionState } from '$lib/internal/selectionState.svelte.js';
     import { createPersistedState, createStores, registerNamespaceCollisions } from '$lib/persistence/index.js';
     import type { DataTableConfig, FullDataTableConfig } from '$lib/types/DataTableConfig.js';
     import type { MessageFormatter } from '$lib/types/MessageFormatter.js';
-    import { configContext, dataSourceContext, messageFormatterContext } from '$lib/util/context.js';
+    import {
+        actionRunnerContext,
+        configContext,
+        dataSourceContext,
+        messageFormatterContext,
+        rowActionsColumnEnabledContext,
+        selectionContext,
+        selectionEnabledContext,
+        type ActionRunner
+    } from '$lib/util/context.js';
     import { mergeDataTableConfigDefaults } from '$lib/util/dataTableConfigUtil.js';
     import { clamp } from '$lib/util/generalUtil.js';
     import { createMessageFormatter } from '$lib/util/messageFormatterUtil.svelte.js';
+    import { invokeAction, type ActionInvocation } from '$lib/util/invokeAction.js';
+    import type { DataTableAction } from '$lib/types/DataTableAction.js';
+    import type { SelectionId } from '$lib/types/SelectionId.js';
+    import { untrack } from 'svelte';
     import type { Component, Snippet } from 'svelte';
     import { flip } from 'svelte/animate';
     import { box } from 'svelte-toolbelt';
@@ -21,6 +35,9 @@
     import DaisyUiDataTableExport from './DaisyUiDataTableExport.svelte';
     import DaisyUiDataTablePagination from './DaisyUiDataTablePagination.svelte';
     import DaisyUiDataTableSettings from './DaisyUiDataTableSettings.svelte';
+    import DaisyUiRowActionsHeaderCell from './DaisyUiRowActionsHeaderCell.svelte';
+    import DaisyUiSelectionHeaderCell from './DaisyUiSelectionHeaderCell.svelte';
+    import DaisyUiSelectionToolbar from './DaisyUiSelectionToolbar.svelte';
     import SearchField from './DaisyUiSearchField.svelte';
     import SortUpIcon from '$lib/daisyUi/icons/SortUpIcon.svelte';
     import SortDownIcon from '$lib/daisyUi/icons/SortDownIcon.svelte';
@@ -79,6 +96,26 @@
 
         initialState?: DataTableState;
         captureState?: (state: DataTableState) => void;
+
+        /**
+         * Two-way bindable selection. Setting it from outside replaces the
+         * internal selection; toggling rows in the table updates this prop.
+         * Treat as IDs of `config.dataUniquePropertyKey` — selection persists
+         * across pagination, so this can include rows that aren't currently
+         * loaded.
+         */
+        selectedIds?: SelectionId[];
+
+        /**
+         * Fired whenever the selection changes (user toggle, programmatic
+         * mutation of `selectedIds`, or `clear()`). `loadedItems` is the
+         * subset of selected rows that are currently visible on the page —
+         * cross-page selections include IDs without loaded items.
+         */
+        onSelectionChange?: (event: {
+            ids: SelectionId[];
+            loadedItems: Record<string, unknown>[];
+        }) => void;
     }
 
     let {
@@ -97,6 +134,8 @@
         settingsExtra,
         initialState,
         captureState,
+        selectedIds = $bindable<SelectionId[]>([]),
+        onSelectionChange,
         ...customSnippets
     }: Props = $props();
 
@@ -110,6 +149,111 @@
     const stores = createStores(config);
     const tableState: InternalDataTableState = createPersistedState(config, initialState, stores);
     registerNamespaceCollisions(config, stores);
+
+    /** Items for the page the data source most recently fetched. Mirrors the
+     * `items` exposed by the inner `DataTable.Root` snippet, but read directly
+     * from the data source so the SelectionState getter can resolve outside
+     * the snippet body. */
+    const currentPageItems = $derived(
+        (dataSource.queryResult.data?.items ?? []) as Record<string, unknown>[]
+    );
+
+    /** Single SelectionState instance for the lifetime of the table. Always
+     * created — selection UI rendering is gated separately by
+     * `selectionEnabled` so a dormant store carries no per-row cost. The
+     * initial set is seeded from the bindable `selectedIds` prop so a
+     * consumer-provided default selection survives the first paint. */
+    const selection = new SelectionState<Record<string, unknown>>({
+        initial: selectedIds,
+        getKey: (item) => item[config.dataUniquePropertyKey] as string | number,
+        getCurrentPageItems: () => currentPageItems,
+        isRowSelectable: (item) => config.selection.selectableRows?.(item) ?? true
+    });
+
+    /** Whether the selection chrome (checkbox column, row-actions column,
+     * bulk toolbar) should render. True when the consumer registered any
+     * actions or explicitly opted in via `selection.enabled`. */
+    const selectionEnabled = $derived(
+        config.selection.enabled === true || config.actions.length > 0
+    );
+
+    /** Equality check that ignores order — selection identity is set-like
+     * even though the bindable prop is an array. Used by the sync effects
+     * below to short-circuit no-op updates and prevent ping-pong. */
+    function idsEqual(a: readonly SelectionId[], b: readonly SelectionId[]): boolean {
+        if (a === b) return true;
+        if (a.length !== b.length) return false;
+        const set = new Set(a);
+        for (const id of b) if (!set.has(id)) return false;
+        return true;
+    }
+
+    /** External → internal: consumer mutates `selectedIds` (or it's seeded
+     * with a non-empty default) → mirror into the internal SelectionState.
+     * Reads only `selectedIds`; the apply happens inside `untrack` so writes
+     * to the SelectionSet don't immediately re-fire this effect. */
+    $effect(() => {
+        const externalIds = selectedIds;
+        untrack(() => {
+            if (!idsEqual(selection.ids, externalIds)) {
+                selection.replaceAll(externalIds);
+            }
+        });
+    });
+
+    /** Internal → external: user toggles a row, or `clear()` runs after a
+     * bulk action → mirror back into the bindable prop and emit
+     * `onSelectionChange`. Reads only `selection.ids` and reuses `untrack`
+     * for the writes for the same anti-ping-pong reason. */
+    $effect(() => {
+        const internalIds = selection.ids;
+        untrack(() => {
+            if (idsEqual(selectedIds, internalIds)) return;
+            selectedIds = internalIds;
+            if (onSelectionChange) {
+                const idSet = new Set(internalIds);
+                const loadedItems = currentPageItems.filter((item) =>
+                    idSet.has(item[config.dataUniquePropertyKey] as SelectionId)
+                );
+                onSelectionChange({ ids: internalIds, loadedItems });
+            }
+        });
+    });
+
+    /** Whether the trailing three-dot row-actions column should render. True
+     * iff at least one action contributes a row-context handler (onSingle
+     * or onMulti) and the consumer hasn't opted out via
+     * `selection.hideRowActionsColumn`. */
+    const rowActionsColumnEnabled = $derived(
+        !config.selection.hideRowActionsColumn &&
+            config.actions.some(
+                (action) =>
+                    !action.hideInRow && (action.onSingle !== undefined || action.onMulti !== undefined)
+            )
+    );
+
+    /** Bumped to trigger a re-fetch of the current page. The internal table
+     * tracks this in `refresh()` so an increment forces the effect to
+     * re-run. Used by the action runner for `refreshAfter` actions. */
+    let refreshNonce = $state(0);
+
+    const actionRunner: ActionRunner = {
+        invoke(action, invocation) {
+            return invokeAction({
+                action: action as DataTableAction<Record<string, unknown>>,
+                invocation: invocation as ActionInvocation<Record<string, unknown>>,
+                selection,
+                refresh: () => {
+                    refreshNonce++;
+                }
+            });
+        }
+    };
+
+    selectionContext.set(box.with(() => selection as SelectionState<unknown>));
+    selectionEnabledContext.set(box.with(() => selectionEnabled));
+    rowActionsColumnEnabledContext.set(box.with(() => rowActionsColumnEnabled));
+    actionRunnerContext.set(box.with(() => actionRunner));
 
     const searchQuery = $derived.by(() => {
         try {
@@ -249,8 +393,14 @@
         })
     );
 
-    /** Number of <th>s actually rendered, used for state-row colspan. */
-    const visibleColumnCount = $derived(visibleOrderedColumnKeys.length);
+    /** Number of <th>s actually rendered, used for state-row colspan.
+     * Includes the leading selection column and trailing row-actions column
+     * when active so the empty/error rows still span the entire table. */
+    const visibleColumnCount = $derived(
+        visibleOrderedColumnKeys.length +
+            (selectionEnabled ? 1 : 0) +
+            (rowActionsColumnEnabled ? 1 : 0)
+    );
 
     function setColumnVisible(key: string, visible: boolean): void {
         const next = { ...tableState.columnVisibility };
@@ -426,7 +576,7 @@
     );
 </script>
 
-<DataTable.Root state={tableState} {searchQuery}>
+<DataTable.Root state={tableState} {searchQuery} {refreshNonce}>
     {#snippet children({
         queryResult,
         columnProperties,
@@ -438,10 +588,13 @@
         highlightedItemId
     })}
         <div class="mb-3 flex w-full flex-wrap items-center justify-between gap-3">
-            <div class="flex flex-row items-center gap-3">
+            <div class="flex flex-row flex-wrap items-center gap-3">
                 {@render headerFirst?.()}
                 {#if config.enableSearch}
                     <SearchField bind:searchInput={tableState.searchInput} />
+                {/if}
+                {#if selectionEnabled}
+                    <DaisyUiSelectionToolbar />
                 {/if}
                 {@render headerAfterSearch?.()}
                 {@render headerMiddle?.()}
@@ -627,6 +780,9 @@
                 {#if config.showTableHeader}
                     <thead>
                         <tr>
+                            {#if selectionEnabled}
+                                <DaisyUiSelectionHeaderCell />
+                            {/if}
                             {#each visibleOrderedColumnKeys as key (key)}
                                 {@const colProp = columnProperties[key]}
                                 {@const userFraction = tableState.columnWidths[key]}
@@ -679,6 +835,9 @@
                                     {/if}
                                 </th>
                             {/each}
+                            {#if rowActionsColumnEnabled}
+                                <DaisyUiRowActionsHeaderCell />
+                            {/if}
                         </tr>
                     </thead>
                 {/if}

@@ -62,6 +62,14 @@ const defaultConfig: Partial<DataTableConfig<unknown>> = {
             retry: 'Retry',
             resetDefaults: 'Reset to defaults',
             localUnavailable: 'Local export is not supported for this data source.'
+        },
+        actions: {
+            selectedCount: '{count} selected',
+            moreActions: 'More actions',
+            clearSelection: 'Clear selection',
+            rowActions: 'Actions',
+            selectRow: 'Select row',
+            selectAllOnPage: 'Select all on page'
         }
     } as MessageConfig<unknown>,
     enableSearch: true,
@@ -75,7 +83,14 @@ const defaultConfig: Partial<DataTableConfig<unknown>> = {
     hideSettings: false,
     hideExport: false,
     buildExportUrl: undefined,
-    exportChunkSize: 1000
+    exportChunkSize: 1000,
+    actions: [],
+    selection: {
+        enabled: undefined,
+        selectableRows: undefined,
+        hideRowActionsColumn: false,
+        primaryActionsCount: 2
+    }
 };
 
 export function mergeDataTableConfigDefaults<Data>(config: DataTableConfig<Data>): FullDataTableConfig<Data> {
@@ -87,13 +102,22 @@ export function mergeDataTableConfigDefaults<Data>(config: DataTableConfig<Data>
     const itemsPerPage =
         config.itemsPerPage ?? (enablePagination ? defaultConfig.itemsPerPage : Number.MAX_SAFE_INTEGER);
 
+    const defaultActions = defaultConfig.messageConfig?.actions;
+    const userActions = config.messageConfig?.actions;
+    const mergedActions = userActions ? { ...defaultActions, ...userActions } : defaultActions;
+
     const fullConfig = {
         ...defaultConfig,
         ...config,
         itemsPerPage,
         messageConfig: {
             ...defaultConfig.messageConfig,
-            ...config.messageConfig
+            ...config.messageConfig,
+            actions: mergedActions
+        },
+        selection: {
+            ...defaultConfig.selection,
+            ...config.selection
         }
     } as FullDataTableConfig<Data>;
 

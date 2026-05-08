@@ -37,6 +37,13 @@
     export interface Props {
         state: InternalDataTableState;
         searchQuery: ParsedSearchQuery | undefined;
+        /**
+         * Externally-incremented counter that forces the `refresh()` effect
+         * to re-run. Used by the row-action / bulk-action runner to trigger
+         * a re-fetch after a mutation, without polluting the persisted
+         * state shape with synthetic fields.
+         */
+        refreshNonce?: number;
         children: Snippet<
             [
                 {
@@ -53,7 +60,7 @@
         >;
     }
 
-    let { state, searchQuery, children }: Props = $props();
+    let { state, searchQuery, refreshNonce = 0, children }: Props = $props();
 
     dataSource.setConfig?.(config);
     $effect(() => dataSource.setConfig?.(config));
@@ -87,6 +94,11 @@
     const internalColumnProperties = $derived(buildColumnPropertyData(config.columnProperties));
 
     function refresh() {
+        // Read the nonce so externally bumping it forces the surrounding
+        // `$effect(() => refresh())` to re-run. Mutations triggered by row
+        // / bulk actions use this path to re-fetch the current view.
+        void refreshNonce;
+
         let orderBy: PaginatedListRequest<unknown>['orderBy'] | undefined;
 
         if (state.sortColumnKey && state.sortDirection) {
