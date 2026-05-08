@@ -1,5 +1,5 @@
 import type { DataTableConfig } from '$lib/types/DataTableConfig.js';
-import { NoopStateStore } from './NoopStateStore.js';
+import { MemoryStateStore } from './MemoryStateStore.svelte.js';
 import { SnapshotStateStore } from './SnapshotStateStore.svelte.js';
 import type { StateStore } from './StateStore.js';
 import { UrlStateStore } from './UrlStateStore.svelte.js';
@@ -99,7 +99,10 @@ export function createStores(config: DataTableConfig<unknown>): CreatedStores {
         urlStore = new UrlStateStore(urlPrefix, urlDebounceMs);
         transient = urlStore;
     } else {
-        transient = new NoopStateStore();
+        // 'none' still needs to hold values during the component's lifetime
+        // so pagination/search/sort continue to function — they just don't
+        // survive navigation. Anything else would break the table.
+        transient = new MemoryStateStore();
     }
 
     let persistent: StateStore;
@@ -107,7 +110,9 @@ export function createStores(config: DataTableConfig<unknown>): CreatedStores {
         webStorageStore = new WebStorageStateStore(persistentKind, storageNamespace);
         persistent = webStorageStore;
     } else {
-        persistent = new NoopStateStore();
+        // Same reasoning: 'none' must keep the user's items-per-page /
+        // column-visibility / column-width choices working during the view.
+        persistent = new MemoryStateStore();
     }
 
     return {

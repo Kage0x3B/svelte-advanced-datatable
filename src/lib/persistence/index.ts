@@ -5,7 +5,7 @@ export type { PersistenceOptions, CreatedStores } from './createStores.svelte.js
 export { createStores } from './createStores.svelte.js';
 export { createPersistedState } from './createPersistedState.svelte.js';
 export { registerNamespaceCollisions } from './namespaceRegistry.svelte.js';
-export { NoopStateStore } from './NoopStateStore.js';
+export { MemoryStateStore } from './MemoryStateStore.svelte.js';
 export { SnapshotStateStore } from './SnapshotStateStore.svelte.js';
 export { UrlStateStore } from './UrlStateStore.svelte.js';
 export { WebStorageStateStore } from './WebStorageStateStore.svelte.js';
