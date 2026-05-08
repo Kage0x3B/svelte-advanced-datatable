@@ -1,4 +1,4 @@
-import adapter from '@sveltejs/adapter-static';
+import adapterCloudflare from '@sveltejs/adapter-cloudflare';
 import { mdsvex } from 'mdsvex';
 import { fileURLToPath } from 'node:url';
 import path from 'node:path';
@@ -29,11 +29,16 @@ const config = {
         })
     ],
     kit: {
-        adapter: adapter({
+        adapter: adapterCloudflare({
             fallback: 'spa.html'
         }),
+        paths: {
+            relative: false
+        },
         prerender: {
             handleMissingId: 'ignore',
+            handleEntryGeneratorMismatch: 'warn',
+            handleUnseenRoutes: 'warn',
             handleHttpError: 'warn'
         }
     },

@@ -19,6 +19,9 @@ src/routes/(docs)/(api-reference)/api-reference/**
 /playwright-report
 /playwright/.cache
 
+# Wrangler
+.wrangler
+
 
 # Created by https://www.toptal.com/developers/gitignore/api/webstorm
 # Edit at https://www.toptal.com/developers/gitignore?templates=webstorm
