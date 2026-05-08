@@ -8,6 +8,14 @@ export interface DataTableState {
     sortDirection: SortDirection;
 
     /**
+     * Secondary sort criteria applied after the primary sort
+     * (`sortColumnKey` / `sortDirection`). Populated by Shift-clicking column
+     * headers — each entry adds another tiebreaker. Empty / absent means
+     * single-column sorting. Transient tier.
+     */
+    additionalSort?: Array<{ column: string; direction: 'asc' | 'desc' }>;
+
+    /**
      * User-chosen items-per-page override. When `undefined`, falls back to
      * `config.itemsPerPage`. Persistent tier.
      */
@@ -31,14 +39,18 @@ export interface DataTableState {
     columnWidths?: Record<string, number>;
 
     /**
-     * Reserved for future column-reordering feature (IMPROVEMENTS.md 1.3).
-     * Ordered list of column keys. Persistent tier when wired.
+     * User-chosen column order. When present, columns render in this order
+     * instead of the `config.columnProperties` definition order. Keys missing
+     * from the array fall back to their config-order position (so adding a
+     * new column to the config after a reorder doesn't drop it). Persistent
+     * tier.
      */
     columnOrder?: string[];
 
     /**
-     * Reserved for future density-toggle feature (IMPROVEMENTS.md 1.14).
-     * Persistent tier when wired.
+     * User-chosen table density override. When `undefined`, falls back to
+     * the `size` prop on `DaisyUiDataTable`. Maps directly to DaisyUI's
+     * `table-{xs,sm,md,lg,xl}` modifiers. Persistent tier.
      */
     density?: 'xs' | 'sm' | 'md' | 'lg' | 'xl';
 }
@@ -58,4 +70,11 @@ export interface InternalDataTableState {
     itemsPerPage: number;
     columnVisibility: Record<string, boolean>;
     columnWidths: Record<string, number>;
+    columnOrder: string[];
+    /**
+     * `undefined` means "follow the component's `size` prop" — the table
+     * renders with no explicit density override.
+     */
+    density: 'xs' | 'sm' | 'md' | 'lg' | 'xl' | undefined;
+    additionalSort: Array<{ column: string; direction: 'asc' | 'desc' }>;
 }

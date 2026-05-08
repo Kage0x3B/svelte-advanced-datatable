@@ -108,6 +108,9 @@ export class SvelteQueryDataSource<Data> implements IDataSource<Data> {
     }
 
     private normalizeRequestData(data: PaginatedListRequest<Data>): PaginatedListRequest<Data> {
+        const additionalOrderBy = data.additionalOrderBy?.length
+            ? data.additionalOrderBy.map((entry) => ({ column: entry.column, order: entry.order ?? 'desc' }))
+            : undefined;
         return {
             start: data.start ?? 0,
             amount: data.amount ?? 10,
@@ -118,6 +121,7 @@ export class SvelteQueryDataSource<Data> implements IDataSource<Data> {
                           column: data.orderBy.column
                       }
                     : undefined,
+            additionalOrderBy,
             rawSearchQuery: data.rawSearchQuery ?? '',
             searchQuery: {
                 searchText: data.searchQuery?.searchText ?? '',

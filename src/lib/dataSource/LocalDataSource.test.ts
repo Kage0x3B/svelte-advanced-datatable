@@ -125,4 +125,26 @@ describe('LocalDataSource', () => {
 
         expect(second).toEqual(first);
     });
+
+    it('applies additionalOrderBy as a tiebreaker after the primary sort', () => {
+        // Two rows share an age of 30 — only the secondary `name` sort
+        // determines their relative order. Without the tiebreaker the
+        // result would be unstable.
+        const data: Row[] = [
+            { id: 1, name: 'Charlie', age: 30 },
+            { id: 2, name: 'Alice', age: 25 },
+            { id: 3, name: 'Bob', age: 30 }
+        ];
+        const source = new LocalDataSource<Row>(data);
+
+        source.requestData({
+            start: 0,
+            amount: 10,
+            orderBy: { column: 'age', order: 'desc' },
+            additionalOrderBy: [{ column: 'name', order: 'asc' }]
+        });
+
+        // age desc: 30s first (Bob, Charlie alphabetically asc), then 25 (Alice).
+        expect(source.queryResult.data?.items.map((r) => r.name)).toEqual(['Bob', 'Charlie', 'Alice']);
+    });
 });

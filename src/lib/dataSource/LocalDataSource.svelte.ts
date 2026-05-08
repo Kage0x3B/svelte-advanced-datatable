@@ -29,7 +29,7 @@ export class LocalDataSource<Data> extends AbstractDataSource<Data> {
     }
 
     public requestData(data: PaginatedListRequest<Data>): void {
-        const { start, amount, orderBy, searchQuery } = data;
+        const { start, amount, orderBy, additionalOrderBy, searchQuery } = data;
 
         const filteredData = this.filterData({
             data: this.data,
@@ -37,7 +37,8 @@ export class LocalDataSource<Data> extends AbstractDataSource<Data> {
         });
         const sortedData = this.sortData({
             data: filteredData,
-            orderBy
+            orderBy,
+            additionalOrderBy
         });
         const paginatedData = sortedData.slice(start, start + amount);
 
@@ -83,37 +84,54 @@ export class LocalDataSource<Data> extends AbstractDataSource<Data> {
 
     private sortData({
         data,
-        orderBy
+        orderBy,
+        additionalOrderBy
     }: {
         data: Data[];
         orderBy: PaginatedListRequest<Data>['orderBy'] | undefined;
+        additionalOrderBy: PaginatedListRequest<Data>['additionalOrderBy'] | undefined;
     }): Data[] {
         if (!orderBy) {
             return data;
         }
 
-        const key = orderBy.column;
+        const allCriteria: Array<{ column: keyof Data | string; order: 'asc' | 'desc' }> = [
+            orderBy,
+            ...(additionalOrderBy ?? [])
+        ];
 
-        const exampleEntry = data.find(
-            (item) => typeof item[key as keyof typeof item] !== 'undefined' && item[key as keyof typeof item] !== null
-        );
-        const exampleValue = exampleEntry ? String(exampleEntry[key as keyof typeof exampleEntry]) : '';
-        const isNumber = !isNaN(exampleValue as unknown as number) && !isNaN(parseFloat(exampleValue));
+        // Per-criterion comparator. Built once per request so we don't pay
+        // the column-type sniffing cost inside the sort comparator.
+        const comparators = allCriteria.map((criterion) => {
+            const key = criterion.column;
+            const exampleEntry = data.find(
+                (item) =>
+                    typeof item[key as keyof typeof item] !== 'undefined' && item[key as keyof typeof item] !== null
+            );
+            const exampleValue = exampleEntry ? String(exampleEntry[key as keyof typeof exampleEntry]) : '';
+            const isNumber = !isNaN(exampleValue as unknown as number) && !isNaN(parseFloat(exampleValue));
 
-        if (isNumber) {
-            return [...data].sort((a, b) => {
-                const n1 = parseFloat(String(a[key as keyof typeof a]));
-                const n2 = parseFloat(String(b[key as keyof typeof b]));
+            return (a: Data, b: Data) => {
+                if (isNumber) {
+                    const n1 = parseFloat(String(a[key as keyof typeof a]));
+                    const n2 = parseFloat(String(b[key as keyof typeof b]));
+                    const diff = n1 - n2;
+                    return criterion.order === 'asc' ? diff : -diff;
+                } else {
+                    const s1 = String(a[key as keyof typeof a]);
+                    const s2 = String(b[key as keyof typeof b]);
+                    const diff = s1.localeCompare(s2);
+                    return criterion.order === 'asc' ? diff : -diff;
+                }
+            };
+        });
 
-                return orderBy.order === 'asc' ? n1 - n2 : n2 - n1;
-            });
-        } else {
-            return [...data].sort((a, b) => {
-                const s1 = String(a[key as keyof typeof a]);
-                const s2 = String(b[key as keyof typeof b]);
-
-                return orderBy.order === 'asc' ? s1.localeCompare(s2) : s2.localeCompare(s1);
-            });
-        }
+        return [...data].sort((a, b) => {
+            for (const compare of comparators) {
+                const result = compare(a, b);
+                if (result !== 0) return result;
+            }
+            return 0;
+        });
     }
 }

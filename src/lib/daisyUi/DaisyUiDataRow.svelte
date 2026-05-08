@@ -23,15 +23,31 @@
 
     let { state, index, highlighted, onClick, href, item, open, customSnippets }: Props = $props();
 
-    const columnEntries = $derived(Object.entries(config.columnProperties));
-
-    /** Filter out columns the user has hidden via the settings popover plus
-     * the always-permanent `hidden` config flag, so cells line up with the
-     * header row. Counted into `columnCount` so spanning rows (modal expand,
-     * margin spacers) cover the right number of cells. */
-    const visibleColumnEntries = $derived(
-        columnEntries.filter(([key, colProp]) => !colProp?.hidden && state.columnVisibility[key] !== false)
-    );
+    /** Resolved column order (user-chosen overlaid on config order), then
+     * filtered by visibility. Mirrors the header's iteration so the cell
+     * order, count, and identity all line up. */
+    const visibleColumnEntries = $derived.by(() => {
+        const configKeys = Object.keys(config.columnProperties);
+        const ordered: string[] = [];
+        if (state.columnOrder.length) {
+            const configKeySet = new Set(configKeys);
+            const seen = new Set<string>();
+            for (const key of state.columnOrder) {
+                if (configKeySet.has(key) && !seen.has(key)) {
+                    ordered.push(key);
+                    seen.add(key);
+                }
+            }
+            for (const key of configKeys) {
+                if (!seen.has(key)) ordered.push(key);
+            }
+        } else {
+            ordered.push(...configKeys);
+        }
+        return ordered
+            .map((key) => [key, config.columnProperties[key]] as const)
+            .filter(([key, colProp]) => !colProp?.hidden && state.columnVisibility[key] !== false);
+    });
     const columnCount = $derived(visibleColumnEntries.length);
 </script>
 

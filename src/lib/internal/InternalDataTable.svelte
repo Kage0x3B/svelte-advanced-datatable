@@ -45,7 +45,7 @@
                     itemAmount: number;
                     pageAmount: number;
                     items: Record<string, unknown>[];
-                    toggleSorting: (columnKey: string) => void;
+                    toggleSorting: (columnKey: string, additive: boolean) => void;
                     open: (index: number) => void;
                     highlightedItemId: string | undefined;
                 }
@@ -96,6 +96,13 @@
             };
         }
 
+        const additionalOrderBy: PaginatedListRequest<unknown>['additionalOrderBy'] =
+            // Tiebreakers only apply when there's a primary orderBy and the
+            // forced search query hasn't taken sort over entirely.
+            !forcedSearchQuery?.orderBy && orderBy && state.additionalSort.length > 0
+                ? state.additionalSort.map((s) => ({ column: s.column, order: s.direction }))
+                : undefined;
+
         const searchFilters = [
             ...(searchQuery?.searchFilters ?? []),
             ...(forcedSearchQuery?.searchQuery?.searchFilters ?? [])
@@ -105,6 +112,7 @@
             start: (state.currentPage - 1) * state.itemsPerPage,
             amount: state.itemsPerPage,
             orderBy: forcedSearchQuery?.orderBy ?? orderBy,
+            additionalOrderBy,
             searchQuery: {
                 searchCategories:
                     forcedSearchQuery?.searchQuery?.searchCategories ?? searchQuery?.searchCategories ?? [],
@@ -128,17 +136,69 @@
         }
     });
 
-    function toggleSorting(columnKey: string): void {
+    /**
+     * Toggle sorting on a column. When `additive` is false (regular click)
+     * the existing single-sort cycle runs (asc → desc → off → asc) and any
+     * Shift-built tiebreakers are cleared. When `additive` is true
+     * (Shift-click): if no primary sort is set yet, this column becomes the
+     * primary; if the column is already the primary, its direction cycles;
+     * if the column is already a tiebreaker, that entry's direction cycles
+     * (asc → desc → removed); otherwise the column appends as a new
+     * tiebreaker with `desc`.
+     */
+    function toggleSorting(columnKey: string, additive: boolean = false): void {
         if (!items.length || items.length <= 1) {
+            return;
+        }
+
+        if (!additive) {
+            if (state.sortColumnKey === columnKey) {
+                state.sortDirection =
+                    state.sortDirection === 'desc' ? 'asc' : state.sortDirection === 'asc' ? false : 'desc';
+            } else {
+                state.sortColumnKey = columnKey;
+                state.sortDirection = 'desc';
+            }
+            if (state.additionalSort.length > 0) {
+                state.additionalSort = [];
+            }
+            return;
+        }
+
+        // Shift-click flow.
+        if (!state.sortColumnKey || !state.sortDirection) {
+            state.sortColumnKey = columnKey;
+            state.sortDirection = 'desc';
             return;
         }
 
         if (state.sortColumnKey === columnKey) {
             state.sortDirection =
                 state.sortDirection === 'desc' ? 'asc' : state.sortDirection === 'asc' ? false : 'desc';
+            if (!state.sortDirection && state.additionalSort.length > 0) {
+                // Promote the first tiebreaker to primary so the user
+                // doesn't lose the rest of their multi-sort by cycling the
+                // primary off.
+                const [next, ...rest] = state.additionalSort;
+                state.sortColumnKey = next.column;
+                state.sortDirection = next.direction;
+                state.additionalSort = rest;
+            }
+            return;
+        }
+
+        const existingIndex = state.additionalSort.findIndex((entry) => entry.column === columnKey);
+        if (existingIndex >= 0) {
+            const existing = state.additionalSort[existingIndex];
+            const next = [...state.additionalSort];
+            if (existing.direction === 'desc') {
+                next[existingIndex] = { column: columnKey, direction: 'asc' };
+            } else {
+                next.splice(existingIndex, 1);
+            }
+            state.additionalSort = next;
         } else {
-            state.sortColumnKey = columnKey;
-            state.sortDirection = 'desc';
+            state.additionalSort = [...state.additionalSort, { column: columnKey, direction: 'desc' }];
         }
     }
 

@@ -23,6 +23,8 @@
     import SortUpIcon from '$lib/daisyUi/icons/SortUpIcon.svelte';
     import SortDownIcon from '$lib/daisyUi/icons/SortDownIcon.svelte';
     import SortIcon from '$lib/daisyUi/icons/SortIcon.svelte';
+    import AngleUpIcon from '$lib/daisyUi/icons/AngleUpIcon.svelte';
+    import AngleDownIcon from '$lib/daisyUi/icons/AngleDownIcon.svelte';
 
     interface Props extends CustomSnippetProps {
         config: DataTableConfig<any>;
@@ -139,6 +141,67 @@
         return tableState.columnVisibility[key] !== false;
     }
 
+    /** Active table density. Persistent state wins over the `size` prop, so a
+     * user choice in the settings popover overrides the consumer's default. */
+    const effectiveDensity = $derived<NonNullable<ThemeSize>>(tableState.density ?? size);
+
+    /** Ordered list of column keys to render. Resolved by overlaying
+     * `state.columnOrder` on top of the config-defined order: known keys come
+     * first in user-chosen order, then any keys missing from the persisted
+     * order (newly-added columns) trail in their config-order position. */
+    const orderedColumnKeys = $derived.by(() => {
+        const configKeys = Object.keys(config.columnProperties);
+        if (!tableState.columnOrder.length) return configKeys;
+        const configKeySet = new Set(configKeys);
+        const seen = new Set<string>();
+        const ordered: string[] = [];
+        for (const key of tableState.columnOrder) {
+            if (configKeySet.has(key) && !seen.has(key)) {
+                ordered.push(key);
+                seen.add(key);
+            }
+        }
+        for (const key of configKeys) {
+            if (!seen.has(key)) ordered.push(key);
+        }
+        return ordered;
+    });
+
+    /**
+     * One-based index of `key` in the active multi-sort (primary = 1,
+     * tiebreakers count up). Returns `0` when the column isn't part of any
+     * sort. Used to render the small priority badge next to the sort caret.
+     */
+    function sortPriorityFor(key: string): number {
+        if (tableState.sortColumnKey === key && tableState.sortDirection) return 1;
+        const idx = tableState.additionalSort.findIndex((entry) => entry.column === key);
+        return idx >= 0 ? idx + 2 : 0;
+    }
+
+    /** Sort direction for any column in the active sort, or `false` if not. */
+    function sortDirectionFor(key: string): 'asc' | 'desc' | false {
+        if (tableState.sortColumnKey === key && tableState.sortDirection) return tableState.sortDirection;
+        const entry = tableState.additionalSort.find((entry) => entry.column === key);
+        return entry ? entry.direction : false;
+    }
+
+    /** Move a column up or down in the persisted order. Operates on the
+     * resolved `orderedColumnKeys` (which already merges config + persisted
+     * order) so reorder buttons in the settings popover stay correct even
+     * before the user has explicitly set any order. */
+    function moveColumn(key: string, delta: -1 | 1): void {
+        const order = [...orderedColumnKeys];
+        const idx = order.indexOf(key);
+        const target = idx + delta;
+        if (idx < 0 || target < 0 || target >= order.length) return;
+        [order[idx], order[target]] = [order[target], order[idx]];
+        tableState.columnOrder = order;
+    }
+
+    function resetColumnOrder(): void {
+        tableState.columnOrder = [];
+    }
+
     /**
      * Derived list of columns the user is allowed to toggle in the settings
      * popover. Skips permanently-hidden config columns and any column marked
@@ -146,19 +209,39 @@
      * configured message formatter.
      */
     const toggleableColumns = $derived(
-        Object.entries(config.columnProperties)
-            .filter(([, colProp]) => colProp && !colProp.hidden && !colProp.alwaysVisible)
-            .map(([key]) => ({
+        orderedColumnKeys
+            .map((key) => ({ key, colProp: config.columnProperties[key] }))
+            .filter(({ colProp }) => colProp && !colProp.hidden && !colProp.alwaysVisible)
+            .map(({ key }) => ({
                 key,
                 label: format(`dataTable.${config.type}.${key}.label`)
             }))
     );
 
+    /** Reorderable column entries for the settings popover. Includes hidden
+     * columns (so users can reorder + reveal them) but skips columns marked
+     * permanently hidden via `colProp.hidden`. */
+    const reorderableColumns = $derived(
+        orderedColumnKeys
+            .map((key, index) => ({ key, index, colProp: config.columnProperties[key] }))
+            .filter(({ colProp }) => colProp && !colProp.hidden)
+            .map(({ key, index }) => ({
+                key,
+                index,
+                label: format(`dataTable.${config.type}.${key}.label`)
+            }))
+    );
+
+    /** True when the user has reordered at least one column. Drives the
+     * "Reset column order" button's visibility in the settings popover. */
+    const hasCustomColumnOrder = $derived(tableState.columnOrder.length > 0);
+
     /** Number of <th>s actually rendered, used for state-row colspan. */
     const visibleColumnCount = $derived(
-        Object.entries(config.columnProperties).filter(
-            ([key, colProp]) => colProp && !colProp.hidden && isColumnVisible(key)
-        ).length
+        orderedColumnKeys.filter((key) => {
+            const colProp = config.columnProperties[key];
+            return colProp && !colProp.hidden && isColumnVisible(key);
+        }).length
     );
 
     function setColumnVisible(key: string, visible: boolean): void {
@@ -298,7 +381,8 @@
             searchInput: tableState.searchInput,
             currentOpenIndex: tableState.currentOpenIndex,
             sortColumnKey: tableState.sortColumnKey,
-            sortDirection: tableState.sortDirection
+            sortDirection: tableState.sortDirection,
+            additionalSort: tableState.additionalSort
         };
     }
 
@@ -309,13 +393,15 @@
                 snapshot.searchInput ||
                 snapshot.currentOpenIndex !== undefined ||
                 snapshot.sortColumnKey !== config.defaultSort?.columnKey ||
-                snapshot.sortDirection !== config.defaultSort?.direction)
+                snapshot.sortDirection !== config.defaultSort?.direction ||
+                (snapshot.additionalSort && snapshot.additionalSort.length > 0))
         ) {
             tableState.currentPage = snapshot.currentPage ?? 1;
             tableState.searchInput = snapshot.searchInput ?? '';
             tableState.currentOpenIndex = snapshot.currentOpenIndex ?? undefined;
             tableState.sortColumnKey = snapshot.sortColumnKey ?? config.defaultSort?.columnKey;
             tableState.sortDirection = snapshot.sortDirection ?? config.defaultSort?.direction;
+            tableState.additionalSort = snapshot.additionalSort ?? [];
             lastObservedSearchInput = tableState.searchInput;
         }
     }
@@ -326,7 +412,8 @@
             searchInput: tableState.searchInput,
             currentOpenIndex: tableState.currentOpenIndex,
             sortColumnKey: tableState.sortColumnKey,
-            sortDirection: tableState.sortDirection
+            sortDirection: tableState.sortDirection,
+            additionalSort: tableState.additionalSort
         })
     );
 </script>
@@ -391,27 +478,83 @@
                                 </select>
                             </label>
                         {/if}
-                        {#if toggleableColumns.length > 0}
+                        <label class="form-control gap-1">
+                            <span class="label-text text-sm font-medium">Density</span>
+                            <select
+                                class="select select-bordered select-sm"
+                                aria-label="Table density"
+                                value={tableState.density ?? ''}
+                                onchange={(e) => {
+                                    const v = (e.currentTarget as HTMLSelectElement).value;
+                                    tableState.density = v === '' ? undefined : (v as 'xs' | 'md' | 'lg');
+                                }}
+                            >
+                                <option value="xs">Compact</option>
+                                <option value="">Default</option>
+                                <option value="lg">Spacious</option>
+                            </select>
+                        </label>
+                        {#if reorderableColumns.length > 0}
                             <fieldset class="form-control gap-1">
                                 <legend class="label-text text-sm font-medium mb-1">Columns</legend>
-                                <div class="flex flex-col gap-1">
-                                    {#each toggleableColumns as column (column.key)}
-                                        <label class="label cursor-pointer justify-start gap-3 py-1">
-                                            <input
-                                                type="checkbox"
-                                                class="checkbox checkbox-sm"
-                                                checked={isColumnVisible(column.key)}
-                                                onchange={(e) =>
-                                                    setColumnVisible(
-                                                        column.key,
-                                                        (e.currentTarget as HTMLInputElement).checked
-                                                    )}
-                                            />
-                                            <span class="label-text">{column.label}</span>
-                                        </label>
+                                <ul class="datatable-column-list flex flex-col gap-1">
+                                    {#each reorderableColumns as column, listIndex (column.key)}
+                                        {@const isFirst = listIndex === 0}
+                                        {@const isLast = listIndex === reorderableColumns.length - 1}
+                                        {@const reorderJoined = !isFirst && !isLast}
+                                        {@const colProp = config.columnProperties[column.key]}
+                                        {@const togglable = colProp && !colProp.alwaysVisible}
+                                        <li class="datatable-column-list-item flex items-center gap-2 py-1">
+                                            <label class="label cursor-pointer justify-start gap-2 flex-1 py-0">
+                                                {#if togglable}
+                                                    <input
+                                                        type="checkbox"
+                                                        class="checkbox checkbox-sm"
+                                                        checked={isColumnVisible(column.key)}
+                                                        onchange={(e) =>
+                                                            setColumnVisible(
+                                                                column.key,
+                                                                (e.currentTarget as HTMLInputElement).checked
+                                                            )}
+                                                    />
+                                                {:else}
+                                                    <span class="datatable-column-locked w-4 h-4" aria-hidden="true"></span>
+                                                {/if}
+                                                <span class="label-text">{column.label}</span>
+                                            </label>
+                                            <div class={[reorderJoined ? 'join' : 'flex', 'justify-end']}>
+                                                <button
+                                                    type="button"
+                                                    class={['btn btn-ghost btn-xs', reorderJoined && 'join-item']}
+                                                    aria-label="Move {column.label} up"
+                                                    disabled={isFirst}
+                                                    onclick={() => moveColumn(column.key, -1)}
+                                                >
+                                                    <AngleUpIcon />
+                                                </button>
+                                                <button
+                                                    type="button"
+                                                    class={['btn btn-ghost btn-xs', reorderJoined && 'join-item']}
+                                                    aria-label="Move {column.label} down"
+                                                    disabled={isLast}
+                                                    onclick={() => moveColumn(column.key, 1)}
+                                                >
+                                                    <AngleDownIcon />
+                                                </button>
+                                            </div>
+                                        </li>
                                     {/each}
-                                </div>
+                                </ul>
                             </fieldset>
+                        {/if}
+                        {#if hasCustomColumnOrder}
+                            <button
+                                type="button"
+                                class="btn btn-ghost btn-sm justify-start"
+                                onclick={resetColumnOrder}
+                            >
+                                Reset column order
+                            </button>
                         {/if}
                         {#if hasCustomColumnWidths}
                             <button
@@ -437,45 +580,56 @@
                         'table-zebra': striped,
                         'table-hover': hoverable,
                         'table-pin-rows': stickyHeader,
-                        'table-xs': size === 'xs',
-                        'table-sm': size === 'sm',
-                        'table-md': size === 'md',
-                        'table-lg': size === 'lg',
-                        'table-xl': size === 'xl'
+                        'table-xs': effectiveDensity === 'xs',
+                        'table-sm': effectiveDensity === 'sm',
+                        'table-md': effectiveDensity === 'md',
+                        'table-lg': effectiveDensity === 'lg',
+                        'table-xl': effectiveDensity === 'xl'
                     },
                     classExport
                 ]}
             >
                 {#if config.showTableHeader}
-                    {@const columnEntries = Object.entries(columnProperties)}
                     <thead>
                         <tr>
-                            {#each columnEntries as [key, colProp] (key)}
-                                {#if !colProp.hidden && isColumnVisible(key)}
+                            {#each orderedColumnKeys as key (key)}
+                                {@const colProp = columnProperties[key]}
+                                {#if colProp && !colProp.hidden && isColumnVisible(key)}
                                     {@const userFraction = tableState.columnWidths[key]}
                                     {@const renderedPx =
                                         userFraction !== undefined && tableContainerWidth > 0
                                             ? userFraction * tableContainerWidth
                                             : null}
+                                    {@const sortDir = sortDirectionFor(key)}
+                                    {@const sortPriority = sortPriorityFor(key)}
                                     <th
                                         class="datatable-th whitespace-normal"
                                         class:w-12={key === 'actions' && userFraction === undefined}
                                         style:width={renderedPx !== null ? `${renderedPx.toFixed(2)}px` : null}
                                         style:min-width={renderedPx !== null ? `${renderedPx.toFixed(2)}px` : null}
                                         data-column-key={key}
-                                        onclick={() => colProp.sortable && toggleSorting(key)}
+                                        onclick={(event) =>
+                                            colProp.sortable && toggleSorting(key, event.shiftKey)}
                                     >
                                         <div class="flex flex-row items-center">
                                             <span class="mr-2">
                                                 {format(`dataTable.${config.type}.${key}.label`)}
                                             </span>
                                             {#if colProp.sortable && items.length > 1}
-                                                {#if tableState.sortColumnKey === key && tableState.sortDirection === 'asc'}
+                                                {#if sortDir === 'asc'}
                                                     <SortUpIcon />
-                                                {:else if tableState.sortColumnKey === key && tableState.sortDirection === 'desc'}
+                                                {:else if sortDir === 'desc'}
                                                     <SortDownIcon />
                                                 {:else}
                                                     <SortIcon />
+                                                {/if}
+                                                {#if sortPriority > 0 && (tableState.additionalSort.length > 0 || sortPriority > 1)}
+                                                    <span
+                                                        class="datatable-sort-priority badge badge-xs ml-1"
+                                                        aria-label="Sort priority {sortPriority}"
+                                                    >
+                                                        {sortPriority}
+                                                    </span>
                                                 {/if}
                                             {/if}
                                         </div>
@@ -615,6 +769,23 @@
     .table-container :global(.datatable-resize-handle:active) {
         border-right-color: color-mix(in srgb, currentColor 60%, transparent);
         background: color-mix(in srgb, currentColor 10%, transparent);
+    }
+
+    /* Multi-sort priority badge — small monospace pill next to the caret so
+       users can see the sort order across columns at a glance. Hidden in
+       single-column-sort mode (priority 1, no tiebreakers) to keep the
+       common case visually quiet. */
+    .table-container :global(.datatable-sort-priority) {
+        font-variant-numeric: tabular-nums;
+        font-size: 0.625rem;
+        padding-inline: 0.3rem;
+        line-height: 1;
+    }
+
+    /* Reorder list inside the settings popover. Keeps a fixed left gutter for
+       the up/down arrows so labels align across rows of varying length. */
+    :global(.datatable-column-list-item) {
+        min-height: 2.5rem;
     }
 
     .table-container :global(td:last-child) {
