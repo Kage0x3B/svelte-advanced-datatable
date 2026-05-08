@@ -1,5 +1,14 @@
 # Changelog
 
+## [0.10.0](https://github.com/Kage0x3B/svelte-advanced-datatable/compare/v0.9.1...v0.10.0) (2026-05-08)
+
+
+### Features
+
+* **daisyUi:** animate column reorders with svelte/animate flip ([cf8e644](https://github.com/Kage0x3B/svelte-advanced-datatable/commit/cf8e644224620af7608e1e7fc785cd44dd5af4b2))
+* **daisyUi:** multi-column sort, density toggle, and column reordering ([f9b9990](https://github.com/Kage0x3B/svelte-advanced-datatable/commit/f9b9990f05c4c45f26efb5afd73a0b8f425e0369))
+* **daisyUi:** pin header row when scrolling ([7dbf17e](https://github.com/Kage0x3B/svelte-advanced-datatable/commit/7dbf17ed83857b594d18b285091ec0febc9f1f02))
+
 ## [0.9.1](https://github.com/Kage0x3B/svelte-advanced-datatable/compare/v0.9.0...v0.9.1) (2026-05-08)
 
 
