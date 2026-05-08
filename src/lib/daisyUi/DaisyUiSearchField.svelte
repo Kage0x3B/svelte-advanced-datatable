@@ -15,10 +15,23 @@
     let { searchInput = $bindable('') }: Props = $props();
 
     let inputElement: HTMLInputElement | undefined = $state();
-    let internalSearchInput = $state('');
+    let internalSearchInput = $state(searchInput);
+    let lastObservedSearchInput = searchInput;
+
+    // Mirror external changes to `searchInput` (e.g. snapshot restore, URL
+    // back/forward, deep-link with persistence) into the input's local state.
+    $effect(() => {
+        if (searchInput !== lastObservedSearchInput) {
+            lastObservedSearchInput = searchInput;
+            internalSearchInput = searchInput;
+        }
+    });
 
     const updateSearchInputDebounced = $derived(
-        debounce((newSearchInput: string) => (searchInput = newSearchInput), config.searchDebounceMs)
+        debounce((newSearchInput: string) => {
+            lastObservedSearchInput = newSearchInput;
+            searchInput = newSearchInput;
+        }, config.searchDebounceMs)
     );
     $effect(() => updateSearchInputDebounced(internalSearchInput));
     $effect(() => {
