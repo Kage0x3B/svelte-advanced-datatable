@@ -2,6 +2,7 @@ import type { TableColumnConfig } from '$lib/dataComponent/ComponentType.js';
 import type { PersistenceOptions } from '$lib/persistence/createStores.svelte.js';
 import type { ForcedSearchQuery } from '$lib/searchParser/ForcedSearchQuery.js';
 import type { ISearchParser } from '$lib/searchParser/ISearchParser.js';
+import type { BuildExportUrl } from '$lib/types/Export.js';
 import type { MessageFormatter } from '$lib/types/MessageFormatter.js';
 import type { ModalProps } from '$lib/types/ModalProps.js';
 import type { Component } from 'svelte';
@@ -26,6 +27,39 @@ export type MessageConfig<Data> = Partial<Record<keyof Data, ColumnMessageConfig
     search?: {
         placeholder: string;
         ariaLabel: string;
+    };
+    export?: {
+        button: string;
+        title: string;
+        format: string;
+        formatCsv: string;
+        formatJson: string;
+        delimiter: string;
+        delimiterComma: string;
+        delimiterSemicolon: string;
+        delimiterTab: string;
+        delimiterPipe: string;
+        includeHeader: string;
+        advanced: string;
+        utf8Bom: string;
+        quoteChar: string;
+        quoteDouble: string;
+        quoteSingle: string;
+        lineEnding: string;
+        lineEndingLf: string;
+        lineEndingCrlf: string;
+        useRawValues: string;
+        download: string;
+        cancel: string;
+        close: string;
+        preparing: string;
+        progress: string;
+        progressUnknown: string;
+        empty: string;
+        error: string;
+        retry: string;
+        resetDefaults: string;
+        localUnavailable: string;
     };
 };
 
@@ -184,6 +218,29 @@ export interface DataTableConfig<Data> {
      * `capture()`/`restore()` API), and persistent storage is opt-in.
      */
     persistence?: PersistenceOptions;
+
+    /**
+     * Hide the export popover button entirely. Defaults to `false` — the
+     * download icon shows immediately to the left of the settings cog.
+     */
+    hideExport?: boolean;
+
+    /**
+     * Optional remote-export URL builder. When provided, the export popover
+     * renders a download link pointing at this URL instead of fetching all
+     * rows locally and serializing in the browser. The callback receives the
+     * same request body the api function would receive (sort/search/filters)
+     * minus pagination, plus the chosen format and CSV options. Useful for
+     * very large exports where the server can stream the file directly.
+     */
+    buildExportUrl?: BuildExportUrl<Data>;
+
+    /**
+     * Maximum number of rows the export popover requests per chunk during a
+     * local export. Higher values mean fewer round-trips but larger
+     * per-request payloads. Defaults to `1000`.
+     */
+    exportChunkSize?: number;
 }
 
 export type FullDataTableConfig<Data> = Required<DataTableConfig<Data>>;

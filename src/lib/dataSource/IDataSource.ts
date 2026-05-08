@@ -1,5 +1,6 @@
 import type { FullDataTableConfig } from '$lib/types/DataTableConfig.js';
 import type { PaginatedListRequest } from '$lib/types/PaginatedListRequest.js';
+import type { PaginatedListResponse } from '$lib/types/PaginatedListResponse.js';
 import type { QueryResult } from './QueryResult.js';
 
 export interface IDataSource<Data> {
@@ -13,6 +14,15 @@ export interface IDataSource<Data> {
      * @param data the request data to be passed through to the server
      */
     requestData(data: PaginatedListRequest<Data>): void;
+
+    /**
+     * Optional one-shot fetch that does NOT mutate the visible `queryResult`.
+     * Used by the export feature so triggering a chunked fetch doesn't blank
+     * out the user's currently-rendered page. Implementations that can't
+     * decouple may omit it; the export popover then disables local export
+     * and falls back to remote-only.
+     */
+    fetchOnce?(request: PaginatedListRequest<Data>, signal?: AbortSignal): Promise<PaginatedListResponse<Data>>;
 
     /**
      * Called by the dataTable svelte component when it is mounted

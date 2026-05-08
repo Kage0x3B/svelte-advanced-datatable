@@ -73,4 +73,34 @@ export class FetchApiDataSource<Data> extends AbstractDataSource<Data> {
                 this.queryResult = QueryResult.buildError(error as Error);
             });
     }
+
+    async fetchOnce(data: PaginatedListRequest<Data>, signal?: AbortSignal): Promise<PaginatedListResponse<Data>> {
+        const response = await fetch(this.url, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(data),
+            ...this.options,
+            signal
+        });
+
+        let resData: unknown;
+        try {
+            resData = await response.json();
+        } catch (error) {
+            throw error;
+        }
+
+        if (response.ok && typeof resData !== 'undefined') {
+            return resData as PaginatedListResponse<Data>;
+        }
+
+        const errorMessage = hasOwnProperty(resData, 'message') ? String(resData.message) : 'Unknown network error';
+        const error = new Error(errorMessage);
+        if (resData) {
+            Object.assign(error, resData);
+        }
+        throw error;
+    }
 }

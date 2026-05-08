@@ -1,3 +1,10 @@
+import type {
+    ExportCsvDelimiter,
+    ExportCsvLineEnding,
+    ExportCsvOptions,
+    ExportCsvQuoteChar,
+    ExportFormat
+} from '$lib/types/Export.js';
 import type { SortDirection } from '$lib/types/SortDirection.js';
 import type { Codec } from './StateStore.js';
 
@@ -112,6 +119,75 @@ export const densityCodec: Codec<'xs' | 'sm' | 'md' | 'lg' | 'xl' | undefined> =
  * `{ column: string; direction: 'asc' | 'desc' }`; malformed entries get
  * dropped to keep a half-corrupt URL/storage value from crashing decode.
  */
+/**
+ * Codec for the export-popover format pick. Falls back to `'csv'` for any
+ * value other than `'csv'`/`'json'` (typo, manual storage edit, etc.).
+ */
+export const exportFormatCodec: Codec<ExportFormat> = {
+    encode: (v) => v,
+    decode: (raw) => (raw === 'json' ? 'json' : 'csv')
+};
+
+const VALID_DELIMITERS: ExportCsvDelimiter[] = [',', ';', 'tab', '|'];
+const VALID_QUOTES: ExportCsvQuoteChar[] = ['"', "'"];
+const VALID_LINE_ENDINGS: ExportCsvLineEnding[] = ['\n', '\r\n'];
+
+export const DEFAULT_EXPORT_CSV_OPTIONS: ExportCsvOptions = {
+    delimiter: ',',
+    includeHeader: true,
+    utf8Bom: false,
+    quoteChar: '"',
+    lineEnding: '\n',
+    useRawValues: false
+};
+
+/**
+ * JSON codec for the entire `ExportCsvOptions` bag. We persist it as one
+ * storage entry to keep the key footprint small. Decode is defensive — every
+ * field individually falls back to its default when missing/invalid, so a
+ * partially-corrupt blob still gives the user a working set of options.
+ */
+export function exportCsvOptionsCodec(): Codec<ExportCsvOptions> {
+    return {
+        encode: (v) => JSON.stringify(v),
+        decode: (raw) => {
+            try {
+                const parsed = JSON.parse(raw);
+                if (!parsed || typeof parsed !== 'object') return { ...DEFAULT_EXPORT_CSV_OPTIONS };
+                return {
+                    delimiter: VALID_DELIMITERS.includes(parsed.delimiter)
+                        ? parsed.delimiter
+                        : DEFAULT_EXPORT_CSV_OPTIONS.delimiter,
+                    includeHeader:
+                        typeof parsed.includeHeader === 'boolean'
+                            ? parsed.includeHeader
+                            : DEFAULT_EXPORT_CSV_OPTIONS.includeHeader,
+                    utf8Bom: typeof parsed.utf8Bom === 'boolean' ? parsed.utf8Bom : DEFAULT_EXPORT_CSV_OPTIONS.utf8Bom,
+                    quoteChar: VALID_QUOTES.includes(parsed.quoteChar)
+                        ? parsed.quoteChar
+                        : DEFAULT_EXPORT_CSV_OPTIONS.quoteChar,
+                    lineEnding: VALID_LINE_ENDINGS.includes(parsed.lineEnding)
+                        ? parsed.lineEnding
+                        : DEFAULT_EXPORT_CSV_OPTIONS.lineEnding,
+                    useRawValues:
+                        typeof parsed.useRawValues === 'boolean'
+                            ? parsed.useRawValues
+                            : DEFAULT_EXPORT_CSV_OPTIONS.useRawValues
+                };
+            } catch {
+                return { ...DEFAULT_EXPORT_CSV_OPTIONS };
+            }
+        },
+        isEqual: (a, b) =>
+            a.delimiter === b.delimiter &&
+            a.includeHeader === b.includeHeader &&
+            a.utf8Bom === b.utf8Bom &&
+            a.quoteChar === b.quoteChar &&
+            a.lineEnding === b.lineEnding &&
+            a.useRawValues === b.useRawValues
+    };
+}
+
 export function additionalSortCodec(): Codec<Array<{ column: string; direction: 'asc' | 'desc' }>> {
     type Entry = { column: string; direction: 'asc' | 'desc' };
     return {

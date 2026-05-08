@@ -29,6 +29,39 @@ const defaultConfig: Partial<DataTableConfig<unknown>> = {
         search: {
             placeholder: 'Search',
             ariaLabel: 'Search'
+        },
+        export: {
+            button: 'Export',
+            title: 'Export data',
+            format: 'Format',
+            formatCsv: 'CSV',
+            formatJson: 'JSON',
+            delimiter: 'Delimiter',
+            delimiterComma: 'Comma (,)',
+            delimiterSemicolon: 'Semicolon (;) — Excel (DE)',
+            delimiterTab: 'Tab',
+            delimiterPipe: 'Pipe (|)',
+            includeHeader: 'Include header row',
+            advanced: 'Advanced options',
+            utf8Bom: 'UTF-8 BOM (Excel)',
+            quoteChar: 'Quote character',
+            quoteDouble: 'Double quote (")',
+            quoteSingle: "Single quote (')",
+            lineEnding: 'Line ending',
+            lineEndingLf: 'LF (\\n)',
+            lineEndingCrlf: 'CRLF (\\r\\n)',
+            useRawValues: 'Use raw values (skip formatters/translations)',
+            download: 'Download',
+            cancel: 'Cancel',
+            close: 'Close',
+            preparing: 'Preparing export…',
+            progress: 'Loaded {loaded} of {total}',
+            progressUnknown: 'Loaded {loaded}',
+            empty: 'No rows match the current filter.',
+            error: 'Export failed: {message}',
+            retry: 'Retry',
+            resetDefaults: 'Reset to defaults',
+            localUnavailable: 'Local export is not supported for this data source.'
         }
     } as MessageConfig<unknown>,
     enableSearch: true,
@@ -39,7 +72,10 @@ const defaultConfig: Partial<DataTableConfig<unknown>> = {
     onError: undefined,
     persistence: {},
     itemsPerPageOptions: [10, 25, 50, 100, 250],
-    hideSettings: false
+    hideSettings: false,
+    hideExport: false,
+    buildExportUrl: undefined,
+    exportChunkSize: 1000
 };
 
 export function mergeDataTableConfigDefaults<Data>(config: DataTableConfig<Data>): FullDataTableConfig<Data> {

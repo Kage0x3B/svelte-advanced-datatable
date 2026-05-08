@@ -22,4 +22,8 @@ export class ApiFunctionDataSource<Data> extends AbstractDataSource<Data> {
             .then((data) => (this.queryResult = QueryResult.buildSuccess(data)))
             .catch((error) => (this.queryResult = QueryResult.buildError(error)));
     }
+
+    fetchOnce(data: PaginatedListRequest<Data>): Promise<PaginatedListResponse<Data>> {
+        return this.apiFunction(data);
+    }
 }

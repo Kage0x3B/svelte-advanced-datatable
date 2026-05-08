@@ -8,9 +8,15 @@
     interface Props {
         state: InternalDataTableState;
         children?: Snippet;
+        /**
+         * Optional override for the trigger button's class. Lets the toolbar
+         * join the settings button to a sibling (e.g. the export button)
+         * by passing `'btn btn-ghost btn-sm btn-square join-item'`.
+         */
+        triggerClass?: string;
     }
 
-    let { state: _state, children }: Props = $props();
+    let { state: _state, children, triggerClass = 'btn btn-ghost btn-sm btn-circle' }: Props = $props();
     const config = $derived(configContext.get().current);
 
     let triggerEl: HTMLButtonElement | undefined = $state();
@@ -49,6 +55,20 @@
         return typeof window !== 'undefined' && window.matchMedia('(max-width: 767.98px)').matches;
     }
 
+    /**
+     * Move the popover element to `document.body` on mount so it isn't
+     * counted as a sibling of the trigger button inside a `.join` container.
+     */
+    function portal(node: HTMLElement) {
+        if (typeof document === 'undefined') return {};
+        document.body.appendChild(node);
+        return {
+            destroy() {
+                node.remove();
+            }
+        };
+    }
+
     function handleToggle(event: ToggleEvent) {
         if (event.newState !== 'open') return;
         if (isMobileViewport()) {
@@ -82,7 +102,7 @@
 <button
     bind:this={triggerEl}
     type="button"
-    class="btn btn-ghost btn-sm btn-circle"
+    class={triggerClass}
     aria-label={`Settings for table ${config.type}`}
     onclick={open}
 >
@@ -91,6 +111,7 @@
 
 <div
     bind:this={popoverEl}
+    use:portal
     popover="auto"
     role="dialog"
     aria-modal="true"
@@ -148,7 +169,11 @@
        all sides. Not full-screen — the user's content underneath stays
        visually framed. */
     @media (max-width: 767.98px) {
-        .datatable-settings-popover {
+        /* Scope mobile layout to the open state only — without `:popover-open`
+           the `display: flex` would override the browser default of
+           `display: none` for closed popovers and the dialog would be
+           visible at all times. */
+        .datatable-settings-popover:popover-open {
             inset: 0;
             top: 50%;
             left: 50%;
@@ -164,17 +189,17 @@
             background: rgb(0 0 0 / 50%);
         }
 
-        .datatable-settings-card {
+        .datatable-settings-popover:popover-open .datatable-settings-card {
             display: flex;
             flex-direction: column;
             max-height: 100%;
         }
 
-        .datatable-settings-mobile-header {
+        .datatable-settings-popover:popover-open .datatable-settings-mobile-header {
             display: flex;
         }
 
-        .datatable-settings-body {
+        .datatable-settings-popover:popover-open .datatable-settings-body {
             overflow-y: auto;
         }
     }

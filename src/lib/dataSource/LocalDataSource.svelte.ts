@@ -1,6 +1,7 @@
 import { QueryResult } from '$lib/dataSource/QueryResult.js';
 import type { ParsedSearchQuery } from '$lib/searchParser/index.js';
 import type { PaginatedListRequest } from '$lib/types/PaginatedListRequest.js';
+import type { PaginatedListResponse } from '$lib/types/PaginatedListResponse.js';
 import { AbstractDataSource } from './AbstractDataSource.svelte.js';
 
 export interface LocalDataSourceOptions<Data> {
@@ -29,6 +30,14 @@ export class LocalDataSource<Data> extends AbstractDataSource<Data> {
     }
 
     public requestData(data: PaginatedListRequest<Data>): void {
+        this.queryResult = QueryResult.buildSuccess(this.computeResponse(data));
+    }
+
+    public fetchOnce(data: PaginatedListRequest<Data>): Promise<PaginatedListResponse<Data>> {
+        return Promise.resolve(this.computeResponse(data));
+    }
+
+    private computeResponse(data: PaginatedListRequest<Data>): PaginatedListResponse<Data> {
         const { start, amount, orderBy, additionalOrderBy, searchQuery } = data;
 
         const filteredData = this.filterData({
@@ -42,10 +51,10 @@ export class LocalDataSource<Data> extends AbstractDataSource<Data> {
         });
         const paginatedData = sortedData.slice(start, start + amount);
 
-        this.queryResult = QueryResult.buildSuccess({
+        return {
             totalCount: filteredData.length,
             items: paginatedData
-        });
+        };
     }
 
     private filterData({

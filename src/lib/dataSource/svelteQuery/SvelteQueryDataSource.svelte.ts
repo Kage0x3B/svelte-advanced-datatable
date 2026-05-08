@@ -72,6 +72,13 @@ export class SvelteQueryDataSource<Data> implements IDataSource<Data> {
         this.queryKey = [this.queryKeyPrefix, this.normalizeRequestData(data)];
     }
 
+    public fetchOnce(data: PaginatedListRequest<Data>): Promise<PaginatedListResponse<Data>> {
+        if (!this.apiFunction) {
+            return Promise.reject(new Error('Svelte-Query data source has no apiFunction configured'));
+        }
+        return this.apiFunction(this.normalizeRequestData(data));
+    }
+
     private createQueryOptions(): DataTableUseQueryOptions<Data> {
         if (!this.queryKey || !this.apiFunction) {
             return {

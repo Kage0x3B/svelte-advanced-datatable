@@ -18,6 +18,7 @@
     import { fade } from 'svelte/transition';
     import type { ThemeSize } from '../../routes/util/type/Theme.js';
     import DaisyUiDataRow from './DaisyUiDataRow.svelte';
+    import DaisyUiDataTableExport from './DaisyUiDataTableExport.svelte';
     import DaisyUiDataTablePagination from './DaisyUiDataTablePagination.svelte';
     import DaisyUiDataTableSettings from './DaisyUiDataTableSettings.svelte';
     import SearchField from './DaisyUiSearchField.svelte';
@@ -460,18 +461,40 @@
                             itemAmount
                         )}
 
-                        <span class="text-base-content/80 whitespace-nowrap"
-                            >{startItemIndex}
-                            - {endItemIndex}
-                            von {itemAmount}</span
-                        >
+                        <span class="text-base-content/80 whitespace-nowrap text-sm md:text-base">
+                            {startItemIndex}-{endItemIndex}
+                            <span class="hidden md:inline">von</span><span class="md:hidden">/</span>
+                            {itemAmount}
+                        </span>
                     {:else}
-                        <span class="text-base-content/80 whitespace-nowrap">0 - 0 von {Math.max(0, itemAmount)}</span>
+                        <span class="text-base-content/80 whitespace-nowrap text-sm md:text-base">
+                            0-0
+                            <span class="hidden md:inline">von</span><span class="md:hidden">/</span>
+                            {Math.max(0, itemAmount)}
+                        </span>
                     {/if}
                     <DaisyUiDataTablePagination state={tableState} bind:currentPage={tableState.currentPage} {pageAmount} />
                 {/if}
-                {#if !config.hideSettings}
-                    <DaisyUiDataTableSettings state={tableState}>
+                {#if !config.hideExport || !config.hideSettings}
+                    {@const exportShown = !config.hideExport}
+                    {@const settingsShown = !config.hideSettings}
+                    {@const joinPair = exportShown && settingsShown}
+                    {@const joinClass = 'btn btn-ghost btn-sm btn-square join-item'}
+                    <div class={joinPair ? 'join' : 'contents'}>
+                        {#if exportShown}
+                            <DaisyUiDataTableExport
+                                {tableState}
+                                {visibleOrderedColumnKeys}
+                                {searchQuery}
+                                {stores}
+                                triggerClass={joinPair ? joinClass : undefined}
+                            />
+                        {/if}
+                        {#if settingsShown}
+                            <DaisyUiDataTableSettings
+                                state={tableState}
+                                triggerClass={joinPair ? joinClass : undefined}
+                            >
                         {#if config.itemsPerPageOptions.length > 0}
                             <label class="form-control gap-1">
                                 <span class="label-text text-sm font-medium">Items per page</span>
@@ -576,7 +599,9 @@
                             </button>
                         {/if}
                         {@render settingsExtra?.()}
-                    </DaisyUiDataTableSettings>
+                            </DaisyUiDataTableSettings>
+                        {/if}
+                    </div>
                 {/if}
             </div>
         </div>
@@ -699,7 +724,7 @@
             </table>
         </div>
         {#if items.length > 10 && config.enablePagination && config.showBottomPagination}
-            <div class="flex flex-wrap items-center justify-between" transition:fade|local={{ duration: 200 }}>
+            <div class="mt-3 flex flex-wrap items-center justify-between" transition:fade|local={{ duration: 200 }}>
                 <div>
                     {#if queryResult.isLoading()}
                         <span class="loading loading-spinner"></span>
@@ -707,10 +732,15 @@
                 </div>
                 <div class="flex flex-row items-baseline">
                     {#if itemAmount >= 0}
-                        <span class="text-base-content/80 mr-3 whitespace-nowrap"
-                            >{(tableState.currentPage - 1) * tableState.itemsPerPage + 1}
-                            - {clamp(tableState.currentPage * tableState.itemsPerPage, tableState.itemsPerPage, itemAmount)} von {itemAmount}</span
-                        >
+                        <span class="text-base-content/80 mr-3 whitespace-nowrap text-sm md:text-base">
+                            {(tableState.currentPage - 1) * tableState.itemsPerPage + 1}-{clamp(
+                                tableState.currentPage * tableState.itemsPerPage,
+                                tableState.itemsPerPage,
+                                itemAmount
+                            )}
+                            <span class="hidden md:inline">von</span><span class="md:hidden">/</span>
+                            {itemAmount}
+                        </span>
                     {/if}
                     <DaisyUiDataTablePagination state={tableState} bind:currentPage={tableState.currentPage} {pageAmount} />
                 </div>

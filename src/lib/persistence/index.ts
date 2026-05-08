@@ -19,5 +19,9 @@ export {
     jsonRecordCodec,
     jsonStringArrayCodec,
     densityCodec,
-    additionalSortCodec
+    additionalSortCodec,
+    exportFormatCodec,
+    exportCsvOptionsCodec,
+    DEFAULT_EXPORT_CSV_OPTIONS
 } from './codecs.js';
+export { createExportPersistedState, type InternalExportState } from './exportPersistence.svelte.js';
