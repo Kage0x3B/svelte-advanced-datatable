@@ -1,5 +1,17 @@
 # Changelog
 
+## [0.12.0](https://github.com/Kage0x3B/svelte-advanced-datatable/compare/v0.11.0...v0.12.0) (2026-05-08)
+
+
+### Features
+
+* **daisyUi:** row selection with bulk + per-row actions ([eb5730e](https://github.com/Kage0x3B/svelte-advanced-datatable/commit/eb5730e8190b529532550e1d4c05acfeb9f439cd))
+
+
+### Documentation
+
+* **example:** svelte-query-actions demo for selection + actions ([220444c](https://github.com/Kage0x3B/svelte-advanced-datatable/commit/220444c55693940b863adcd51a71c3ff21873c3f))
+
 ## [0.11.0](https://github.com/Kage0x3B/svelte-advanced-datatable/compare/v0.10.0...v0.11.0) (2026-05-08)
 
 
