@@ -14,6 +14,11 @@ src/routes/(docs)/(api-reference)/api-reference/**
 # Local-only improvement backlog
 /IMPROVEMENTS.md
 
+# Playwright artifacts
+/test-results
+/playwright-report
+/playwright/.cache
+
 
 # Created by https://www.toptal.com/developers/gitignore/api/webstorm
 # Edit at https://www.toptal.com/developers/gitignore?templates=webstorm
