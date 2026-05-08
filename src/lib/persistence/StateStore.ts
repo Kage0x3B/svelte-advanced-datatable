@@ -1,10 +1,16 @@
 /**
  * Codec for serializing a typed value to/from a string. Used by URL and
  * Web Storage backends; ignored by the in-memory snapshot backend.
+ *
+ * `isEqual` controls default-elision: a value considered equal to its
+ * fallback is removed from the backing store on `set`. Defaults to
+ * `Object.is`, which is correct for primitives and intentionally wrong
+ * for objects — object-shaped fields must override it.
  */
 export interface Codec<T> {
     encode(value: T): string;
     decode(raw: string): T;
+    isEqual?(a: T, b: T): boolean;
 }
 
 /**

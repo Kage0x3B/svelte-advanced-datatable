@@ -1,6 +1,6 @@
 import { describe, expect, it, vi } from 'vitest';
 import { SnapshotStateStore } from './SnapshotStateStore.svelte.js';
-import { numberCodec, stringCodec } from './codecs.js';
+import { jsonRecordCodec, numberCodec, stringCodec } from './codecs.js';
 
 describe('SnapshotStateStore', () => {
     it('returns fallback when key is unset', () => {
@@ -36,6 +36,13 @@ describe('SnapshotStateStore', () => {
         store.hydrate({ q: 'foo' });
         expect(store.get('page', 1, numberCodec)).toBe(1);
         expect(store.get('q', '', stringCodec)).toBe('foo');
+    });
+
+    it('first write of an object-codec value does not crash on the freshness check', () => {
+        const store = new SnapshotStateStore();
+        const codec = jsonRecordCodec<boolean>();
+        expect(() => store.set('columnVisibility', { id: false }, {}, codec)).not.toThrow();
+        expect(store.get('columnVisibility', {}, codec)).toEqual({ id: false });
     });
 
     it('subscribe fires on set and hydrate', () => {

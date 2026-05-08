@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import {
+    jsonRecordCodec,
     numberCodec,
     optionalNumberCodec,
     optionalStringCodec,
@@ -53,6 +54,39 @@ describe('optionalNumberCodec', () => {
 
     it('decodes garbage to undefined', () => {
         expect(optionalNumberCodec.decode('xyz')).toBeUndefined();
+    });
+});
+
+describe('jsonRecordCodec', () => {
+    const codec = jsonRecordCodec<boolean>();
+
+    it('round-trips a record', () => {
+        const value = { a: true, b: false };
+        const encoded = codec.encode(value);
+        expect(codec.decode(encoded)).toEqual(value);
+    });
+
+    it('decodes invalid JSON to {}', () => {
+        expect(codec.decode('not-json')).toEqual({});
+    });
+
+    it('decodes non-record JSON (array, primitive) to {}', () => {
+        expect(codec.decode('[1,2,3]')).toEqual({});
+        expect(codec.decode('"hello"')).toEqual({});
+        expect(codec.decode('null')).toEqual({});
+    });
+
+    it('isEqual is true for records with same key/value pairs in any insertion order', () => {
+        expect(codec.isEqual!({ a: true, b: false }, { b: false, a: true })).toBe(true);
+    });
+
+    it('isEqual is false for differing keys or values', () => {
+        expect(codec.isEqual!({ a: true }, { a: true, b: false })).toBe(false);
+        expect(codec.isEqual!({ a: true }, { a: false })).toBe(false);
+    });
+
+    it('isEqual treats two empty records as equal (default-elision)', () => {
+        expect(codec.isEqual!({}, {})).toBe(true);
     });
 });
 

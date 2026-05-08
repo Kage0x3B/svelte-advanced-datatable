@@ -15,5 +15,6 @@ export {
     stringCodec,
     optionalStringCodec,
     optionalNumberCodec,
-    sortDirectionCodec
+    sortDirectionCodec,
+    jsonRecordCodec
 } from './codecs.js';

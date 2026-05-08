@@ -51,7 +51,8 @@ export class UrlStateStore implements StateStore {
     set<T>(key: string, value: T, fallback: T, codec: Codec<T>): void {
         if (!browser) return;
         const scoped = this.scoped(key);
-        if (Object.is(value, fallback)) {
+        const eq = codec.isEqual ?? Object.is;
+        if (eq(value, fallback)) {
             this.pendingWrites[scoped] = null;
         } else {
             this.pendingWrites[scoped] = codec.encode(value);

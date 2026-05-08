@@ -17,15 +17,19 @@ export class SnapshotStateStore implements StateStore {
         return stored === undefined ? fallback : (stored as T);
     }
 
-    set<T>(key: string, value: T, fallback: T, _codec: Codec<T>): void {
-        if (Object.is(value, fallback)) {
+    set<T>(key: string, value: T, fallback: T, codec: Codec<T>): void {
+        const eq = codec.isEqual ?? Object.is;
+        if (eq(value, fallback)) {
             if (key in this.record) {
                 delete this.record[key];
                 this.notify();
             }
             return;
         }
-        if (!Object.is(this.record[key], value)) {
+        // Skip the change check on a fresh slot — `record[key]` is `undefined`
+        // there, and an object-codec's `isEqual` would crash on it.
+        const stored = this.record[key];
+        if (stored === undefined || !eq(stored as T, value)) {
             this.record[key] = value;
             this.notify();
         }
