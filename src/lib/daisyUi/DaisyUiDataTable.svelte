@@ -61,14 +61,20 @@
         size?: ThemeSize;
 
         /**
-         * Pin the table header row to the top of the nearest scrolling
-         * ancestor while the body scrolls. Applies DaisyUI's `table-pin-rows`
-         * class, so for the header to actually stick the table needs to be
-         * inside a height-constrained scroll container — without one,
-         * vertical scroll happens at page level and the header scrolls with
-         * it. Defaults to `true`.
+         * Pin the table header row while scrolling. Defaults to `true`,
+         * which maps to `'page'`.
+         *
+         * - `'page'` (or `true`): header pins to the viewport while the
+         *   page scrolls. The table-container drops its horizontal
+         *   `overflow-x-auto`, so a table wider than the viewport will
+         *   cause page-level horizontal scroll instead of inner scroll.
+         * - `'container'`: header pins inside `.table-container`. Requires
+         *   the caller to height-constrain that container (e.g. a wrapper
+         *   with `max-height`); otherwise the page scrolls and the header
+         *   travels with it.
+         * - `false`: no sticky header.
          */
-        stickyHeader?: boolean;
+        stickyHeader?: boolean | 'page' | 'container';
 
         headerFirst?: Snippet;
         headerAfterSearch?: Snippet;
@@ -138,6 +144,10 @@
         onSelectionChange,
         ...customSnippets
     }: Props = $props();
+
+    const stickyHeaderMode: 'page' | 'container' | false = $derived(
+        stickyHeader === true ? 'page' : stickyHeader === false ? false : stickyHeader
+    );
 
     const config: FullDataTableConfig<unknown> = $derived(mergeDataTableConfigDefaults<unknown>(configExport));
     const format: MessageFormatter = $derived(createMessageFormatter<unknown>(config));
@@ -759,7 +769,10 @@
             </div>
         </div>
 
-        <div class="table-container overflow-x-auto" bind:clientWidth={tableContainerWidth}>
+        <div
+            class={['table-container', { 'overflow-x-auto': stickyHeaderMode !== 'page' }]}
+            bind:clientWidth={tableContainerWidth}
+        >
             <table
                 class={[
                     'table',
@@ -767,7 +780,7 @@
                     {
                         'table-zebra': striped,
                         'table-hover': hoverable,
-                        'table-pin-rows': stickyHeader,
+                        'table-pin-rows': stickyHeaderMode !== false,
                         'table-xs': effectiveDensity === 'xs',
                         'table-sm': effectiveDensity === 'sm',
                         'table-md': effectiveDensity === 'md',

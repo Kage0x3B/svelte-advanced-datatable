@@ -101,6 +101,12 @@ The `DataTable` component also accepts `initialState` and `captureState` props f
 
 The DaisyUI `DataTable` component also accepts `stickyHeader`, `striped`, `hoverable`, `size` and several snippet props (`empty`, `errorState`, `headerFirst`, `headerAfterSearch`, `headerMiddle`, `settingsExtra`).
 
+`stickyHeader` accepts `boolean | 'page' | 'container'` (default `true`, equivalent to `'page'`):
+
+- `'page'` pins the header to the viewport while the page scrolls. The container drops `overflow-x-auto`, so a wide table causes page-level horizontal scroll.
+- `'container'` pins the header inside `.table-container`. You must height-constrain that container yourself (e.g. wrap it with `max-h-*`); otherwise the page scrolls and the header travels with it.
+- `false` disables the sticky header.
+
 ### Internationalisation
 
 | Key                       | Type                                                  | Description                                                                                                | Default     |
