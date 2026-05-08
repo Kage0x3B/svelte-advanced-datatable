@@ -1,7 +1,17 @@
 import adapter from '@sveltejs/adapter-static';
 import { mdsvex } from 'mdsvex';
+import { fileURLToPath } from 'node:url';
+import path from 'node:path';
 import { u } from 'unist-builder';
 import { vitePreprocess } from '@sveltejs/vite-plugin-svelte';
+
+// mdsvex layout paths must be absolute on disk; relative paths are resolved
+// against the .md file being processed, which produces nonsense like
+// `src/routes/(docs)/docs/getting-started/src/routes/...` and breaks Vite
+// import analysis.
+const projectRoot = path.dirname(fileURLToPath(import.meta.url));
+const docsLayout = path.join(projectRoot, 'src/routes/util/layout/docs-layout.svelte');
+const apiReferenceLayout = path.join(projectRoot, 'src/routes/util/layout/api-reference-layout.svelte');
 
 /** @type {import('@sveltejs/kit').Config} */
 const config = {
@@ -11,9 +21,9 @@ const config = {
         mdsvex({
             extensions: ['.md', '.svx'],
             layout: {
-                'api-reference': './src/routes/util/layout/api-reference-layout.svelte',
-                docs: './src/routes/util/layout/docs-layout.svelte',
-                _: './src/routes/util/layout/docs-layout.svelte'
+                'api-reference': apiReferenceLayout,
+                docs: docsLayout,
+                _: docsLayout
             },
             remarkPlugins: [remarkHintPlugin()]
         })
