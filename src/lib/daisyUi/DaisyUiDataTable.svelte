@@ -12,6 +12,7 @@
     import { clamp } from '$lib/util/generalUtil.js';
     import { createMessageFormatter } from '$lib/util/messageFormatterUtil.svelte.js';
     import type { Component, Snippet } from 'svelte';
+    import { flip } from 'svelte/animate';
     import { box } from 'svelte-toolbelt';
     import type { ClassValue } from 'svelte/elements';
     import { fade } from 'svelte/transition';
@@ -236,13 +237,19 @@
      * "Reset column order" button's visibility in the settings popover. */
     const hasCustomColumnOrder = $derived(tableState.columnOrder.length > 0);
 
-    /** Number of <th>s actually rendered, used for state-row colspan. */
-    const visibleColumnCount = $derived(
+    /** Ordered keys that should actually render as <th>s. Pre-filtered so
+     * the each-block in the header can carry an `animate:flip` directly on
+     * the <th> — Svelte requires the animated element to be the only child
+     * of a keyed `{#each}`, which precludes wrapping it in an `{#if}`. */
+    const visibleOrderedColumnKeys = $derived(
         orderedColumnKeys.filter((key) => {
             const colProp = config.columnProperties[key];
             return colProp && !colProp.hidden && isColumnVisible(key);
-        }).length
+        })
     );
+
+    /** Number of <th>s actually rendered, used for state-row colspan. */
+    const visibleColumnCount = $derived(visibleOrderedColumnKeys.length);
 
     function setColumnVisible(key: string, visible: boolean): void {
         const next = { ...tableState.columnVisibility };
@@ -504,7 +511,10 @@
                                         {@const reorderJoined = !isFirst && !isLast}
                                         {@const colProp = config.columnProperties[column.key]}
                                         {@const togglable = colProp && !colProp.alwaysVisible}
-                                        <li class="datatable-column-list-item flex items-center gap-2 py-1">
+                                        <li
+                                            class="datatable-column-list-item flex items-center gap-2 py-1"
+                                            animate:flip={{ duration: 200 }}
+                                        >
                                             <label class="label cursor-pointer justify-start gap-2 flex-1 py-0">
                                                 {#if togglable}
                                                     <input
@@ -592,58 +602,57 @@
                 {#if config.showTableHeader}
                     <thead>
                         <tr>
-                            {#each orderedColumnKeys as key (key)}
+                            {#each visibleOrderedColumnKeys as key (key)}
                                 {@const colProp = columnProperties[key]}
-                                {#if colProp && !colProp.hidden && isColumnVisible(key)}
-                                    {@const userFraction = tableState.columnWidths[key]}
-                                    {@const renderedPx =
-                                        userFraction !== undefined && tableContainerWidth > 0
-                                            ? userFraction * tableContainerWidth
-                                            : null}
-                                    {@const sortDir = sortDirectionFor(key)}
-                                    {@const sortPriority = sortPriorityFor(key)}
-                                    <th
-                                        class="datatable-th whitespace-normal"
-                                        class:w-12={key === 'actions' && userFraction === undefined}
-                                        style:width={renderedPx !== null ? `${renderedPx.toFixed(2)}px` : null}
-                                        style:min-width={renderedPx !== null ? `${renderedPx.toFixed(2)}px` : null}
-                                        data-column-key={key}
-                                        onclick={(event) =>
-                                            colProp.sortable && toggleSorting(key, event.shiftKey)}
-                                    >
-                                        <div class="flex flex-row items-center">
-                                            <span class="mr-2">
-                                                {format(`dataTable.${config.type}.${key}.label`)}
-                                            </span>
-                                            {#if colProp.sortable && items.length > 1}
-                                                {#if sortDir === 'asc'}
-                                                    <SortUpIcon />
-                                                {:else if sortDir === 'desc'}
-                                                    <SortDownIcon />
-                                                {:else}
-                                                    <SortIcon />
-                                                {/if}
-                                                {#if sortPriority > 0 && (tableState.additionalSort.length > 0 || sortPriority > 1)}
-                                                    <span
-                                                        class="datatable-sort-priority badge badge-xs ml-1"
-                                                        aria-label="Sort priority {sortPriority}"
-                                                    >
-                                                        {sortPriority}
-                                                    </span>
-                                                {/if}
+                                {@const userFraction = tableState.columnWidths[key]}
+                                {@const renderedPx =
+                                    userFraction !== undefined && tableContainerWidth > 0
+                                        ? userFraction * tableContainerWidth
+                                        : null}
+                                {@const sortDir = sortDirectionFor(key)}
+                                {@const sortPriority = sortPriorityFor(key)}
+                                <th
+                                    class="datatable-th whitespace-normal"
+                                    class:w-12={key === 'actions' && userFraction === undefined}
+                                    style:width={renderedPx !== null ? `${renderedPx.toFixed(2)}px` : null}
+                                    style:min-width={renderedPx !== null ? `${renderedPx.toFixed(2)}px` : null}
+                                    data-column-key={key}
+                                    animate:flip={{ duration: 200 }}
+                                    onclick={(event) =>
+                                        colProp.sortable && toggleSorting(key, event.shiftKey)}
+                                >
+                                    <div class="flex flex-row items-center">
+                                        <span class="mr-2">
+                                            {format(`dataTable.${config.type}.${key}.label`)}
+                                        </span>
+                                        {#if colProp.sortable && items.length > 1}
+                                            {#if sortDir === 'asc'}
+                                                <SortUpIcon />
+                                            {:else if sortDir === 'desc'}
+                                                <SortDownIcon />
+                                            {:else}
+                                                <SortIcon />
                                             {/if}
-                                        </div>
-                                        {#if isColumnResizable(colProp)}
-                                            <span
-                                                role="separator"
-                                                aria-orientation="vertical"
-                                                aria-label="Resize column {key}"
-                                                class="datatable-resize-handle"
-                                                onpointerdown={(event) => startColumnResize(event, key)}
-                                            ></span>
+                                            {#if sortPriority > 0 && (tableState.additionalSort.length > 0 || sortPriority > 1)}
+                                                <span
+                                                    class="datatable-sort-priority badge badge-xs ml-1"
+                                                    aria-label="Sort priority {sortPriority}"
+                                                >
+                                                    {sortPriority}
+                                                </span>
+                                            {/if}
                                         {/if}
-                                    </th>
-                                {/if}
+                                    </div>
+                                    {#if isColumnResizable(colProp)}
+                                        <span
+                                            role="separator"
+                                            aria-orientation="vertical"
+                                            aria-label="Resize column {key}"
+                                            class="datatable-resize-handle"
+                                            onpointerdown={(event) => startColumnResize(event, key)}
+                                        ></span>
+                                    {/if}
+                                </th>
                             {/each}
                         </tr>
                     </thead>

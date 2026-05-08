@@ -3,6 +3,7 @@
     import DataTable from '$lib/internal/index.js';
     import type { InternalDataTableState } from '$lib/types/DataTableState.js';
     import { configContext } from '$lib/util/context.js';
+    import { flip } from 'svelte/animate';
     import { slide } from 'svelte/transition';
     import DaisyUiBadgeWrapper from '$lib/daisyUi/DaisyUiBadgeWrapper.svelte';
     import DaisyUiIconWrapper from '$lib/daisyUi/DaisyUiIconWrapper.svelte';
@@ -72,7 +73,10 @@
         >
             {#if item}
                 {#each visibleColumnEntries as [key, _colProp] (key)}
-                    <td class={[isOpen && 'bg-base-300 border-0 first:rounded-tl-box last:rounded-tr-box']}>
+                    <td
+                        class={[isOpen && 'bg-base-300 border-0 first:rounded-tl-box last:rounded-tr-box']}
+                        animate:flip={{ duration: 200 }}
+                    >
                         {#if href}
                             <a {href}>
                                 <DataTable.Column
