@@ -1,5 +1,4 @@
 import type { SortDirection } from '$lib/types/SortDirection.js';
-import type { ReadableBox, WritableBox, WritableBoxedValues } from 'svelte-toolbelt';
 
 export interface DataTableState {
     currentPage: number;
@@ -9,14 +8,25 @@ export interface DataTableState {
     sortDirection: SortDirection;
 
     /**
-     * Reserved for future column-visibility feature (IMPROVEMENTS.md 1.2).
-     * Map of column key → visible flag. Persistent tier when wired.
+     * User-chosen items-per-page override. When `undefined`, falls back to
+     * `config.itemsPerPage`. Persistent tier.
+     */
+    itemsPerPage?: number;
+
+    /**
+     * Map of column key → visible flag. When a key is absent or `true`, the
+     * column is shown. When `false`, the user has hidden it via the settings
+     * popover. Independent from the static `colProp.hidden` config flag,
+     * which is a permanent "never shown" override. Persistent tier.
      */
     columnVisibility?: Record<string, boolean>;
 
     /**
-     * Reserved for future column-resizing feature (IMPROVEMENTS.md 1.4).
-     * Map of column key → width in pixels. Persistent tier when wired.
+     * Map of column key → width as a fraction of the table's clientWidth at
+     * the moment of resize (0–1, e.g. `0.4` ≈ 40 %). Stored as a fraction so
+     * the layout scales with window/table resizes — a column dragged to half
+     * the table stays half-width on a phone or a 4K monitor. Absent keys use
+     * the column's natural width. Persistent tier.
      */
     columnWidths?: Record<string, number>;
 
@@ -33,33 +43,19 @@ export interface DataTableState {
     density?: 'xs' | 'sm' | 'md' | 'lg' | 'xl';
 }
 
-type GetKeys<T, U> = {
-    [K in keyof T]: T[K] extends U ? K : never;
-}[keyof T];
-type RemoveValues<T, U> = Omit<T, GetKeys<T, U>>;
-type BoxFlatten<R extends Record<string, unknown>> = Expand<
-    RemoveValues<
-        {
-            [K in keyof R]: R[K] extends WritableBox<infer T> ? T : never;
-        },
-        never
-    > &
-        RemoveValues<
-            {
-                readonly [K in keyof R]: R[K] extends WritableBox<infer _>
-                    ? never
-                    : R[K] extends ReadableBox<infer T>
-                      ? T
-                      : never;
-            },
-            never
-        >
-> &
-    RemoveValues<
-        {
-            [K in keyof R]: R[K] extends ReadableBox<infer _> ? never : R[K];
-        },
-        never
-    >;
-
-export type InternalDataTableState = BoxFlatten<WritableBoxedValues<DataTableState>>;
+/**
+ * Runtime state shape used inside the table component, after all persistence
+ * boxes have been flattened. Every field is always populated — optional
+ * `DataTableState` fields use sensible defaults (e.g. `itemsPerPage` falls
+ * back to `config.itemsPerPage`, record fields fall back to `{}`).
+ */
+export interface InternalDataTableState {
+    currentPage: number;
+    searchInput: string;
+    currentOpenIndex: number | undefined;
+    sortColumnKey: string | undefined;
+    sortDirection: SortDirection;
+    itemsPerPage: number;
+    columnVisibility: Record<string, boolean>;
+    columnWidths: Record<string, number>;
+}

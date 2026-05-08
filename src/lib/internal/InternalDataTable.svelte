@@ -66,14 +66,14 @@
             return -1;
         }
 
-        const calculatedMaxItemAmount = ((state.currentPage ?? 1) - 1) * config.itemsPerPage + queryData.items.length;
+        const calculatedMaxItemAmount = ((state.currentPage ?? 1) - 1) * state.itemsPerPage + queryData.items.length;
 
-        return calculatedMaxItemAmount >= config.itemsPerPage
+        return calculatedMaxItemAmount >= state.itemsPerPage
             ? queryData.totalCount
             : Math.min(queryData.totalCount, calculatedMaxItemAmount);
     });
 
-    const pageAmount = $derived(Math.ceil(Math.max(1, itemAmount / config.itemsPerPage)));
+    const pageAmount = $derived(Math.ceil(Math.max(1, itemAmount / state.itemsPerPage)));
     const items: Record<string, unknown>[] = $derived((queryData?.items ?? []) as Record<string, unknown>[]);
 
     const highlightedItemId = $derived(config.highlightedItemId);
@@ -102,8 +102,8 @@
         ];
 
         const requestData: PaginatedListRequest<unknown> = {
-            start: (state.currentPage - 1) * config.itemsPerPage,
-            amount: config.itemsPerPage,
+            start: (state.currentPage - 1) * state.itemsPerPage,
+            amount: state.itemsPerPage,
             orderBy: forcedSearchQuery?.orderBy ?? orderBy,
             searchQuery: {
                 searchCategories:

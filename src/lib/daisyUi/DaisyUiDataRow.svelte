@@ -24,7 +24,15 @@
     let { state, index, highlighted, onClick, href, item, open, customSnippets }: Props = $props();
 
     const columnEntries = $derived(Object.entries(config.columnProperties));
-    const columnCount = $derived(columnEntries.length);
+
+    /** Filter out columns the user has hidden via the settings popover plus
+     * the always-permanent `hidden` config flag, so cells line up with the
+     * header row. Counted into `columnCount` so spanning rows (modal expand,
+     * margin spacers) cover the right number of cells. */
+    const visibleColumnEntries = $derived(
+        columnEntries.filter(([key, colProp]) => !colProp?.hidden && state.columnVisibility[key] !== false)
+    );
+    const columnCount = $derived(visibleColumnEntries.length);
 </script>
 
 <DataTable.Row {state} {index} {onClick} {item} {open}>
@@ -47,20 +55,10 @@
             onclick={rowOnClick}
         >
             {#if item}
-                {#each columnEntries as [key, colProp]}
-                    {#if !colProp?.hidden}
-                        <td class={[isOpen && 'bg-base-300 border-0 first:rounded-tl-box last:rounded-tr-box']}>
-                            {#if href}
-                                <a {href}>
-                                    <DataTable.Column
-                                        IconComponent={DaisyUiIconWrapper}
-                                        BadgeComponent={DaisyUiBadgeWrapper}
-                                        {item}
-                                        {key}
-                                        {customSnippets}
-                                    />
-                                </a>
-                            {:else}
+                {#each visibleColumnEntries as [key, _colProp] (key)}
+                    <td class={[isOpen && 'bg-base-300 border-0 first:rounded-tl-box last:rounded-tr-box']}>
+                        {#if href}
+                            <a {href}>
                                 <DataTable.Column
                                     IconComponent={DaisyUiIconWrapper}
                                     BadgeComponent={DaisyUiBadgeWrapper}
@@ -68,9 +66,17 @@
                                     {key}
                                     {customSnippets}
                                 />
-                            {/if}
-                        </td>
-                    {/if}
+                            </a>
+                        {:else}
+                            <DataTable.Column
+                                IconComponent={DaisyUiIconWrapper}
+                                BadgeComponent={DaisyUiBadgeWrapper}
+                                {item}
+                                {key}
+                                {customSnippets}
+                            />
+                        {/if}
+                    </td>
                 {/each}
             {:else}
                 <td>No data</td>

@@ -19,6 +19,7 @@ export const FIELD_TIER: Record<keyof DataTableState, FieldTier> = {
     sortColumnKey: 'transient',
     sortDirection: 'transient',
     currentOpenIndex: 'transient',
+    itemsPerPage: 'persistent',
     columnVisibility: 'persistent',
     columnWidths: 'persistent',
     columnOrder: 'persistent',
@@ -38,8 +39,9 @@ export const FIELD_KEY: Record<keyof DataTableState, string> = {
     sortColumnKey: 'sortCol',
     sortDirection: 'sortDir',
     currentOpenIndex: 'open',
-    columnVisibility: 'cols',
-    columnWidths: 'colWidths',
-    columnOrder: 'colOrder',
+    itemsPerPage: 'itemsPerPage',
+    columnVisibility: 'columnVisibility',
+    columnWidths: 'columnWidths',
+    columnOrder: 'columnOrder',
     density: 'density'
 } as const;

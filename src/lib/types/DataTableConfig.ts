@@ -116,9 +116,24 @@ export interface DataTableConfig<Data> {
     showBottomPagination?: boolean;
 
     /**
-     * Maximum amount of rows shown on one page
+     * Maximum amount of rows shown on one page. Acts as the default for the
+     * persisted `state.itemsPerPage` — when the user picks a different value
+     * via the settings panel, that overrides this.
      */
     itemsPerPage?: number;
+
+    /**
+     * Options exposed in the settings popover's "items per page" select.
+     * Defaults to `[10, 25, 50, 100, 250]`. Pass an empty array to hide the
+     * selector entirely.
+     */
+    itemsPerPageOptions?: number[];
+
+    /**
+     * Hide the settings popover button entirely. Defaults to `false` —
+     * the cog icon shows next to the top pagination by default.
+     */
+    hideSettings?: boolean;
 
     /**
      * Whether to show the search textbox

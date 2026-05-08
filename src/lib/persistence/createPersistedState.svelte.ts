@@ -1,7 +1,14 @@
 import type { DataTableState, InternalDataTableState } from '$lib/types/DataTableState.js';
 import type { FullDataTableConfig } from '$lib/types/DataTableConfig.js';
 import { box } from 'svelte-toolbelt';
-import { numberCodec, optionalNumberCodec, optionalStringCodec, sortDirectionCodec, stringCodec } from './codecs.js';
+import {
+    jsonRecordCodec,
+    numberCodec,
+    optionalNumberCodec,
+    optionalStringCodec,
+    sortDirectionCodec,
+    stringCodec
+} from './codecs.js';
 import { FIELD_KEY } from './fieldTiers.js';
 import type { StateStore } from './StateStore.js';
 
@@ -26,13 +33,19 @@ export function createPersistedState(
     initialState: DataTableState | undefined,
     stores: PersistenceStores
 ): InternalDataTableState {
-    const { transient } = stores;
+    const { transient, persistent } = stores;
 
     const fallbackPage = initialState?.currentPage ?? 1;
     const fallbackSearch = initialState?.searchInput ?? '';
     const fallbackOpen = initialState?.currentOpenIndex;
     const fallbackSortCol = initialState?.sortColumnKey ?? config.defaultSort?.columnKey;
     const fallbackSortDir = initialState?.sortDirection ?? config.defaultSort?.direction ?? false;
+    const fallbackItemsPerPage = initialState?.itemsPerPage ?? config.itemsPerPage;
+    const fallbackColumnVisibility: Record<string, boolean> = initialState?.columnVisibility ?? {};
+    const fallbackColumnWidths: Record<string, number> = initialState?.columnWidths ?? {};
+
+    const visibilityCodec = jsonRecordCodec<boolean>();
+    const widthsCodec = jsonRecordCodec<number>();
 
     // Init-time normalization: read each field, then immediately echo the
     // value back to the store. Values equal to their fallback get scrubbed
@@ -69,6 +82,18 @@ export function createPersistedState(
         sortDirection: box.with(
             () => transient.get(FIELD_KEY.sortDirection, fallbackSortDir, sortDirectionCodec),
             (v) => transient.set(FIELD_KEY.sortDirection, v, fallbackSortDir, sortDirectionCodec)
+        ),
+        itemsPerPage: box.with(
+            () => persistent.get(FIELD_KEY.itemsPerPage, fallbackItemsPerPage, numberCodec),
+            (v) => persistent.set(FIELD_KEY.itemsPerPage, v, fallbackItemsPerPage, numberCodec)
+        ),
+        columnVisibility: box.with(
+            () => persistent.get(FIELD_KEY.columnVisibility, fallbackColumnVisibility, visibilityCodec),
+            (v) => persistent.set(FIELD_KEY.columnVisibility, v, fallbackColumnVisibility, visibilityCodec)
+        ),
+        columnWidths: box.with(
+            () => persistent.get(FIELD_KEY.columnWidths, fallbackColumnWidths, widthsCodec),
+            (v) => persistent.set(FIELD_KEY.columnWidths, v, fallbackColumnWidths, widthsCodec)
         )
     });
 }

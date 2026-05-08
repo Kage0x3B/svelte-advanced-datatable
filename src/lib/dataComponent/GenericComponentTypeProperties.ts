@@ -25,7 +25,24 @@ export interface GenericComponentTypeProperties<Type extends ComponentType, T> {
     sortable?: boolean;
 
     /**
-     * Hides this table column
+     * Hides this table column. Permanent — the column is never shown and is
+     * never offered in the column-visibility settings list. For user-toggleable
+     * visibility, leave `hidden` falsy and let the persisted
+     * `state.columnVisibility[key]` decide instead.
      */
     hidden?: boolean;
+
+    /**
+     * Marks the column as always visible: the user cannot hide it via the
+     * settings popover, and it never appears in the visibility toggle list.
+     * Useful for action columns or any "this column is essential" case.
+     */
+    alwaysVisible?: boolean;
+
+    /**
+     * Whether the user can drag the right edge of this column's header to
+     * resize it. Defaults to `true`; set to `false` to lock the natural
+     * width (e.g. for tight icon/action columns).
+     */
+    resizable?: boolean;
 }
