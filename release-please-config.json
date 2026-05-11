@@ -4,9 +4,11 @@
     "include-component-in-tag": false,
     "include-v-in-tag": true,
     "bootstrap-sha": "c7870e2fa0c0a043579eebe299c54579b6fd7a9d",
+    "bump-minor-pre-major": true,
     "packages": {
         ".": {
             "package-name": "svelte-advanced-datatable",
+            "bump-minor-pre-major": true,
             "changelog-sections": [
                 { "type": "feat", "section": "Features" },
                 { "type": "fix", "section": "Bug Fixes" },
