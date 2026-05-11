@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.13.1](https://github.com/Kage0x3B/svelte-advanced-datatable/compare/v0.13.0...v0.13.1) (2026-05-11)
+
+
+### Bug Fixes
+
+* **dataSource:** decouple setConfig param from Data to unblock IDataSource&lt;unknown&gt; assignment ([b8813f8](https://github.com/Kage0x3B/svelte-advanced-datatable/commit/b8813f8d24e1d258565b00a6ecb5ce73cdc8170b))
+
 ## [0.13.0](https://github.com/Kage0x3B/svelte-advanced-datatable/compare/v0.12.1...v0.13.0) (2026-05-08)
 
 
