@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.13.0](https://github.com/Kage0x3B/svelte-advanced-datatable/compare/v0.12.1...v0.13.0) (2026-05-08)
+
+
+### Features
+
+* **daisyUi:** make stickyHeader default pin to page viewport ([7baf76d](https://github.com/Kage0x3B/svelte-advanced-datatable/commit/7baf76dfe2778130314b63e7f00293f21d112c04))
+
 ## [0.12.1](https://github.com/Kage0x3B/svelte-advanced-datatable/compare/v0.12.0...v0.12.1) (2026-05-08)
 
 
