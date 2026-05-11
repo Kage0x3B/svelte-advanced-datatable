@@ -7,10 +7,6 @@ const browser = typeof window !== 'undefined';
 /**
  * Persists state to URL search params via SvelteKit's `replaceState`.
  *
- * Reads are synchronous and reactive — they touch `page.url`, so any read
- * inside an `$effect` / `$derived` re-runs when the URL changes (back/forward
- * navigation, replaceState).
- *
  * Writes are buffered: each `set` updates a reactive pending-changes record
  * (so subsequent `get` calls see the latest value immediately), then schedules
  * a debounced flush that calls `replaceState` once. This avoids history spam
@@ -39,7 +35,7 @@ export class UrlStateStore implements StateStore {
                 return fallback;
             }
         }
-        const raw = page.url.searchParams.get(scoped);
+        const raw = currentUrl().searchParams.get(scoped);
         if (raw === null) return fallback;
         try {
             return codec.decode(raw);
@@ -84,7 +80,7 @@ export class UrlStateStore implements StateStore {
     private flush(): void {
         const entries = Object.entries(this.pendingWrites);
         if (entries.length === 0) return;
-        const url = new URL(page.url);
+        const url = currentUrl();
         let changed = false;
         for (const [key, value] of entries) {
             if (value === null) {
@@ -98,19 +94,23 @@ export class UrlStateStore implements StateStore {
             }
         }
         if (changed) replaceState(url, page.state);
-        // Defer clearing until `page.url` has propagated from `replaceState`.
-        // Clearing synchronously would invalidate reactive readers in the same
-        // batch, causing them to fall through empty `pendingWrites` and stale
-        // `page.url` to the fallback — clobbering the user's just-applied change.
-        // Only clear keys whose pending value is unchanged so concurrent writes
-        // arriving between flush and microtask survive.
-        const flushedSnapshot = new Map(entries);
-        queueMicrotask(() => {
-            const next = { ...this.pendingWrites };
-            for (const [key, value] of flushedSnapshot) {
-                if (next[key] === value) delete next[key];
-            }
-            this.pendingWrites = next;
-        });
+        // Safe to clear synchronously: `replaceState` updates `window.location`
+        // synchronously, and reads go through `currentUrl()` which prefers
+        // `window.location` over `page.url`. So a reactive reader re-running
+        // in the same frame as the clear sees the just-written value.
+        this.pendingWrites = {};
     }
+}
+
+/**
+ * Source of truth for URL reads.
+ *
+ * `$app/navigation.replaceState` updates `window.location` and `page.state`,
+ * but NOT `page.url` — it's a shallow-routing API that intentionally keeps
+ * `page.url` pinned to the last real navigation. Reading `page.url` after a
+ * flush returns stale data forever, so we read `window.location` in the
+ * browser and fall back to `page.url` only for SSR.
+ */
+function currentUrl(): URL {
+    return browser ? new URL(window.location.href) : new URL(page.url);
 }

@@ -57,6 +57,33 @@ test.describe('URL persistence', () => {
         await expect.poll(() => new URL(page.url()).searchParams.get('dt-q'), { timeout: 2000 }).toBe('Alice');
     });
 
+    // Regression for the structural bug fixed in 0.14.2: `replaceState` updates
+    // `window.location` but never `page.url`. The store used to read `page.url`,
+    // so once `pendingWrites` was cleared the getter fell through to the fallback
+    // and re-fired `requestData(...)` with the default sort, clobbering the user's
+    // just-applied sort. Visible symptom: rows revert after the 300ms debounce.
+    test('sort survives the URL flush debounce', async ({ page }) => {
+        await page.goto('/example/daisy-ui/basic/url-state');
+        await expect(page.locator('tbody tr.datatable-row').first()).toBeVisible();
+
+        await page.locator('th[data-column-key="id"]').click();
+
+        // URL must reflect the click after the debounced flush (first click
+        // on a new column sorts DESC).
+        await expect.poll(() => new URL(page.url()).searchParams.get('dt-sortCol'), { timeout: 2000 }).toBe('id');
+        await expect.poll(() => new URL(page.url()).searchParams.get('dt-sortDir'), { timeout: 2000 }).toBe('desc');
+
+        // Wait past the 300ms debounce + a margin, then verify the table is
+        // still sorted by id (i.e. the buggy second requestData never reverted
+        // to the default unsorted order, which would show ids 1..N ascending).
+        await page.waitForTimeout(600);
+
+        const firstId = await page.locator('tbody tr.datatable-row').first().locator('td').first().innerText();
+        const lastId = await page.locator('tbody tr.datatable-row').last().locator('td').first().innerText();
+        expect(Number(firstId)).toBeGreaterThan(Number(lastId));
+        expect(new URL(page.url()).searchParams.get('dt-sortCol')).toBe('id');
+    });
+
     test('back navigation restores previous URL state', async ({ page }) => {
         await page.goto('/example/daisy-ui/basic/url-state');
         await page.locator('input.search-box').fill('Alice');
