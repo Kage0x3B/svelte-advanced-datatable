@@ -1,5 +1,17 @@
 # Changelog
 
+## [0.14.2](https://github.com/Kage0x3B/svelte-advanced-datatable/compare/v0.14.1...v0.14.2) (2026-05-11)
+
+
+### Bug Fixes
+
+* **persistence:** defer UrlStateStore pendingWrites clear past flush ([5a448c3](https://github.com/Kage0x3B/svelte-advanced-datatable/commit/5a448c36c2d5b9c5a70506075ea7cdcf05991667))
+
+
+### Documentation
+
+* add four installable Claude Code skill files ([6baa2cf](https://github.com/Kage0x3B/svelte-advanced-datatable/commit/6baa2cf84ed576bf9b75e7db465cc53bca004758))
+
 ## [0.14.1](https://github.com/Kage0x3B/svelte-advanced-datatable/compare/v0.14.0...v0.14.1) (2026-05-11)
 
 
