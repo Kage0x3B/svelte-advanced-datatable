@@ -1,5 +1,16 @@
 # Changelog
 
+## [1.0.0](https://github.com/Kage0x3B/svelte-advanced-datatable/compare/v0.13.1...v1.0.0) (2026-05-11)
+
+
+### ⚠ BREAKING CHANGES
+
+* **export:** pluggable exporter config with custom settings components
+
+### Features
+
+* **export:** pluggable exporter config with custom settings components ([030829f](https://github.com/Kage0x3B/svelte-advanced-datatable/commit/030829ff52bf1111f8ceb8f8004b95c7389cddef))
+
 ## [0.13.1](https://github.com/Kage0x3B/svelte-advanced-datatable/compare/v0.13.0...v0.13.1) (2026-05-11)
 
 
