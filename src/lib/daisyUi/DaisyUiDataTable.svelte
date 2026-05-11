@@ -638,8 +638,8 @@
                     {/if}
                     <DaisyUiDataTablePagination state={tableState} bind:currentPage={tableState.currentPage} {pageAmount} />
                 {/if}
-                {#if !config.hideExport || !config.hideSettings}
-                    {@const exportShown = !config.hideExport}
+                {#if config.resolvedExporters.length > 0 || !config.hideSettings}
+                    {@const exportShown = config.resolvedExporters.length > 0}
                     {@const settingsShown = !config.hideSettings}
                     {@const joinPair = exportShown && settingsShown}
                     {@const joinClass = 'btn btn-ghost btn-sm btn-square join-item'}

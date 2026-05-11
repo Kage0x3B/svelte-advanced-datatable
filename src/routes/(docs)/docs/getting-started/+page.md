@@ -12,7 +12,7 @@ A configurable, server-aware data table for Svelte 5 with first-class DaisyUI in
 - **Settings popover** — items per page, density toggle, column visibility, column reordering, reset persisted column widths.
 - **Column resizing and reordering** with persisted widths and order.
 - **Sticky header** that pins while the body scrolls.
-- **Export** — CSV / JSON with full delimiter / quoting / line-ending control. Use `buildExportUrl` to delegate large exports to the server.
+- **Export** — pluggable exporters keyed by id, with built-in CSV (full delimiter / quoting / line-ending control) and JSON. Plug in custom formats (e.g. XLSX) by registering them under `config.exporters` with either a local `run` callback or a remote `buildUrl`.
 - **State persistence** with separate session and persistent tiers (sessionStorage / localStorage / custom backend).
 - **Internationalisation** through the built-in message config, [svelte-i18n](https://github.com/kaisermann/svelte-i18n) or a custom `MessageFormatter`.
 - **Error handling** — `onError` callback plus a customisable `errorState` slot.

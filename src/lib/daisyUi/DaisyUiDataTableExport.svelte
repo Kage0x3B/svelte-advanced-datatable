@@ -1,19 +1,20 @@
 <script lang="ts">
-    import type { ComponentTypeProperties } from '$lib/dataComponent/ComponentType.js';
-    import type { ParsedSearchQuery } from '$lib/searchParser/ParsedSearchQuery.js';
+    import { resolveExportResult } from '$lib/export/resolveExportResult.js';
     import { createExportPersistedState, type InternalExportState } from '$lib/persistence/exportPersistence.svelte.js';
     import type { CreatedStores } from '$lib/persistence/createStores.svelte.js';
+    import type { ParsedSearchQuery } from '$lib/searchParser/ParsedSearchQuery.js';
     import type { InternalDataTableState } from '$lib/types/DataTableState.js';
-    import type { ExportRequest } from '$lib/types/Export.js';
+    import type {
+        ExportBuildUrlContext,
+        ExportColumn,
+        ExportRunContext,
+        ResolvedExporter
+    } from '$lib/types/Export.js';
     import type { PaginatedListRequest } from '$lib/types/PaginatedListRequest.js';
     import { configContext, dataSourceContext, messageFormatterContext } from '$lib/util/context.js';
-    import { serializeCsv, type SerializeCsvColumn } from '$lib/util/exportCsvUtil.js';
     import { triggerDownload } from '$lib/util/exportDownloadUtil.js';
     import { fetchAllRows } from '$lib/util/exportFetcher.js';
     import { buildExportFilename } from '$lib/util/exportFilenameUtil.js';
-    import { serializeJson, type SerializeJsonColumn } from '$lib/util/exportJsonUtil.js';
-    import { DEFAULT_EXPORT_CSV_OPTIONS } from '$lib/persistence/codecs.js';
-    import AngleRightIcon from './icons/AngleRightIcon.svelte';
     import DownloadIcon from './icons/DownloadIcon.svelte';
     import XIcon from './icons/XIcon.svelte';
 
@@ -46,7 +47,10 @@
     const dataSource = $derived(dataSourceContext.get().current);
     const format = $derived(messageFormatterContext.get().current);
 
-    const exportState: InternalExportState = createExportPersistedState(stores);
+    const exporters = $derived(config.resolvedExporters);
+
+    /* svelte-ignore state_referenced_locally */
+    const exportState: InternalExportState = createExportPersistedState(stores, exporters);
 
     let triggerEl: HTMLButtonElement | undefined = $state();
     let popoverEl: HTMLDivElement | undefined = $state();
@@ -57,22 +61,27 @@
         | { kind: 'error'; message: string };
 
     let status: Status = $state({ kind: 'idle' });
-    let advancedOpen = $state(false);
 
-    const supportsLocalExport = $derived(typeof dataSource?.fetchOnce === 'function');
-    const hasRemoteUrl = $derived(typeof config.buildExportUrl === 'function');
+    const selectedExporter: ResolvedExporter<unknown, unknown> = $derived(
+        exporters.find((e) => e.id === exportState.selectedId) ?? exporters[0]
+    );
+
+    const currentSettings = $derived.by<unknown>(() => {
+        const stored = exportState.settings[selectedExporter.id];
+        if (stored && typeof stored === 'object') {
+            return { ...(selectedExporter.defaultSettings as object), ...(stored as object) };
+        }
+        return selectedExporter.defaultSettings;
+    });
 
     /** Columns the export will produce, with labels resolved through the
      *  message formatter so headers match what users see on screen. */
-    const exportColumns = $derived(
-        visibleOrderedColumnKeys.map((key) => {
-            const colProps = config.columnProperties[key] as ComponentTypeProperties | undefined;
-            return {
-                key,
-                label: format(`dataTable.${config.type}.${key}.label`) as string,
-                colProps
-            };
-        })
+    const exportColumns = $derived<ExportColumn[]>(
+        visibleOrderedColumnKeys.map((key) => ({
+            key,
+            label: format(`dataTable.${config.type}.${key}.label`) as string,
+            colProps: config.columnProperties[key]
+        }))
     );
 
     /** Base request body — sort + search inherited from current table state, no pagination. */
@@ -93,24 +102,24 @@
         };
     });
 
-    const exportRequest = $derived<ExportRequest<unknown>>({
-        ...baseRequest,
-        format: exportState.format,
-        csv: exportState.format === 'csv' ? exportState.csv : undefined,
-        columns: visibleOrderedColumnKeys
-    });
+    const supportsLocalExport = $derived(typeof dataSource?.fetchOnce === 'function');
 
-    const remoteUrl = $derived.by(() => {
-        if (!hasRemoteUrl || !config.buildExportUrl) return undefined;
-        try {
-            return config.buildExportUrl(exportRequest);
-        } catch (err) {
-            console.error('svelte-advanced-datatable: buildExportUrl threw', err);
-            return undefined;
-        }
-    });
+    /**
+     * Whether the currently-selected exporter can be invoked at all. A remote
+     * exporter is assumed to be invokable (we won't know until we call
+     * `buildUrl` whether it returns `undefined`); a pure-local exporter
+     * requires `fetchOnce`.
+     */
+    const isInvokable = $derived(
+        typeof selectedExporter.buildUrl === 'function' ||
+            (typeof selectedExporter.run === 'function' && supportsLocalExport)
+    );
 
-    const filename = $derived(buildExportFilename(config.type, exportState.format));
+    function exporterLabel(id: string): string {
+        const fromConfig = format(`dataTable.${config.type}.export.formats.${id}`);
+        if (typeof fromConfig === 'string' && fromConfig.length > 0) return fromConfig;
+        return id;
+    }
 
     function open() {
         if (!popoverEl) return;
@@ -183,8 +192,30 @@
         }
     }
 
+    function updateSettings(id: string, next: unknown) {
+        exportState.settings = { ...exportState.settings, [id]: next };
+    }
+
+    function buildBuildUrlContext(): ExportBuildUrlContext<unknown> {
+        return {
+            columns: exportColumns,
+            config,
+            baseRequest
+        };
+    }
+
+    function tryBuildUrl(): string | undefined {
+        if (typeof selectedExporter.buildUrl !== 'function') return undefined;
+        try {
+            return selectedExporter.buildUrl(buildBuildUrlContext(), currentSettings);
+        } catch (err) {
+            console.error('svelte-advanced-datatable: exporter buildUrl threw', err);
+            return undefined;
+        }
+    }
+
     async function runLocalExport() {
-        if (!dataSource.fetchOnce) return;
+        if (!dataSource.fetchOnce || typeof selectedExporter.run !== 'function') return;
 
         const controller = new AbortController();
         status = { kind: 'loading', loaded: 0, total: 0, controller };
@@ -204,16 +235,20 @@
 
             if (controller.signal.aborted) return;
 
-            let serialized: { content: string; mime: string };
-            if (exportState.format === 'csv') {
-                const cols: SerializeCsvColumn[] = exportColumns;
-                serialized = serializeCsv({ rows, columns: cols, options: exportState.csv, config, format });
-            } else {
-                const cols: SerializeJsonColumn[] = exportColumns.map(({ key, colProps }) => ({ key, colProps }));
-                serialized = serializeJson({ rows, columns: cols, config, format });
-            }
+            const ctx: ExportRunContext<unknown> = {
+                rows,
+                columns: exportColumns,
+                config,
+                format,
+                signal: controller.signal,
+                baseRequest,
+                fetchOnce: dataSource.fetchOnce.bind(dataSource),
+                chunkSize: config.exportChunkSize
+            };
 
-            const blob = new Blob([serialized.content], { type: serialized.mime });
+            const result = await selectedExporter.run(ctx, currentSettings);
+            const { blob, extension } = resolveExportResult(result, selectedExporter);
+            const filename = buildExportFilename(config.type, extension ?? selectedExporter.extension);
             triggerDownload(blob, filename);
             status = { kind: 'idle' };
             close();
@@ -227,6 +262,30 @@
         }
     }
 
+    /**
+     * Decide per-click which path to take:
+     *  1. If `buildUrl` returns a string, navigate to it via a synthetic
+     *     anchor click (preserves `download={filename}` semantics).
+     *  2. Otherwise fall through to the local `run` callback.
+     */
+    function onDownload() {
+        const url = tryBuildUrl();
+        if (typeof url === 'string') {
+            const filename = buildExportFilename(config.type, selectedExporter.extension);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = filename;
+            document.body.appendChild(a);
+            a.click();
+            a.remove();
+            close();
+            return;
+        }
+        if (typeof selectedExporter.run === 'function' && supportsLocalExport) {
+            void runLocalExport();
+        }
+    }
+
     function cancelExport() {
         if (status.kind === 'loading') {
             status.controller.abort();
@@ -235,15 +294,11 @@
     }
 
     function resetDefaults() {
-        exportState.format = 'csv';
-        exportState.csv = { ...DEFAULT_EXPORT_CSV_OPTIONS };
-    }
-
-    function setCsv<K extends keyof typeof exportState.csv>(field: K, value: (typeof exportState.csv)[K]) {
-        exportState.csv = { ...exportState.csv, [field]: value };
+        updateSettings(selectedExporter.id, { ...(selectedExporter.defaultSettings as object) });
     }
 
     const t = (key: string) => format(`dataTable.${config.type}.export.${key}`) as string;
+    const SettingsPanel = $derived(selectedExporter.settingsComponent);
 </script>
 
 <svelte:window
@@ -284,104 +339,18 @@
         <div class="datatable-export-body card-body gap-4 p-4">
             <label class="form-control gap-1">
                 <span class="label-text text-sm font-medium">{t('format')}</span>
-                <select class="select select-bordered select-sm" bind:value={exportState.format}>
-                    <option value="csv">{t('formatCsv')}</option>
-                    <option value="json">{t('formatJson')}</option>
+                <select class="select select-bordered select-sm" bind:value={exportState.selectedId}>
+                    {#each exporters as exporter (exporter.id)}
+                        <option value={exporter.id}>{exporterLabel(exporter.id)}</option>
+                    {/each}
                 </select>
             </label>
 
-            {#if exportState.format === 'csv'}
-                <label class="form-control gap-1">
-                    <span class="label-text text-sm font-medium">{t('delimiter')}</span>
-                    <select
-                        class="select select-bordered select-sm"
-                        value={exportState.csv.delimiter}
-                        onchange={(e) =>
-                            setCsv(
-                                'delimiter',
-                                (e.currentTarget as HTMLSelectElement).value as typeof exportState.csv.delimiter
-                            )}
-                    >
-                        <option value=",">{t('delimiterComma')}</option>
-                        <option value=";">{t('delimiterSemicolon')}</option>
-                        <option value="tab">{t('delimiterTab')}</option>
-                        <option value="|">{t('delimiterPipe')}</option>
-                    </select>
-                </label>
-
-                <label class="label cursor-pointer justify-start gap-2 py-0">
-                    <input
-                        type="checkbox"
-                        class="checkbox checkbox-sm"
-                        checked={exportState.csv.includeHeader}
-                        onchange={(e) => setCsv('includeHeader', (e.currentTarget as HTMLInputElement).checked)}
-                    />
-                    <span class="label-text">{t('includeHeader')}</span>
-                </label>
-
-                <details class="datatable-export-advanced" bind:open={advancedOpen}>
-                    <summary class="cursor-pointer text-sm font-medium select-none flex items-center gap-1">
-                        <AngleRightIcon class="datatable-export-chevron size-3 transition-transform" />
-                        <span>{t('advanced')}</span>
-                    </summary>
-                    <div class="mt-2 flex flex-col gap-3">
-                        <label class="label cursor-pointer justify-start gap-2 py-0">
-                            <input
-                                type="checkbox"
-                                class="checkbox checkbox-sm"
-                                checked={exportState.csv.utf8Bom}
-                                onchange={(e) =>
-                                    setCsv('utf8Bom', (e.currentTarget as HTMLInputElement).checked)}
-                            />
-                            <span class="label-text">{t('utf8Bom')}</span>
-                        </label>
-
-                        <label class="label cursor-pointer justify-start gap-2 py-0">
-                            <input
-                                type="checkbox"
-                                class="checkbox checkbox-sm"
-                                checked={exportState.csv.useRawValues}
-                                onchange={(e) =>
-                                    setCsv('useRawValues', (e.currentTarget as HTMLInputElement).checked)}
-                            />
-                            <span class="label-text">{t('useRawValues')}</span>
-                        </label>
-
-                        <label class="form-control gap-1">
-                            <span class="label-text text-sm font-medium">{t('quoteChar')}</span>
-                            <select
-                                class="select select-bordered select-sm"
-                                value={exportState.csv.quoteChar}
-                                onchange={(e) =>
-                                    setCsv(
-                                        'quoteChar',
-                                        (e.currentTarget as HTMLSelectElement)
-                                            .value as typeof exportState.csv.quoteChar
-                                    )}
-                            >
-                                <option value={'"'}>{t('quoteDouble')}</option>
-                                <option value={"'"}>{t('quoteSingle')}</option>
-                            </select>
-                        </label>
-
-                        <label class="form-control gap-1">
-                            <span class="label-text text-sm font-medium">{t('lineEnding')}</span>
-                            <select
-                                class="select select-bordered select-sm"
-                                value={exportState.csv.lineEnding}
-                                onchange={(e) =>
-                                    setCsv(
-                                        'lineEnding',
-                                        (e.currentTarget as HTMLSelectElement)
-                                            .value as typeof exportState.csv.lineEnding
-                                    )}
-                            >
-                                <option value={'\n'}>{t('lineEndingLf')}</option>
-                                <option value={'\r\n'}>{t('lineEndingCrlf')}</option>
-                            </select>
-                        </label>
-                    </div>
-                </details>
+            {#if SettingsPanel}
+                <SettingsPanel
+                    settings={currentSettings}
+                    onsettingschange={(next) => updateSettings(selectedExporter.id, next)}
+                />
             {/if}
 
             {#if status.kind === 'loading'}
@@ -418,21 +387,12 @@
                         </button>
                     {/if}
 
-                    {#if hasRemoteUrl && remoteUrl}
-                        <a
-                            class="btn btn-primary btn-sm"
-                            href={remoteUrl}
-                            download={filename}
-                            onclick={() => close()}
-                        >
-                            {t('download')}
-                        </a>
-                    {:else if supportsLocalExport}
+                    {#if isInvokable}
                         <button
                             type="button"
                             class="btn btn-primary btn-sm"
                             disabled={status.kind === 'loading'}
-                            onclick={status.kind === 'error' ? runLocalExport : runLocalExport}
+                            onclick={onDownload}
                         >
                             {status.kind === 'error' ? t('retry') : t('download')}
                         </button>
@@ -459,23 +419,6 @@
     .datatable-export-popover::backdrop {
         background: transparent;
         transition: background 150ms ease;
-    }
-
-    /* Rotate the chevron when the details element is open. Targets the icon
-       inside the summary so the disclosure state stays in sync with the open
-       attribute regardless of how it was toggled. */
-    .datatable-export-advanced > summary > :global(.datatable-export-chevron) {
-        transition: transform 150ms ease;
-    }
-    .datatable-export-advanced[open] > summary > :global(.datatable-export-chevron) {
-        transform: rotate(90deg);
-    }
-    /* Hide the default disclosure triangle. */
-    .datatable-export-advanced > summary {
-        list-style: none;
-    }
-    .datatable-export-advanced > summary::-webkit-details-marker {
-        display: none;
     }
 
     .datatable-export-popover {

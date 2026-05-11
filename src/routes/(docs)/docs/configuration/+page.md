@@ -72,11 +72,11 @@ The `DataTable` component additionally accepts `bind:selectedIds` and `onSelecti
 
 ### Export
 
-| Key               | Type             | Description                                                                                                                                | Default  |
-|:------------------|:-----------------|:-------------------------------------------------------------------------------------------------------------------------------------------|:---------|
-| `hideExport`      | `boolean`        | Hide the export popover button.                                                                                                            | `false`  |
-| `buildExportUrl`  | `BuildExportUrl` | Provide a server-side export URL builder. When set, the popover offers a download link instead of fetching all rows in the browser.       | `undefined` |
-| `exportChunkSize` | `number`         | Maximum rows per chunk during a local export.                                                                                              | `1000`   |
+| Key               | Type                | Description                                                                                                                                                                                                                          | Default  |
+|:------------------|:--------------------|:-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|:---------|
+| `exporters`       | `ExportersConfig`   | Pluggable export configuration. Object keyed by exporter id — key insertion order is the order shown in the popover's format select. Set to `false` to disable export entirely, or set a specific key to `false` to disable that format. Omit for the default `{ csv: {}, json: {} }`. Built-in `csv` and `json` keys take partial overrides; other keys require `extension`, `mime`, and at least one of `run` (local) / `buildUrl` (remote). | `undefined` |
+| `exportChunkSize` | `number`            | Maximum rows per chunk during a local export.                                                                                                                                                                                       | `1000`   |
+| `hideExport`      | `boolean`           | Deprecated. Prefer `exporters: false`. Honored only when `exporters` is unset.                                                                                                                                                       | `false`  |
 
 ### Persistence and state
 

@@ -3,7 +3,7 @@ import type { PersistenceOptions } from '$lib/persistence/createStores.svelte.js
 import type { ForcedSearchQuery } from '$lib/searchParser/ForcedSearchQuery.js';
 import type { ISearchParser } from '$lib/searchParser/ISearchParser.js';
 import type { DataTableAction } from '$lib/types/DataTableAction.js';
-import type { BuildExportUrl } from '$lib/types/Export.js';
+import type { ExportersConfig, ResolvedExporter } from '$lib/types/Export.js';
 import type { MessageFormatter } from '$lib/types/MessageFormatter.js';
 import type { ModalProps } from '$lib/types/ModalProps.js';
 import type { Component } from 'svelte';
@@ -75,8 +75,13 @@ export type MessageConfig<Data> = Partial<Record<keyof Data, ColumnMessageConfig
         button: string;
         title: string;
         format: string;
-        formatCsv: string;
-        formatJson: string;
+        /**
+         * Per-exporter display labels, keyed by `exporter.id`. The popover
+         * resolves the visible name from this record — built-ins come with
+         * `csv` and `json` labels by default. Add an entry for any custom
+         * exporter id you register in `DataTableConfig.exporters`.
+         */
+        formats: Record<string, string>;
         delimiter: string;
         delimiterComma: string;
         delimiterSemicolon: string;
@@ -263,20 +268,25 @@ export interface DataTableConfig<Data> {
     persistence?: PersistenceOptions;
 
     /**
-     * Hide the export popover button entirely. Defaults to `false` — the
-     * download icon shows immediately to the left of the settings cog.
+     * @deprecated Use `exporters: false` instead. Will be removed in a
+     * future release. When `exporters` is set this field is ignored.
      */
     hideExport?: boolean;
 
     /**
-     * Optional remote-export URL builder. When provided, the export popover
-     * renders a download link pointing at this URL instead of fetching all
-     * rows locally and serializing in the browser. The callback receives the
-     * same request body the api function would receive (sort/search/filters)
-     * minus pagination, plus the chosen format and CSV options. Useful for
-     * very large exports where the server can stream the file directly.
+     * Pluggable export configuration. The object is a record keyed by
+     * exporter id — the iteration order of the keys is the order shown in
+     * the popover's format `<select>`.
+     *
+     * - `exporters: false` disables the export button entirely.
+     * - Built-in `csv` and `json` keys accept partial overrides; any other
+     *   key requires a full {@link ExporterOptions} entry (`extension`,
+     *   `mime`, and at least one of `run` / `buildUrl`).
+     * - Set a value to `false` to disable that specific exporter.
+     * - Omitted entirely defaults to `{ csv: {}, json: {} }` — both built-ins
+     *   enabled, CSV first.
      */
-    buildExportUrl?: BuildExportUrl<Data>;
+    exporters?: ExportersConfig<Data>;
 
     /**
      * Maximum number of rows the export popover requests per chunk during a
@@ -337,4 +347,13 @@ export interface SelectionOptions<Data> {
     primaryActionsCount?: number;
 }
 
-export type FullDataTableConfig<Data> = Required<DataTableConfig<Data>>;
+/**
+ * Internally-resolved config shape. `mergeDataTableConfigDefaults` keeps the
+ * original author-facing `exporters` record (for parity with `DataTableConfig`)
+ * and adds a separate `resolvedExporters` array — ordered exactly as the
+ * exporters appear in the record. The popover and table iterate the resolved
+ * array; the original record is retained only for round-trip / debug use.
+ */
+export type FullDataTableConfig<Data> = Required<DataTableConfig<Data>> & {
+    resolvedExporters: ResolvedExporter<unknown, Data>[];
+};

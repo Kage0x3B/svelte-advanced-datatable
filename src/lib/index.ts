@@ -15,14 +15,25 @@ export { WrappedIconName, WrappedComponentColor } from './dataComponent/WrappedC
 
 export type { ApiFunction } from './types/ApiFunction.js';
 export type {
-    BuildExportUrl,
+    ExportBuildUrlContext,
+    ExportColumn,
     ExportCsvDelimiter,
     ExportCsvLineEnding,
     ExportCsvOptions,
     ExportCsvQuoteChar,
-    ExportFormat,
-    ExportRequest
+    ExporterOptions,
+    ExportersConfig,
+    ExporterSettingsProps,
+    ExportResult,
+    ExportRunContext,
+    BuiltinCsvExporterOptions,
+    BuiltinJsonExporterOptions,
+    ResolvedExporter
 } from './types/Export.js';
+export { builtinCsvExporter } from './export/builtinCsvExporter.js';
+export { builtinJsonExporter } from './export/builtinJsonExporter.js';
+export { resolveExportResult } from './export/resolveExportResult.js';
+export type { ResolvedExportArtifact } from './export/resolveExportResult.js';
 export type { DataTableAction, DataTableActionVariant } from './types/DataTableAction.js';
 export type { DataTableState } from './types/DataTableState.js';
 export type {

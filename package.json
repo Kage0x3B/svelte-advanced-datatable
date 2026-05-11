@@ -128,6 +128,11 @@
             "types": "./dist/dataSource/index.d.ts",
             "default": "./dist/dataSource/index.js"
         },
+        "./export": {
+            "types": "./dist/export/index.d.ts",
+            "svelte": "./dist/export/index.js",
+            "default": "./dist/export/index.js"
+        },
         "./internal": {
             "types": "./dist/internal/index.d.ts",
             "svelte": "./dist/internal/index.js",
@@ -164,6 +169,9 @@
             ],
             "dataSource/svelteQuery": [
                 "./dist/dataSource/svelteQuery/index.d.ts"
+            ],
+            "export": [
+                "./dist/export/index.d.ts"
             ],
             "internal": [
                 "./dist/internal/index.d.ts"

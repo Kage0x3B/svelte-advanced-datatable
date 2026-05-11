@@ -3,7 +3,7 @@ import type {
     ExportCsvLineEnding,
     ExportCsvOptions,
     ExportCsvQuoteChar,
-    ExportFormat
+    ResolvedExporter
 } from '$lib/types/Export.js';
 import type { SortDirection } from '$lib/types/SortDirection.js';
 import type { Codec } from './StateStore.js';
@@ -120,13 +120,51 @@ export const densityCodec: Codec<'xs' | 'sm' | 'md' | 'lg' | 'xl' | undefined> =
  * dropped to keep a half-corrupt URL/storage value from crashing decode.
  */
 /**
- * Codec for the export-popover format pick. Falls back to `'csv'` for any
- * value other than `'csv'`/`'json'` (typo, manual storage edit, etc.).
+ * Codec for the export-popover format pick. Validates the stored value
+ * against the resolved exporters list and falls back to the first
+ * exporter's id when the stored id is unknown (renamed exporter, exporter
+ * removed from config, etc.).
  */
-export const exportFormatCodec: Codec<ExportFormat> = {
-    encode: (v) => v,
-    decode: (raw) => (raw === 'json' ? 'json' : 'csv')
-};
+export function exportSelectedIdCodec(exporters: readonly ResolvedExporter[]): Codec<string> {
+    const fallback = exporters[0]?.id ?? '';
+    const valid = new Set(exporters.map((e) => e.id));
+    return {
+        encode: (v) => v,
+        decode: (raw) => (valid.has(raw) ? raw : fallback)
+    };
+}
+
+/**
+ * JSON codec for the per-exporter settings blob — a flat `Record<string, unknown>`
+ * keyed by exporter id. Each exporter's settings stays opaque here; the
+ * popover merges defaults + decodes via the exporter's own `settingsCodec`
+ * when consuming it.
+ */
+export function exportSettingsCodec(): Codec<Record<string, unknown>> {
+    return {
+        encode: (v) => JSON.stringify(v),
+        decode: (raw) => {
+            try {
+                const parsed = JSON.parse(raw);
+                if (parsed && typeof parsed === 'object' && !Array.isArray(parsed)) {
+                    return parsed as Record<string, unknown>;
+                }
+            } catch {
+                // fall through
+            }
+            return {};
+        },
+        isEqual: (a, b) => {
+            const aKeys = Object.keys(a);
+            const bKeys = Object.keys(b);
+            if (aKeys.length !== bKeys.length) return false;
+            for (const key of aKeys) {
+                if (!Object.is(a[key], b[key])) return false;
+            }
+            return true;
+        }
+    };
+}
 
 const VALID_DELIMITERS: ExportCsvDelimiter[] = [',', ';', 'tab', '|'];
 const VALID_QUOTES: ExportCsvQuoteChar[] = ['"', "'"];

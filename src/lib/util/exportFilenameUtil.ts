@@ -1,16 +1,15 @@
 import { DateTime } from 'luxon';
-import type { ExportFormat } from '$lib/types/Export.js';
 
 /**
  * Build a download filename of the form
- * `{sanitizedType}_{yyyy-LL-dd_HH-mm-ss}.{csv|json}`. Falls back to `'export'`
+ * `{sanitizedType}_{yyyy-LL-dd_HH-mm-ss}.{extension}`. Falls back to `'export'`
  * for the type segment when sanitization removes everything (defensive — the
  * `DataTableConfig.type` jsdoc already forbids unsafe characters).
  */
-export function buildExportFilename(tableType: string, format: ExportFormat, now: DateTime = DateTime.now()): string {
+export function buildExportFilename(tableType: string, extension: string, now: DateTime = DateTime.now()): string {
     const segment = sanitizeFilenameSegment(tableType);
     const stamp = now.toFormat('yyyy-LL-dd_HH-mm-ss');
-    return `${segment}_${stamp}.${format}`;
+    return `${segment}_${stamp}.${extension}`;
 }
 
 /**
