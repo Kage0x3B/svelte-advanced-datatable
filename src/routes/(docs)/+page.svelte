@@ -12,7 +12,7 @@
         <div class="mb-24">
             <h1 class="h1 text-5xl lg:text-6xl xl:text-7xl mb-4">Svelte Advanced DataTable</h1>
             <p class="text-xl font-light">
-                A highly configurable dataTable for Svelte and Sveltestrap UI components (and more soon)
+                A configurable, server-aware data table for Svelte 5 with first-class daisyUI integration.
             </p>
         </div>
         <Button href="/docs/getting-started" color="primary" size="lg">Explore docs</Button>

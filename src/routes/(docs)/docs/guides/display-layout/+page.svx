@@ -1,0 +1,116 @@
+---
+title: Display & Layout
+---
+
+<script>
+    import ExampleTable from '../../../../util/ExampleTable.svelte';
+</script>
+
+# Display & Layout
+
+Visual chrome — sticky header, density, table styling, settings popover — plus snippet slots for app-specific extensions.
+
+## Component props (daisyUI `DataTable`)
+
+These live on the component itself, not in `config`:
+
+```svelte
+<DataTable
+    {config}
+    {dataSource}
+    stickyHeader='page'
+    striped
+    hoverable
+    size='md'
+    class='shadow-lg rounded-box'
+/>
+```
+
+| Prop             | Type                                  | Description                                                                                                                                                                              | Default  |
+|:-----------------|:--------------------------------------|:-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|:---------|
+| `stickyHeader`   | `boolean \| 'page' \| 'container'`    | Pin the header row while scrolling. See below.                                                                                                                                           | `true` (= `'page'`) |
+| `striped`        | `boolean`                             | Apply daisyUI `table-zebra` styling.                                                                                                                                                     | `false`  |
+| `hoverable`      | `boolean`                             | Highlight rows on hover.                                                                                                                                                                  | `true`   |
+| `size`           | `'xs' \| 'sm' \| 'md' \| 'lg' \| 'xl'`| Table density. Applied via daisyUI's `table-*` size classes.                                                                                                                              | `'md'`   |
+| `class`          | `ClassValue`                          | Forwarded to the table wrapper. Use for shadows, rounded corners, max-widths.                                                                                                             | —        |
+
+## `stickyHeader` modes
+
+- **`'page'`** (default) — header pins to the viewport while the page scrolls. The container drops its `overflow-x-auto`, so a wide table causes **page-level horizontal scroll**. Best for full-page tables.
+- **`'container'`** — header pins inside `.table-container`. You must height-constrain the container yourself (e.g. wrap it with `max-h-*`), otherwise the container expands to fit and the header still scrolls away.
+- **`false`** — no sticky header.
+
+> Changed in v0.13: `true` now resolves to `'page'`. Wrap with `max-h-*` and pass `stickyHeader='container'` if you want the pre-v0.13 behaviour.
+
+## Density
+
+User-toggleable via the settings popover (the cog icon). The chosen density persists into the `persistent` tier — see [Persistence](/docs/guides/persistence).
+
+## Settings popover
+
+The cog icon next to the top pagination opens a popover with column visibility, column reorder, items-per-page selector, density toggle and a "reset persisted column widths" button. All controlled by config:
+
+```typescript
+const config: DataTableConfig<UserData> = {
+    // ...
+    hideSettings: false,
+    itemsPerPageOptions: [10, 25, 50, 100, 250]   // [] hides the per-page select
+};
+```
+
+| Option                  | Type        | Description                                                                                            | Default                |
+|:------------------------|:------------|:-------------------------------------------------------------------------------------------------------|:-----------------------|
+| `hideSettings`          | `boolean`   | Suppress the cog icon entirely.                                                                         | `false`                |
+| `showTopPagination`     | `boolean`   | Render the pagination row above the table.                                                              | `true`                 |
+| `showBottomPagination`  | `boolean`   | Render the pagination row below the table. Auto-hidden when fewer than 10 rows are visible.             | `true`                 |
+| `showTableHeader`       | `boolean`   | Render the table header row. Headerless tables are not sortable.                                        | `true`                 |
+
+Pin a column out of the visibility list with [`alwaysVisible: true`](/docs/guides/columns); permanently exclude one with `hidden: true`.
+
+## Snippet props
+
+Drop custom content into specific positions of the header bar or settings popover. All are optional [`Snippet`](https://svelte.dev/docs/svelte/snippet)s.
+
+```svelte
+<DataTable {config} {dataSource}>
+    {#snippet headerFirst()}
+        <h2 class='text-xl font-semibold'>Active users</h2>
+    {/snippet}
+    {#snippet headerMiddle()}
+        <div class='join'>
+            <button class='join-item btn btn-sm'>All</button>
+            <button class='join-item btn btn-sm btn-active'>Active</button>
+        </div>
+    {/snippet}
+    {#snippet headerAfterSearch()}
+        <button class='btn btn-sm btn-primary'>Invite user</button>
+    {/snippet}
+    {#snippet settingsExtra()}
+        <label class='label cursor-pointer'>
+            <span class='label-text'>Show archived</span>
+            <input type='checkbox' class='toggle' />
+        </label>
+    {/snippet}
+    {#snippet empty()}
+        <div class='py-16 text-center text-base-content/60'>No users match this filter.</div>
+    {/snippet}
+    {#snippet errorState({ error })}
+        <div role='alert' class='alert alert-error'>{error.message}</div>
+    {/snippet}
+</DataTable>
+```
+
+| Snippet              | Args                | Position                                                                                |
+|:---------------------|:--------------------|:----------------------------------------------------------------------------------------|
+| `headerFirst`        | —                   | Leftmost slot in the header bar, before the search field.                               |
+| `headerMiddle`       | —                   | Between the search field and any right-aligned chrome.                                  |
+| `headerAfterSearch`  | —                   | Immediately right of the search field, before bulk-action chrome.                       |
+| `settingsExtra`      | —                   | Bottom of the settings popover.                                                          |
+| `empty`              | —                   | Body slot when zero rows match (and the source is not loading / has no error).           |
+| `errorState`         | `{ error: Error }`  | Body slot when the data source surfaces an error.                                        |
+
+## See also
+
+- [Error handling](/docs/guides/error-handling) — the `errorState` snippet and `onError`.
+- [Persistence](/docs/guides/persistence) — density / visibility / order / width state.
+- [Selection & actions](/docs/guides/selection-actions) — the bulk-action toolbar sharing the header bar.

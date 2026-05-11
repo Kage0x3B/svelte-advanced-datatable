@@ -1,0 +1,54 @@
+---
+title: Error Handling
+---
+
+<script>
+    import ExampleTable from '../../../../util/ExampleTable.svelte';
+</script>
+
+# Error Handling
+
+The `onError` config callback fires whenever the active data source reports a fresh failure. It observes the data source's `queryResult`, so it works for every implementation — `FetchApiDataSource`, `ApiFunctionDataSource`, `SvelteQueryDataSource`, and any custom `IDataSource`.
+
+Identical `Error` instances are reported only once, so a transient blip won't spam the toast queue. A different error (different identity) re-fires the callback even if the message string matches.
+
+```typescript
+const config: DataTableConfig<UserData> = {
+    type: 'flakyUsers',
+    columnProperties: { /* ... */ },
+    dataUniquePropertyKey: 'id',
+    onError: (error) => {
+        // toast / sentry / console — your call
+        toasts.push({ id: nextToastId++, message: error.message });
+    }
+};
+```
+
+| Option       | Type                       | Description                                                                                                         | Default |
+|:-------------|:---------------------------|:--------------------------------------------------------------------------------------------------------------------|:--------|
+| `onError`    | `(error: Error) => void`   | Callback for data-source failures. Fires once per distinct error instance.                                          | —       |
+
+## In-table error state
+
+The component renders a fallback when the data source is in an error state. Replace it with the `errorState` snippet for app-specific styling:
+
+```svelte
+<DataTable {config} {dataSource}>
+    {#snippet errorState({ error })}
+        <div role='alert' class='alert alert-error'>
+            <span>{error.message}</span>
+            <button class='btn btn-sm' onclick={() => dataSource.refresh()}>Retry</button>
+        </div>
+    {/snippet}
+</DataTable>
+```
+
+`onError` and `errorState` are independent — use both: `onError` for cross-app surfaces (toasts, telemetry), `errorState` for the contextual recovery UI inside the table.
+
+<ExampleTable path='daisy-ui/error-handling' description='Slider controls the failure rate; failures surface via onError without disturbing the loaded page.' />
+
+## See also
+
+- [Data sources](/docs/guides/data-sources) — how each built-in source surfaces errors (HTTP, exception, promise rejection).
+- [Display & layout](/docs/guides/display-layout#snippet-props) — full list of body-slot snippets.
+- [`wrapFetchToThrow`](/api-reference/index/functions/wrapFetchToThrow) — helper that turns non-2xx responses into thrown errors for `ApiFunctionDataSource` / `SvelteQueryDataSource`.

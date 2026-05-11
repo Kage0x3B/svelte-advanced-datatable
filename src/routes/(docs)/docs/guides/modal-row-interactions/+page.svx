@@ -1,0 +1,97 @@
+---
+title: Modals & Row Interactions
+---
+
+<script>
+    import ExampleTable from '../../../../util/ExampleTable.svelte';
+</script>
+
+# Modals & Row Interactions
+
+Three mutually exclusive ways to react to a row click: open a modal, run a callback, or follow a link. Pick at most one — the table picks the first one that's defined and ignores the others.
+
+## Open a modal
+
+A Svelte component that receives [`ModalProps<Data>`](/api-reference/index/interfaces/ModalProps). The library handles open/close state; the component focuses on rendering the row details.
+
+```typescript
+import UserDataModal from './UserDataModal.svelte';
+
+const config: DataTableConfig<UserData> = {
+    // ...
+    modalComponent: UserDataModal,
+    autoOpenSingleItem: false,
+    highlightedItemId: '42'
+};
+```
+
+The modal component (daisyUI flavour):
+
+```svelte
+<script lang='ts'>
+    import type { ModalProps } from 'svelte-advanced-datatable';
+    import type { UserData } from './UserData.js';
+
+    let { item }: ModalProps<UserData> = $props();
+</script>
+
+<div class='py-4 flex flex-wrap gap-6'>
+    <img
+        class='w-32 h-32 rounded-full ring ring-base-300'
+        src='https://ui-avatars.com/api/?format=svg&name={item.firstName}+{item.lastName}'
+        alt='{item.firstName} {item.lastName}'
+    />
+    <div class='flex-1'>
+        <h4 class='text-lg font-semibold'>
+            {item.firstName} {item.lastName}
+            <small class='text-base-content/60'>@{item.userName}</small>
+        </h4>
+        <p class='mt-2'>
+            Contact: <a class='link' href='mailto:{item.mailAddress}'>{item.mailAddress}</a>
+        </p>
+    </div>
+</div>
+```
+
+## Run a callback
+
+```typescript
+const config: DataTableConfig<UserData> = {
+    // ...
+    onItemClick: (item) => track('user.row.clicked', item.id)
+};
+```
+
+Use when row clicks should drive app state without a built-in modal — open a side panel, kick off an inline edit, route to a side-effect.
+
+## Navigate to a URL
+
+```typescript
+const config: DataTableConfig<UserData> = {
+    // ...
+    buildItemUrl: (item) => `/users/${item.id}`
+};
+```
+
+The row renders as an `<a>` — middle-click and keyboard navigation behave correctly. Don't combine with `modalComponent` or `onItemClick`.
+
+## Options
+
+| Option                | Type                              | Description                                                                                                | Default     |
+|:----------------------|:----------------------------------|:-----------------------------------------------------------------------------------------------------------|:------------|
+| `modalComponent`      | `Component<ModalProps<Data>>`     | Svelte component rendered when a row is clicked.                                                            | —           |
+| `onItemClick`         | `(item: Data) => void`            | Callback fired when a row is clicked. Mutually exclusive with `buildItemUrl`.                              | —           |
+| `buildItemUrl`        | `(item: Data) => string`          | Turn each row into a link by returning the URL. Mutually exclusive with `onItemClick`.                     | —           |
+| `autoOpenSingleItem`  | `boolean`                         | When the result has exactly one row, open the modal automatically. Only honoured with `modalComponent`.    | `false`     |
+| `highlightedItemId`   | `string`                          | ID of the row that should receive the `highlighted` CSS class.                                              | —           |
+
+## Click bubbling from custom cells
+
+Custom cells with their own click handlers must call `event.stopPropagation()` — otherwise the row's click handler fires too, opening the modal or navigating away. See [Columns → Custom cell patterns](/docs/guides/columns#componenttypecustom).
+
+<ExampleTable path='daisy-ui/modal' description='modalComponent receiving the clicked row; localised through svelte-i18n.' />
+
+## See also
+
+- [`ModalProps`](/api-reference/index/interfaces/ModalProps) — exact shape of the props passed to your modal component.
+- [Selection & actions](/docs/guides/selection-actions) — actions fire from the row dropdown, not from the row click.

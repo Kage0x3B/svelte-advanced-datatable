@@ -1,0 +1,144 @@
+---
+title: Export
+---
+
+<script>
+    import ExampleTable from '../../../../util/ExampleTable.svelte';
+</script>
+
+# Export
+
+A download button next to the search field opens a popover offering one or more export formats. CSV and JSON are built in. Add custom formats (e.g. XLSX, PDF) by registering them under `config.exporters`.
+
+## Defaults
+
+```typescript
+const config: DataTableConfig<UserData> = {
+    // ...
+    // Omitted entirely → defaults to { csv: {}, json: {} } — both enabled, CSV first.
+    exporters: undefined,
+    exportChunkSize: 1000
+};
+```
+
+| Option            | Type                            | Description                                                                                                                                  | Default |
+|:------------------|:--------------------------------|:---------------------------------------------------------------------------------------------------------------------------------------------|:--------|
+| `exporters`       | `ExportersConfig<Data> \| false`| Object keyed by exporter id. Key insertion order = popover format order. `false` disables export. Set a key to `false` to disable that format. | `{ csv: {}, json: {} }` |
+| `exportChunkSize` | `number`                        | Maximum rows per chunk fetched during a local export.                                                                                         | `1000`  |
+
+## Disabling or trimming
+
+```typescript
+exporters: false                            // remove the download button entirely
+exporters: { csv: {}, json: false }         // CSV only
+exporters: { json: {}, csv: {} }            // JSON listed first in the popover
+```
+
+## Built-in CSV settings
+
+[`BuiltinCsvExporterOptions`](/api-reference/index/type-aliases/BuiltinCsvExporterOptions) — every field is optional; the library supplies a settings component, default values and a persistence codec.
+
+The popover lets users tweak these per export; the chosen values persist to localStorage:
+
+| Setting        | Type                              | Default     |
+|:---------------|:----------------------------------|:------------|
+| `delimiter`    | `',' \| ';' \| 'tab' \| '\|'`     | `','`       |
+| `quoteChar`    | `'"' \| "'"`                      | `'"'`       |
+| `lineEnding`   | `'\n' \| '\r\n'`                  | `'\n'`      |
+| `includeHeader`| `boolean`                         | `true`      |
+| `utf8Bom`      | `boolean`                         | `false`     |
+| `useRawValues` | `boolean`                         | `false`     |
+
+`useRawValues: true` skips `formatValue` / the message formatter and emits the underlying value (`String(value)`). Useful for re-import pipelines.
+
+## Custom exporters
+
+Register any format. Two execution modes:
+
+- **Local (`run`)** — produces a `Blob` (or `string`/`ArrayBuffer`) in the browser. Rows are pre-fetched across all pages by the time `run` is called.
+- **Remote (`buildUrl`)** — returns a URL the browser navigates to. The server does the work.
+
+Provide both to fall back to local when `buildUrl` returns `undefined`.
+
+```typescript
+import type { ExporterOptions, ExportRunContext } from 'svelte-advanced-datatable';
+import XlsxSettings from './XlsxSettings.svelte';
+
+interface XlsxSettings { freezeHeader: boolean }
+
+const xlsx: ExporterOptions<XlsxSettings, UserData> = {
+    extension: 'xlsx',
+    mime: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+    defaultSettings: { freezeHeader: true },
+    settingsComponent: XlsxSettings,
+    async run(ctx, settings) {
+        const { default: ExcelJS } = await import('exceljs');
+        const workbook = new ExcelJS.Workbook();
+        const sheet = workbook.addWorksheet('Users');
+        sheet.columns = ctx.columns.map((col) => ({ header: col.label, key: col.key }));
+        sheet.addRows(ctx.rows);
+        if (settings.freezeHeader) sheet.views = [{ state: 'frozen', ySplit: 1 }];
+        return await workbook.xlsx.writeBuffer();
+    }
+};
+
+const config: DataTableConfig<UserData> = {
+    // ...
+    exporters: { csv: {}, json: {}, xlsx }
+};
+```
+
+[`ExportRunContext`](/api-reference/index/interfaces/ExportRunContext) hands `run` the pre-fetched rows, the resolved columns (with translated labels), the active config, the message formatter and an `AbortSignal`. For streaming exporters, use `ctx.fetchOnce` + `ctx.baseRequest` + `ctx.chunkSize` to drive your own chunked fetch.
+
+## Remote export
+
+```typescript
+const config: DataTableConfig<UserData> = {
+    // ...
+    exporters: {
+        csv: false,
+        xlsx: {
+            extension: 'xlsx',
+            mime: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+            buildUrl: (ctx) => {
+                const params = new URLSearchParams({
+                    sort: JSON.stringify(ctx.baseRequest.orderBy),
+                    q: ctx.baseRequest.searchQuery?.searchText ?? ''
+                });
+                return `/api/users/export.xlsx?${params}`;
+            }
+        }
+    }
+};
+```
+
+[`ExportBuildUrlContext`](/api-reference/index/interfaces/ExportBuildUrlContext) carries no rows — just the resolved columns, current request (no pagination) and the full config. The browser navigates to the returned URL, so the server is responsible for emitting the file.
+
+## Settings component contract
+
+A custom `settingsComponent` receives [`ExporterSettingsProps`](/api-reference/index/interfaces/ExporterSettingsProps):
+
+```svelte
+<script lang="ts">
+    import type { ExporterSettingsProps } from 'svelte-advanced-datatable';
+    let { settings, onsettingschange }: ExporterSettingsProps<{ freezeHeader: boolean }> = $props();
+</script>
+
+<label class='label cursor-pointer gap-2'>
+    <span class='label-text'>Freeze header row</span>
+    <input
+        type='checkbox'
+        class='toggle toggle-primary'
+        checked={settings.freezeHeader}
+        onchange={(e) => onsettingschange({ ...settings, freezeHeader: e.currentTarget.checked })}
+    />
+</label>
+```
+
+Pair with a `settingsCodec` if you want the choice to persist; otherwise the popover resets to `defaultSettings` on next open.
+
+## See also
+
+- [`DaisyUiDataTableExport`](/api-reference/daisyUi/variables/DataTable) — the export popover component, usable standalone.
+- [`resolveExportResult`](/api-reference/index/functions/resolveExportResult) — helper that normalises a `run` return value into a downloadable `Blob`.
+- [Internationalisation](/docs/guides/i18n) — `messageConfig.export.*` for every label in the popover.

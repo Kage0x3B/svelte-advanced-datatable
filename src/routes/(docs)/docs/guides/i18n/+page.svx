@@ -1,0 +1,115 @@
+---
+title: Internationalisation
+---
+
+<script>
+    import ExampleTable from '../../../../util/ExampleTable.svelte';
+</script>
+
+# Internationalisation
+
+Every visible string flows through one [`MessageFormatter`](/api-reference/index/type-aliases/MessageFormatter). Three sources are supported out of the box; for anything else, write your own formatter function.
+
+## Source 1 — built-in `messageConfig`
+
+The default. Strings live on the config in a structured object. `messageFormatter: 'config'` is implicit when `messageConfig` is set.
+
+```typescript
+const config: DataTableConfig<UserData> = {
+    type: 'userData',
+    columnProperties: { /* ... */ },
+    dataUniquePropertyKey: 'id',
+    messageFormatter: 'config',
+    messageConfig: {
+        id:        { label: 'Id' },
+        userName:  { label: 'Username', format: '@{value}' },
+        firstName: { label: 'First name' },
+        gender:    {
+            label: 'Gender',
+            enumValue: { male: 'Male', female: 'Female' }
+        },
+        pagination: { previous: 'Previous', next: 'Next', first: 'First', last: 'Last' },
+        search: { placeholder: 'Search', ariaLabel: 'Search users' },
+        actions: { selectedCount: '{count} selected', edit: 'Edit', delete: 'Delete' },
+        export:  { button: 'Export', title: 'Export rows', /* ... */ }
+    }
+};
+```
+
+[`MessageConfig`](/api-reference/index/type-aliases/MessageConfig) is deep-merged onto the built-in English defaults, so partial configs work — set only the keys you want to override. Per-action labels live under `actions.<key>` and resolve through the same formatter.
+
+`{value}` and `{count}` are interpolation placeholders — the library replaces them with the row value and selection count respectively.
+
+## Source 2 — svelte-i18n
+
+Pass the `format` store directly. Every message id is prefixed and looked up through svelte-i18n's normal resolution.
+
+```typescript
+import { format, addMessages, init, getLocaleFromNavigator } from 'svelte-i18n';
+import localeEn from './locales/en.json';
+import localeDe from './locales/de.json';
+
+addMessages('en', localeEn);
+addMessages('de', localeDe);
+init({ fallbackLocale: 'en', initialLocale: getLocaleFromNavigator() });
+
+const config: DataTableConfig<UserData> = {
+    type: 'userData',
+    columnProperties: { /* ... */ },
+    dataUniquePropertyKey: 'id',
+    messageFormatter: format,
+    messageFormatterPrefix: ''       // optional — e.g. 'datatable.' if your bundle nests these
+};
+```
+
+Per-column labels are looked up at `dataTable.<config.type>.<key>.label`. Pagination/search/actions/export live at top-level keys (`pagination.next`, `search.placeholder`, ...). Mirror the `messageConfig` shape inside your locale JSON:
+
+```json
+{
+    "search":     { "placeholder": "Search", "ariaLabel": "Search" },
+    "pagination": { "previous": "Previous", "next": "Next", "first": "First", "last": "Last" },
+    "dataTable": {
+        "userData": {
+            "id":       { "label": "Id" },
+            "userName": { "label": "Username", "format": "@{value}" },
+            "gender":   { "label": "Gender", "enumValue": { "male": "Male", "female": "Female" } }
+        }
+    }
+}
+```
+
+## Source 3 — custom `MessageFormatter`
+
+Anything that matches the signature works — `react-intl`-style ICU formatters, a `Map` lookup, even hard-coded translation tables.
+
+```typescript
+import type { MessageFormatter } from 'svelte-advanced-datatable';
+
+const formatter: MessageFormatter = (id, opts) => {
+    const raw = bundle[locale]?.[id] ?? opts?.default ?? id;
+    return interpolate(raw, opts?.values ?? {});
+};
+
+const config: DataTableConfig<UserData> = {
+    // ...
+    messageFormatter: formatter
+};
+```
+
+Use [`createMessageFormatter`](/api-reference/index/functions/createMessageFormatter) when you need a `MessageFormatter` instance built from the resolved config (e.g. inside a custom exporter `run` callback).
+
+## Options
+
+| Option                   | Type                                                     | Description                                                                                                | Default     |
+|:-------------------------|:---------------------------------------------------------|:-----------------------------------------------------------------------------------------------------------|:------------|
+| `messageFormatter`       | `'config' \| svelteI18nFormat \| MessageFormatter`       | Source of all strings.                                                                                      | `'config'`  |
+| `messageFormatterPrefix` | `string`                                                 | Prefix prepended to every message id; only applies to external formatters such as svelte-i18n.              | `''`        |
+| `messageConfig`          | `MessageConfig<Data>`                                    | Static strings. Required for `messageFormatter: 'config'`; ignored otherwise.                              | —           |
+
+<ExampleTable path='daisy-ui/i18n' description='svelte-i18n driving the table with shared en/de message bundles.' />
+
+## See also
+
+- [`MessageConfig`](/api-reference/index/type-aliases/MessageConfig) — full structured shape.
+- [`createMessageFormatter`](/api-reference/index/functions/createMessageFormatter) — build a formatter from a resolved config.
+- [Selection & actions](/docs/guides/selection-actions) — `messageConfig.actions` for action labels and chrome.

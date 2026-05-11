@@ -1,0 +1,133 @@
+---
+title: Search
+---
+
+<script>
+    import ExampleTable from '../../../../util/ExampleTable.svelte';
+</script>
+
+# Search
+
+The search input feeds a parser, the parser produces a [`ParsedSearchQuery`](/api-reference/searchParser/interfaces/ParsedSearchQuery), and the data source decides how to apply it. Two parsers ship with the library; both implement [`ISearchParser`](/api-reference/searchParser/interfaces/ISearchParser).
+
+## Basic text search
+
+Default. The whole input becomes `searchText`; the data source matches it as a substring against the columns it considers searchable.
+
+```typescript
+import { BasicTextSearchParser } from 'svelte-advanced-datatable/searchParser';
+
+const config: DataTableConfig<UserData> = {
+    // ...
+    searchParser: new BasicTextSearchParser(), // implicit default — no need to set explicitly
+    enableSearch: true,
+    searchDebounceMs: 200
+};
+
+const dataSource = new LocalDataSource(rows, {
+    filtering: { textSearchColumns: ['userName', 'mailAddress'] }
+});
+```
+
+| Option              | Type      | Description                                                                                          | Default |
+|:--------------------|:----------|:-----------------------------------------------------------------------------------------------------|:--------|
+| `enableSearch`      | `boolean` | Show the search textbox.                                                                             | `true`  |
+| `searchDebounceMs`  | `number`  | Delay before the input is committed as a query. Higher = fewer requests + more input lag.            | `200`   |
+| `forcedSearchQuery` | `ForcedSearchQuery<Data>` | Override the user's query. Useful for permanent filters or external "scope" pickers.       | —       |
+
+## Advanced search — typed filters
+
+`AdvancedSearchParser` understands three token shapes:
+
+- **Free text** — anything not matching a filter or category. Falls into `searchText`.
+- **Filters** — `key:value` tokens. Land in `searchFilters: { type, value }[]`.
+- **Categories** — `#name` tokens (only when `enableCategoryParsing` is on). Land in `searchCategories`.
+
+Aliases let users type whichever shorthand they prefer; all map back to one canonical type.
+
+```typescript
+import { AdvancedSearchParser } from 'svelte-advanced-datatable/searchParser';
+
+type FilterType = 'gender' | 'test' | 'idAbove';
+
+const searchParser = new AdvancedSearchParser<string, FilterType>({
+    searchFilterAliases: {
+        gender:  ['g', 'sex'],
+        test:    ['t', 'tester', 'isTestUser'],
+        idAbove: ['id', 'min']
+    },
+    enableCategoryParsing: false,
+    additionalQueryPartParsers: []
+});
+```
+
+| Constructor option            | Type                           | Description                                                                                  | Default |
+|:------------------------------|:-------------------------------|:---------------------------------------------------------------------------------------------|:--------|
+| `searchFilterAliases`         | `Record<Type, string[]>`       | Map filter type → accepted aliases. The type itself is also accepted.                        | `{}`    |
+| `searchCategoryAliases`       | `Record<Category, string[]>`   | Same for `#category` tokens.                                                                 | `{}`    |
+| `enableFilterParsing`         | `boolean`                      | Treat `key:value` tokens as filters.                                                         | `true`  |
+| `enableCategoryParsing`       | `boolean`                      | Treat `#name` tokens as categories.                                                          | `true`  |
+| `additionalQueryPartParsers`  | `QueryPartParser[]`            | Custom parsers tried on each unrecognised token before it falls through to `searchText`.     | `[]`    |
+
+Aliases are matched by `startsWith`, so `g:` resolves to `gender` even if the user only types one character. Multiple definitions matching the same prefix throw a [`SearchError`](/api-reference/searchParser/classes/SearchError).
+
+## Applying filters
+
+The parser doesn't know what your filters mean — interpret them where the data lives.
+
+### Client-side (LocalDataSource)
+
+```typescript
+const dataSource = new LocalDataSource(rows, {
+    filtering: {
+        textSearchColumns: ['userName', 'firstName', 'lastName', 'mailAddress'],
+        filterFunction: (item, query) => {
+            for (const filter of query.searchFilters) {
+                const value = filter.value.trim().toLowerCase();
+                switch (filter.type) {
+                    case 'gender':
+                        if (item.gender.toLowerCase() !== value) return false;
+                        break;
+                    case 'idAbove': {
+                        const min = Number.parseInt(value, 10);
+                        if (Number.isFinite(min) && item.id < min) return false;
+                        break;
+                    }
+                }
+            }
+            return true;
+        }
+    }
+});
+```
+
+### Server-side
+
+Forward `query.searchText`, `query.searchFilters` and `query.searchCategories` in the request payload — the data source ships the full `ParsedSearchQuery` as part of the [`PaginatedListRequest`](/api-reference/index/interfaces/PaginatedListRequest), so the backend already receives them.
+
+## Custom query-part parsers
+
+Recognise bare tokens (no `key:` prefix) and turn them into filters or categories. Useful for natural patterns like `>100`, `2024-*`, or `@username`.
+
+```typescript
+const searchParser = new AdvancedSearchParser({
+    additionalQueryPartParsers: [
+        (queryPart) => {
+            if (queryPart.startsWith('@')) {
+                return { searchFilter: { type: 'username', value: queryPart.slice(1) } };
+            }
+            return false;
+        }
+    ]
+});
+```
+
+Return `false` to fall through to the next parser. The token becomes `searchText` if no parser claims it.
+
+<ExampleTable path='daisy-ui/advanced-search' description='AdvancedSearchParser routes key:value filters into the data source filterFunction. Try gender:female, t:true, id:100 gender:male.' />
+
+## See also
+
+- [`AdvancedSearchParser`](/api-reference/searchParser/classes/AdvancedSearchParser) — full API.
+- [`ParsedSearchQuery`](/api-reference/searchParser/interfaces/ParsedSearchQuery) — exact field shapes.
+- [Data sources](/docs/guides/data-sources) — `filterFunction` wiring.

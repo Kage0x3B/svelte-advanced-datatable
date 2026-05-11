@@ -1,0 +1,115 @@
+---
+title: Data Sources
+---
+
+<script>
+    import ExampleTable from '../../../../util/ExampleTable.svelte';
+</script>
+
+# Data Sources
+
+The data source supplies rows to the table. It owns the network/IO layer; the table owns the UI. Pick the implementation that matches where the data lives, or implement `IDataSource` for anything custom.
+
+The data source is passed as the `dataSource` prop on `<DataTable>`, separately from `config`.
+
+## LocalDataSource — in-memory arrays
+
+For client-side data you already have in JS. Pagination, sort and search all happen in the browser.
+
+```typescript
+import { LocalDataSource } from 'svelte-advanced-datatable';
+
+const dataSource = new LocalDataSource(rows, {
+    filtering: {
+        textSearchColumns: ['userName', 'mailAddress'],
+        filterFunction: (item, query) => /* return true to keep */ true
+    }
+});
+```
+
+- `textSearchColumns` — keys the basic search inspects (case-insensitive substring).
+- `filterFunction` — runs after text search. Receives the row and the [`ParsedSearchQuery`](/api-reference/searchParser/interfaces/ParsedSearchQuery), so it can branch on `query.searchFilters` from an [`AdvancedSearchParser`](/docs/guides/search).
+
+<ExampleTable path='daisy-ui/basic/first-example' description='LocalDataSource with text search on userName.' />
+
+## FetchApiDataSource — POST to an endpoint
+
+POSTs a JSON [`PaginatedListRequest`](/api-reference/index/interfaces/PaginatedListRequest) to your URL and expects a [`PaginatedListResponse`](/api-reference/index/interfaces/PaginatedListResponse) back. Aborts in-flight requests when the user changes page/search.
+
+```typescript
+import { FetchApiDataSource } from 'svelte-advanced-datatable';
+
+const dataSource = new FetchApiDataSource<UserData>('/api/users/list', {
+    credentials: 'include',
+    headers: { 'X-CSRF': csrfToken }
+});
+```
+
+The second argument is forwarded to `fetch` — use it for auth headers, credentials, custom `signal`s, etc.
+
+## ApiFunctionDataSource — wrap any async function
+
+When the request shape doesn't match a single POST (GraphQL, RPC client, third-party SDK), pass an [`ApiFunction`](/api-reference/index/type-aliases/ApiFunction) that maps `PaginatedListRequest` → `Promise<PaginatedListResponse>`.
+
+```typescript
+import { ApiFunctionDataSource } from 'svelte-advanced-datatable';
+
+const dataSource = new ApiFunctionDataSource<UserData>(async (request) => {
+    const result = await usersClient.list({
+        offset: request.start,
+        limit: request.amount,
+        sort: request.orderBy,
+        q: request.searchQuery?.searchText
+    });
+
+    return { totalCount: result.total, items: result.rows };
+});
+```
+
+Throw to surface an error — `onError` and the `errorState` snippet pick it up.
+
+## SvelteQueryDataSource — TanStack Query integration
+
+Same `ApiFunction` shape as above, but cached and refetched through [@tanstack/svelte-query](https://tanstack.com/query/latest/docs/framework/svelte/overview). The query key is `["dataTable-" + config.type, request]` and is regenerated whenever the request changes.
+
+```typescript
+import { SvelteQueryDataSource } from 'svelte-advanced-datatable';
+
+const dataSource = new SvelteQueryDataSource<UserData>(
+    (request) => fetchUsers(request),
+    { staleTime: 30_000, gcTime: 5 * 60_000 }
+);
+```
+
+The second argument is forwarded to `useQuery`. Use `setApiFunction`, `setEnabled`, or `updateQueryOptions` to swap behaviour at runtime without re-mounting the table.
+
+<ExampleTable path='daisy-ui/svelte-query' description='SvelteQueryDataSource fetching a static JSON file through TanStack Query.' />
+
+## Custom data source
+
+Implement `IDataSource` for anything else. Two paths:
+
+1. Extend `AbstractDataSource<Data>` and only implement `requestData` — it gives you `queryResult` plumbing for free.
+2. Implement `IDataSource` directly when you need full control over the result store.
+
+```typescript
+import { AbstractDataSource, QueryResult } from 'svelte-advanced-datatable';
+import type { PaginatedListRequest } from 'svelte-advanced-datatable';
+
+class WebsocketDataSource<Data> extends AbstractDataSource<Data> {
+    requestData(request: PaginatedListRequest<Data>): void {
+        socket.send({ type: 'list', request });
+        socket.onMessage = (response) => {
+            this.queryResult = QueryResult.buildSuccess(response);
+        };
+    }
+}
+```
+
+Implement `fetchOnce` as well if you want **local export** to work — the popover calls it to stream every page without disturbing the visible rows. Skip it and the popover falls back to remote-only export.
+
+## See also
+
+- [Configuration reference](/docs/configuration) — every `dataSource`-adjacent option.
+- [Search](/docs/guides/search) — wire `AdvancedSearchParser` filters into your data source.
+- [Error handling](/docs/guides/error-handling) — surfacing data-source failures.

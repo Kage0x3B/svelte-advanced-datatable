@@ -1,0 +1,120 @@
+---
+title: Selection & Actions
+---
+
+<script>
+    import ExampleTable from '../../../../util/ExampleTable.svelte';
+</script>
+
+# Selection & Actions
+
+Registering even one [`DataTableAction`](/api-reference/index/interfaces/DataTableAction) lights up the entire selection UI: a leading checkbox column, a trailing three-dot per-row dropdown, and a bulk-action toolbar that slides in next to the search field when at least one row is selected. Selection persists across pagination, so cross-page bulk operations work without extra code.
+
+## Registering actions
+
+Each action needs a `key` (stable, lookup id for translated labels) plus either `onSingle`, `onMulti`, or both.
+
+```typescript
+import type { DataTableAction, DataTableConfig, SelectionId } from 'svelte-advanced-datatable';
+import PencilIcon from './PencilIcon.svelte';
+import ArchiveIcon from './ArchiveIcon.svelte';
+import TrashIcon from './TrashIcon.svelte';
+
+const config: DataTableConfig<UserData> = {
+    type: 'userDataActions',
+    columnProperties: { /* ... */ },
+    dataUniquePropertyKey: 'id',
+    actions: [
+        {
+            key: 'edit',
+            icon: PencilIcon,
+            onSingle: (item) => openEditDialog(item)
+        },
+        {
+            key: 'archive',
+            icon: ArchiveIcon,
+            primary: true,
+            onMulti: (ids) => archiveUsers(ids)
+        },
+        {
+            key: 'delete',
+            icon: TrashIcon,
+            variant: 'destructive',
+            primary: true,
+            onMulti: (ids) => deleteUsers(ids)
+        }
+    ],
+    messageConfig: {
+        // ...column labels...
+        actions: { edit: 'Edit', archive: 'Archive', delete: 'Delete' }
+    }
+};
+```
+
+`onMulti` receives **IDs only** — cross-page selections can include rows that aren't loaded in memory. Refetch with the IDs when the handler needs full objects.
+
+When only `onMulti` is supplied, single-row invocations call it with `[id]`. That's the common case for destructive/bulk-shaped actions.
+
+## Action properties
+
+| Property               | Type                                  | Description                                                                                                                | Default                |
+|:-----------------------|:--------------------------------------|:---------------------------------------------------------------------------------------------------------------------------|:-----------------------|
+| `key`                  | `string`                              | Stable id. Used as a list key and as the message-formatter lookup for the label.                                            | required               |
+| `icon`                 | `Component`                           | Svelte icon component. Render an SVG sized via tailwind (e.g. `class="size-4"`).                                            | —                      |
+| `variant`              | `'default' \| 'primary' \| 'destructive'` | Visual styling — destructive = red.                                                                                     | `'default'`            |
+| `primary`              | `boolean`                             | Render as a standalone button in the bulk toolbar (otherwise lives in the "More" overflow). Capped by `primaryActionsCount`. | `false`                |
+| `hideInRow`            | `boolean`                             | Suppress in the per-row dropdown.                                                                                          | `false`                |
+| `hideInBulk`           | `boolean`                             | Suppress in the bulk toolbar. Implicit when no `onMulti` is provided.                                                      | `false`                |
+| `rowVisible`           | `(item) => boolean`                   | Per-row predicate for the row dropdown. Hide actions the row isn't eligible for.                                           | —                      |
+| `onSingle`             | `(item) => void \| Promise<void>`     | Row-dropdown handler. Receives the full row.                                                                                | —                      |
+| `onMulti`              | `(ids) => void \| Promise<void>`      | Bulk-toolbar handler. Receives selected IDs.                                                                                | —                      |
+| `refreshAfter`         | `boolean`                             | Call `dataSource.refresh()` after the handler resolves.                                                                     | `true`                 |
+| `clearSelectionAfter`  | `boolean`                             | Wipe the selection after the handler resolves.                                                                              | `true` bulk / `false` single |
+
+## Selection options
+
+`SelectionOptions` is for fine-tuning when the defaults aren't right.
+
+```typescript
+const config: DataTableConfig<UserData> = {
+    // ...
+    selection: {
+        enabled: true,                                    // force the checkbox column on without actions
+        selectableRows: (item) => item.role !== 'admin',  // disable selection per row
+        hideRowActionsColumn: false,                      // hide the trailing three-dot column
+        primaryActionsCount: 2                            // cap primary buttons before overflow
+    }
+};
+```
+
+| Property              | Type               | Description                                                                                                  | Default     |
+|:----------------------|:-------------------|:-------------------------------------------------------------------------------------------------------------|:------------|
+| `enabled`             | `boolean`          | Force the selection column on even without actions. Useful when binding `selectedIds` for a custom UI.        | `actions.length > 0` |
+| `selectableRows`      | `(item) => boolean`| Per-row gate. `false` renders a disabled checkbox.                                                            | all selectable |
+| `hideRowActionsColumn`| `boolean`          | Hide the trailing per-row dropdown. Useful when actions should only fire from the bulk toolbar.               | `false`     |
+| `primaryActionsCount` | `number`           | Maximum `primary: true` actions rendered as buttons in the toolbar. Surplus falls into the "More" overflow.   | `2`         |
+
+## Two-way binding
+
+Bind `selectedIds` to drive selection from outside (default selections, persistence, custom toolbars):
+
+```svelte
+<DataTable
+    {config}
+    {dataSource}
+    bind:selectedIds
+    onSelectionChange={({ ids, loadedItems }) => {
+        // loadedItems is the subset currently rendered — cross-page IDs aren't in here
+    }}
+/>
+```
+
+Both `bind:selectedIds` and `onSelectionChange` fire on every change; pick whichever fits — they're not mutually exclusive.
+
+<ExampleTable path='daisy-ui/svelte-query-actions' description='Edit / Archive / Delete actions, primary buttons, destructive variant, and bind:selectedIds.' />
+
+## See also
+
+- [`SelectionState`](/api-reference/index/classes/SelectionState) — internal selection store, exposed for advanced integrations.
+- [`invokeAction`](/api-reference/index/functions/invokeAction) — programmatically trigger an action.
+- [Internationalisation](/docs/guides/i18n) — `messageConfig.actions` shape for translating action labels and chrome.

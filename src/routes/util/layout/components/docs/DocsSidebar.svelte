@@ -13,22 +13,26 @@
     </DocsSidebarItem>
 
     <DocsSidebarItem>
-        Configuration
+        Guides
         {#snippet submenu()}
-            <DocsSidebarItem href="configuration" matchActiveExact>General</DocsSidebarItem>
-            <DocsSidebarItem href="configuration/column-config">Column Configuration</DocsSidebarItem>
-            <DocsSidebarItem href="configuration/data-sources">Data Sources</DocsSidebarItem>
+            <DocsSidebarItem href="guides/data-sources">Data sources</DocsSidebarItem>
+            <DocsSidebarItem href="guides/columns">Columns &amp; cell types</DocsSidebarItem>
+            <DocsSidebarItem href="guides/search">Search</DocsSidebarItem>
+            <DocsSidebarItem href="guides/sorting-pagination">Sorting &amp; pagination</DocsSidebarItem>
+            <DocsSidebarItem href="guides/selection-actions">Selection &amp; actions</DocsSidebarItem>
+            <DocsSidebarItem href="guides/export">Export</DocsSidebarItem>
+            <DocsSidebarItem href="guides/persistence">Persistence</DocsSidebarItem>
+            <DocsSidebarItem href="guides/i18n">Internationalisation</DocsSidebarItem>
+            <DocsSidebarItem href="guides/modal-row-interactions">Modals &amp; row interactions</DocsSidebarItem>
+            <DocsSidebarItem href="guides/display-layout">Display &amp; layout</DocsSidebarItem>
+            <DocsSidebarItem href="guides/error-handling">Error handling</DocsSidebarItem>
         {/snippet}
     </DocsSidebarItem>
 
     <DocsSidebarItem>
-        Examples
+        Configuration
         {#snippet submenu()}
-            <DocsSidebarItem href="examples/extensive-example">Extensive Example</DocsSidebarItem>
-            <DocsSidebarItem href="examples/modal">Modal</DocsSidebarItem>
-            <DocsSidebarItem href="examples/custom-columns">Custom Column Components</DocsSidebarItem>
-            <DocsSidebarItem href="examples/advanced-search">Advanced Search</DocsSidebarItem>
-            <DocsSidebarItem href="examples/error-handling">Error Handling</DocsSidebarItem>
+            <DocsSidebarItem href="configuration" matchActiveExact>Reference</DocsSidebarItem>
         {/snippet}
     </DocsSidebarItem>
 </ul>

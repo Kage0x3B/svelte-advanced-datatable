@@ -1,0 +1,138 @@
+---
+title: Columns & Cell Types
+---
+
+<script>
+    import ExampleTable from '../../../../util/ExampleTable.svelte';
+</script>
+
+# Columns & Cell Types
+
+`columnProperties` maps each data key to a [`ComponentTypeProperties`](/api-reference/index/type-aliases/ComponentTypeProperties) entry that decides how the cell renders, sorts and exports. The `type` field is the only required key.
+
+```typescript
+import { ComponentType } from 'svelte-advanced-datatable';
+
+const config: DataTableConfig<UserData> = {
+    type: 'userData',
+    columnProperties: {
+        id:        { type: ComponentType.NUMBER },
+        userName:  { type: ComponentType.STRING },
+        active:    { type: ComponentType.BOOLEAN },
+        lastLogin: { type: ComponentType.DATE },
+        role:      {
+            type: ComponentType.ENUM,
+            values: ['admin', 'editor', 'viewer'],
+            enumColorKey: { admin: 'error', editor: 'warning', viewer: 'info' }
+        },
+        avatar:    { type: ComponentType.CUSTOM, sortable: false, component: AvatarCell }
+    },
+    dataUniquePropertyKey: 'id'
+};
+```
+
+## Shared properties (all types)
+
+Every column inherits [`GenericComponentTypeProperties`](/api-reference/index/interfaces/GenericComponentTypeProperties):
+
+| Property                  | Type                                            | Description                                                                                              | Default |
+|:--------------------------|:------------------------------------------------|:---------------------------------------------------------------------------------------------------------|:--------|
+| `sortable`                | `boolean`                                       | Header click sorts by this column. Disable for derived/custom cells.                                     | `true`  |
+| `hidden`                  | `boolean`                                       | Hard-hide. Never rendered, never offered in the column-visibility list.                                  | `false` |
+| `alwaysVisible`           | `boolean`                                       | Forces the column on; suppresses it from the visibility toggle list.                                     | `false` |
+| `resizable`               | `boolean`                                       | Allow the user to drag the right edge of the header.                                                     | `true`  |
+| `formatValue`             | `(value, item) => string`                       | Custom display formatter. Receives the cell value and the full row. Return a string.                     | —       |
+| `formatValueEnableHtml`   | `boolean`                                       | Render `formatValue`'s return value as HTML. Beware XSS — the value is injected with `{@html}`.          | `false` |
+
+## ComponentType.STRING / NUMBER
+
+No extra properties — STRING renders as text, NUMBER as a right-aligned number. Use `formatValue` for currencies, units, etc.
+
+```typescript
+budget: {
+    type: ComponentType.NUMBER,
+    formatValue: (value) =>
+        new Intl.NumberFormat(undefined, { style: 'currency', currency: 'USD' }).format(value as number)
+}
+```
+
+## ComponentType.BOOLEAN
+
+Renders a check/cross. Use when your data isn't a plain `true`/`false` (e.g. legacy `'Y'`/`'N'`).
+
+| Property   | Type      | Description                                                                                  | Default |
+|:-----------|:----------|:---------------------------------------------------------------------------------------------|:--------|
+| `truthy`   | `unknown` | Value loosely compared against the cell. Anything else renders as false.                     | `true`  |
+| `inverted` | `boolean` | Render the opposite of the resolved boolean.                                                 | `false` |
+
+## ComponentType.ENUM
+
+Coloured badge per value. Pair with `messageConfig.<key>.enumValue` to translate the visible labels.
+
+| Property        | Type                                          | Description                                                                                        |
+|:----------------|:----------------------------------------------|:---------------------------------------------------------------------------------------------------|
+| `values`        | `string[]`                                    | Every possible enum value. Sort order in the export header follows this.                            |
+| `enumColorKey`  | `Partial<Record<Enum \| 'default' \| 'unknown', WrappedComponentColor \| string>>` | DaisyUI badge colours per value; `default` covers configured values without a colour, `unknown` covers values not in `values`. |
+
+```typescript
+gender: {
+    type: ComponentType.ENUM,
+    values: ['male', 'female'],
+    enumColorKey: { male: 'info', female: 'error', default: 'primary', unknown: 'neutral' }
+} satisfies EnumComponentTypeProperties<'male' | 'female'>
+```
+
+## ComponentType.DATE
+
+Renders a luxon `DateTime` or a native `Date`. Override the formatter to localise.
+
+| Property     | Type                          | Description                                                                  | Default                                  |
+|:-------------|:------------------------------|:-----------------------------------------------------------------------------|:-----------------------------------------|
+| `dateFormat` | `Intl.DateTimeFormatOptions`  | `Intl` formatter options passed to luxon. Equivalent to `DATETIME_MED` by default. | `{ year, month: 'short', day, hour, minute }` |
+
+## ComponentType.CUSTOM
+
+Mount your own component or snippet for full control. The component receives `{ key, value, item, colProps }` ([`CustomComponentProps`](/api-reference/index/interfaces/CustomComponentProps)).
+
+```typescript
+password: {
+    type: ComponentType.CUSTOM,
+    sortable: false,
+    component: HiddenPasswordCellComponent
+} satisfies CustomComponentTypeProperties<string>
+```
+
+The cell component (daisyUI flavour):
+
+```svelte
+<script lang="ts">
+    import type { CustomComponentProps } from 'svelte-advanced-datatable';
+
+    let { value }: CustomComponentProps<string> = $props();
+    let isHidden = $state(true);
+
+    function toggle(event: MouseEvent) {
+        event.stopPropagation();
+        isHidden = !isHidden;
+    }
+</script>
+
+{#if isHidden}
+    <button class='btn btn-error btn-xs' onclick={toggle}>Show</button>
+{:else}
+    <code class='bg-base-200 px-1 rounded' onclick={toggle}>{value}</code>
+{/if}
+```
+
+**Always call `event.stopPropagation()` on interactive controls.** Without it the row's click handler (modal open / `onItemClick` / `buildItemUrl`) also fires.
+
+Prefer `formatValue` over a custom component when all you need is a different display string — it's cheaper and keeps export output sensible. Use `snippet` (instead of `component`) when the cell needs closures over local state.
+
+<ExampleTable path='daisy-ui/basic/extensive-example' description='STRING, NUMBER, ENUM and a custom password cell in one table.' />
+<ExampleTable path='daisy-ui/custom-columns' description='Five custom-cell flavours: hashed-colour avatar, tonal progress bar, relative-time badge, currency formatting, and a stopPropagation action button.' />
+
+## See also
+
+- [`MessageConfig`](/api-reference/index/type-aliases/MessageConfig) — column labels, enum translations, `format` strings.
+- [Internationalisation](/docs/guides/i18n) — translating column labels and enum values.
+- [Custom cell patterns](/docs/guides/columns#componenttypecustom) above — see also [`CustomComponentProps`](/api-reference/index/interfaces/CustomComponentProps).

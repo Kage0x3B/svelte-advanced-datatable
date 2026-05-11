@@ -1,0 +1,106 @@
+---
+title: Persistence
+---
+
+<script>
+    import ExampleTable from '../../../../util/ExampleTable.svelte';
+</script>
+
+# Persistence
+
+The table separates state into two independent tiers:
+
+- **Transient** — short-lived per-view state: page, search input, sort key/direction, additional sort tiebreakers, currently-open modal row.
+- **Persistent** — longer-lived UI preferences: items-per-page, column visibility, column widths, column order, density.
+
+Each tier wires to its own backend. The defaults (`transient: 'snapshot'`, `persistent: 'none'`) preserve pre-persistence behaviour: nothing touches `localStorage` without explicit opt-in.
+
+```typescript
+const config: DataTableConfig<UserData> = {
+    // ...
+    persistence: {
+        transient: 'url',
+        persistent: 'localStorage',
+        urlPrefix: 'dt',
+        storageNamespace: config.type,
+        urlDebounceMs: 300
+    }
+};
+```
+
+## Options
+
+| Option            | Type                                     | Description                                                                                              | Default                |
+|:------------------|:-----------------------------------------|:---------------------------------------------------------------------------------------------------------|:-----------------------|
+| `transient`       | `'snapshot' \| 'url' \| 'none'`          | Backend for page/search/sort/open state.                                                                  | `'snapshot'`           |
+| `persistent`      | `'localStorage' \| 'sessionStorage' \| 'none'` | Backend for column prefs and items-per-page.                                                       | `'none'`               |
+| `urlPrefix`       | `string`                                 | URL search-param prefix when `transient: 'url'`. Override when multiple tables share a route.            | `'dt'`                 |
+| `storageNamespace`| `string`                                 | Storage-key prefix when `persistent: 'localStorage' \| 'sessionStorage'`.                                | `config.type`          |
+| `urlDebounceMs`   | `number`                                 | Debounce for URL writes. Bursts of state changes collapse into one `replaceState`.                       | `300`                  |
+
+## Transient backends
+
+- **`'snapshot'`** — wires `capture()` / `restore()` so SvelteKit's [`Snapshot` API](https://kit.svelte.dev/docs/snapshots) restores state on back-navigation. Survives within the SPA session; lost on full reload.
+- **`'url'`** — writes to `?dt-page=...&dt-q=...&dt-sortCol=...` via `replaceState`. Shareable, refresh-survivable, back/forward-aware.
+- **`'none'`** — in-memory only. Useful for embedded tables where state should reset each mount.
+
+The transient field keys are stable (`page`, `q`, `sortCol`, `sortDir`, `sortMore`, `open`). They're part of the URL wire format — changing the prefix is the only way to disambiguate, never patch the keys themselves.
+
+## Persistent backends
+
+- **`'localStorage'`** — survives reload and tab close. Keys take the form `${storageNamespace}-${field}` (e.g. `userData-columnWidths`).
+- **`'sessionStorage'`** — survives reload, lost on tab close.
+- **`'none'`** — in-memory only. The user's settings survive component remounts but reset on reload.
+
+`storageNamespace` defaults to `config.type`, which is already unique per table in your app, so collisions are avoided by default.
+
+## SvelteKit snapshot wiring
+
+`'snapshot'` is the default `transient` backend, but SvelteKit only round-trips it when the page exports a `snapshot`. Wire `capture` / `restore` on the route:
+
+```svelte
+<script lang='ts'>
+    import type { DataTableState } from 'svelte-advanced-datatable';
+    import type { Snapshot } from './$types.js';
+
+    let dataTable = $state<DataTable>();
+
+    export const snapshot: Snapshot<DataTableState | undefined> = {
+        capture: () => dataTable?.capture(),
+        restore: (s) => dataTable?.restore(s)
+    };
+</script>
+
+<DataTable bind:this={dataTable} {config} {dataSource} />
+```
+
+Or pass `initialState` + `captureState` directly to drive state from outside SvelteKit (e.g. saving snapshots to your own store):
+
+```svelte
+<DataTable
+    {config}
+    {dataSource}
+    initialState={savedState}
+    captureState={(s) => persistToBackend(s)}
+/>
+```
+
+## Multiple tables on one route
+
+Two tables sharing `transient: 'url'` will fight over the same query params unless you give them different prefixes. Same story for the persistent storage namespace.
+
+```typescript
+const usersConfig    = { type: 'users',    persistence: { transient: 'url', urlPrefix: 'u' } };
+const projectsConfig = { type: 'projects', persistence: { transient: 'url', urlPrefix: 'p' } };
+```
+
+The library detects collisions at mount and logs a console warning when two tables share the same URL prefix or storage namespace.
+
+<ExampleTable path='daisy-ui/basic/url-state' description='transient: url + persistent: localStorage — refresh the iframe and the page/search/sort state survives.' />
+<ExampleTable path='daisy-ui/basic/snapshot-state' description='SvelteKit Snapshot API wiring for back-navigation state restore.' />
+
+## See also
+
+- [`PersistenceOptions`](/api-reference/index/interfaces/PersistenceOptions) — full type.
+- [`DataTableState`](/api-reference/index/interfaces/DataTableState) — the state shape captured/restored.
+- `createStores` (from `svelte-advanced-datatable/persistence`) — escape hatch for fully custom backends.

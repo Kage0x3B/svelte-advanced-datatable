@@ -1,0 +1,66 @@
+---
+title: Sorting & Pagination
+---
+
+<script>
+    import ExampleTable from '../../../../util/ExampleTable.svelte';
+</script>
+
+# Sorting & Pagination
+
+Sort state and page state are part of the [`PaginatedListRequest`](/api-reference/index/interfaces/PaginatedListRequest) — both client- and server-side data sources receive them on every change.
+
+## Sorting
+
+Clicking a column header sets the primary sort. Shift-clicking appends a tiebreaker. The header shows direction indicators and renumbers tiebreakers automatically.
+
+```typescript
+const config: DataTableConfig<UserData> = {
+    // ...
+    defaultSort: { columnKey: 'lastName', direction: 'asc' },
+    columnProperties: {
+        avatar:   { type: ComponentType.CUSTOM, sortable: false, component: AvatarCell },
+        userName: { type: ComponentType.STRING }    // sortable: true is the default
+    }
+};
+```
+
+| Option            | Type                                                | Description                                                                                       | Default |
+|:------------------|:----------------------------------------------------|:--------------------------------------------------------------------------------------------------|:--------|
+| `defaultSort`     | `{ columnKey?: keyof Data; direction?: SortDirection }` | Initial sort applied on first render and whenever persisted sort state is missing.           | —       |
+| Per-column `sortable` | `boolean`                                       | Header click sorts the column. Set to `false` for derived/custom cells.                          | `true`  |
+| `showTableHeader` | `boolean`                                           | Hide the header row entirely. Headerless tables can't sort.                                       | `true`  |
+
+Multi-column sort is automatic — no config required. The chosen primary plus all tiebreakers are sent to the data source as `orderBy` + `additionalOrderBy`.
+
+## Pagination
+
+Pagination is on by default. The page size persists across reloads (it lives in the `persistent` tier — see [Persistence](/docs/guides/persistence)), so `itemsPerPage` is just the seed value.
+
+```typescript
+const config: DataTableConfig<UserData> = {
+    // ...
+    enablePagination: true,
+    itemsPerPage: 25,
+    itemsPerPageOptions: [10, 25, 50, 100, 250],
+    showTopPagination: true,
+    showBottomPagination: true
+};
+```
+
+| Option                  | Type        | Description                                                                                                | Default                |
+|:------------------------|:------------|:-----------------------------------------------------------------------------------------------------------|:-----------------------|
+| `enablePagination`      | `boolean`   | Disable to render every row at once. The data source must then return the whole dataset in one response.   | `true`                 |
+| `itemsPerPage`          | `number`    | Seed for `state.itemsPerPage`. User overrides via the settings popover persist.                            | `50`                   |
+| `itemsPerPageOptions`   | `number[]`  | Choices in the settings popover's "items per page" select. Pass `[]` to hide it.                          | `[10, 25, 50, 100, 250]` |
+| `showTopPagination`     | `boolean`   | Render the pagination row above the table.                                                                 | `true`                 |
+| `showBottomPagination`  | `boolean`   | Render the pagination row below the table. Auto-hidden when fewer than 10 rows are visible.                | `true`                 |
+
+`enablePagination: false` is the right pick for small bounded datasets where the user wants Cmd+F across everything. For anything that can grow, leave pagination on — the data source's `requestData` is called once per page and the abort logic keeps the network tidy.
+
+<ExampleTable path='daisy-ui/basic/extensive-example' description='Multi-column sorting (Shift-click) and itemsPerPage selector via the settings popover.' />
+
+## See also
+
+- [Persistence](/docs/guides/persistence) — page index, sort key/direction, and items-per-page live in different persistence tiers.
+- [Data sources](/docs/guides/data-sources) — what server-side endpoints must return.
