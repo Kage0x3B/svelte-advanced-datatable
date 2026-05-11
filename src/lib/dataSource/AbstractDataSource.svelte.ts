@@ -16,8 +16,8 @@ export abstract class AbstractDataSource<Data> implements IDataSource<Data> {
         this._queryResult = value;
     }
 
-    public setConfig(config: FullDataTableConfig<Data>): void {
-        this.dataTableConfig = config;
+    public setConfig(config: FullDataTableConfig<any>): void {
+        this.dataTableConfig = config as FullDataTableConfig<Data>;
     }
 
     public abstract requestData(data: PaginatedListRequest<Data>): void;

@@ -6,7 +6,17 @@ import type { QueryResult } from './QueryResult.js';
 export interface IDataSource<Data> {
     readonly queryResult: QueryResult<Data>;
 
-    setConfig?(config: FullDataTableConfig<Data>): void;
+    /**
+     * Typed `<any>` rather than `<Data>` so that a concrete-typed source like
+     * `LocalDataSource<UserRow>` is structurally assignable to the framework's
+     * `IDataSource<unknown>` slot. Without this, contravariant uses of `Data`
+     * inside `FullDataTableConfig<Data>` (e.g. `buildExportUrl`,
+     * `dataUniquePropertyKey: keyof Data & string`) trip TypeScript's
+     * variance check — the optional-method-syntax bivariance exemption
+     * doesn't survive `Required<>` wrapping a generic. The lib itself only
+     * needs `config.type`, so erasing `Data` here costs nothing at runtime.
+     */
+    setConfig?(config: FullDataTableConfig<any>): void;
 
     /**
      * Called to retrieve the initial dataTable entries and everytime the request changes, for example when

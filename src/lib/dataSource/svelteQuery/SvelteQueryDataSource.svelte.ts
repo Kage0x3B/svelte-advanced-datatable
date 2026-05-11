@@ -54,8 +54,8 @@ export class SvelteQueryDataSource<Data> implements IDataSource<Data> {
         return this._queryResult;
     }
 
-    setConfig(config: FullDataTableConfig<Data>) {
-        this.dataTableConfig = config;
+    setConfig(config: FullDataTableConfig<any>) {
+        this.dataTableConfig = config as FullDataTableConfig<Data>;
 
         this.queryKeyPrefix = `dataTable-${config.type}`;
 
