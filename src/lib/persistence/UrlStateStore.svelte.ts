@@ -97,7 +97,20 @@ export class UrlStateStore implements StateStore {
                 changed = true;
             }
         }
-        this.pendingWrites = {};
         if (changed) replaceState(url, page.state);
+        // Defer clearing until `page.url` has propagated from `replaceState`.
+        // Clearing synchronously would invalidate reactive readers in the same
+        // batch, causing them to fall through empty `pendingWrites` and stale
+        // `page.url` to the fallback — clobbering the user's just-applied change.
+        // Only clear keys whose pending value is unchanged so concurrent writes
+        // arriving between flush and microtask survive.
+        const flushedSnapshot = new Map(entries);
+        queueMicrotask(() => {
+            const next = { ...this.pendingWrites };
+            for (const [key, value] of flushedSnapshot) {
+                if (next[key] === value) delete next[key];
+            }
+            this.pendingWrites = next;
+        });
     }
 }
