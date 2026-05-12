@@ -5,8 +5,10 @@
     import {
         configContext,
         rowActionsColumnEnabledContext,
+        rowFocusContext,
         selectionEnabledContext
     } from '$lib/util/context.js';
+    import { tick } from 'svelte';
     import { flip } from 'svelte/animate';
     import { slide } from 'svelte/transition';
     import DaisyUiBadgeWrapper from '$lib/daisyUi/DaisyUiBadgeWrapper.svelte';
@@ -17,9 +19,10 @@
     const config = $derived(configContext.get().current);
     const selectionEnabled = $derived(selectionEnabledContext.get().current);
     const rowActionsColumnEnabled = $derived(rowActionsColumnEnabledContext.get().current);
+    const rowFocus = $derived(rowFocusContext.get().current);
 
     interface Props {
-        state: InternalDataTableState;
+        tableState: InternalDataTableState;
         index: number;
         highlighted: boolean;
         onClick: (<T>(item: T) => void | Promise<void>) | undefined;
@@ -30,7 +33,31 @@
         customSnippets: CustomSnippetProps;
     }
 
-    let { state, index, highlighted, onClick, href, item, open, customSnippets }: Props = $props();
+    let { tableState, index, highlighted, onClick, href, item, open, customSnippets }: Props = $props();
+
+    /** This row holds the keyboard focus when its index matches the
+     * RowFocusState's. Drives both `tabindex` (roving pattern: 0 for
+     * focused, -1 for the rest) and the focus-pull effect below. */
+    const isFocused = $derived(rowFocus.focusedIndex === index);
+
+    let rowEl = $state<HTMLTableRowElement | undefined>(undefined);
+
+    /** When the focused index changes (arrow keys, Home/End, page change)
+     * pull the DOM focus onto the matching row so the next keystroke lands
+     * here. The activeElement guard prevents focus thrash when the user
+     * deliberately tabbed into a cell-embedded control inside this row. */
+    $effect(() => {
+        if (!isFocused || !rowEl) return;
+        if (document.activeElement === rowEl) return;
+        if (rowEl.contains(document.activeElement)) return;
+        // Wait for any pending DOM mutations (e.g. a page change re-rendered
+        // the tbody) before focusing — otherwise focus() can hit a stale node.
+        void tick().then(() => {
+            if (rowEl && rowFocus.focusedIndex === index) {
+                rowEl.focus({ preventScroll: false });
+            }
+        });
+    });
 
     /** Resolved column order (user-chosen overlaid on config order), then
      * filtered by visibility. Mirrors the header's iteration so the cell
@@ -38,10 +65,10 @@
     const visibleColumnEntries = $derived.by(() => {
         const configKeys = Object.keys(config.columnProperties);
         const ordered: string[] = [];
-        if (state.columnOrder.length) {
+        if (tableState.columnOrder.length) {
             const configKeySet = new Set(configKeys);
             const seen = new Set<string>();
-            for (const key of state.columnOrder) {
+            for (const key of tableState.columnOrder) {
                 if (configKeySet.has(key) && !seen.has(key)) {
                     ordered.push(key);
                     seen.add(key);
@@ -55,7 +82,7 @@
         }
         return ordered
             .map((key) => [key, config.columnProperties[key]] as const)
-            .filter(([key, colProp]) => !colProp?.hidden && state.columnVisibility[key] !== false);
+            .filter(([key, colProp]) => !colProp?.hidden && tableState.columnVisibility[key] !== false);
     });
     /** Spans the data columns plus the leading selection column and trailing
      * row-actions column when active. Used for the colspans of the
@@ -68,7 +95,7 @@
     );
 </script>
 
-<DataTable.Row {state} {index} {onClick} {item} {open}>
+<DataTable.Row state={tableState} {index} {onClick} {item} {open}>
     {#snippet children({ isOpen, rowOnClick, toggle })}
         {#if isOpen}
             <tr class="margin-row top border-b-0">
@@ -76,6 +103,7 @@
             </tr>
         {/if}
         <tr
+            bind:this={rowEl}
             class={[
                 'datatable-row cursor-pointer whitespace-nowrap transition-colors duration-200',
                 {
@@ -85,7 +113,11 @@
             ]}
             class:expanded={isOpen}
             class:highlighted
+            tabindex={isFocused ? 0 : -1}
             onclick={rowOnClick}
+            onfocus={() => {
+                rowFocus.focusedIndex = index;
+            }}
         >
             {#if item}
                 {#if selectionEnabled}

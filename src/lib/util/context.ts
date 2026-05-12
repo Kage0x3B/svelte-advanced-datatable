@@ -1,4 +1,5 @@
 import type { IDataSource } from '$lib/dataSource/IDataSource.js';
+import type { RowFocusState } from '$lib/internal/rowFocusState.svelte.js';
 import type { SelectionState } from '$lib/internal/selectionState.svelte.js';
 import type { MessageFormatter } from '$lib/types/MessageFormatter.js';
 import type { FullDataTableConfig } from '$lib/types/DataTableConfig.js';
@@ -55,3 +56,11 @@ export interface ActionRunner {
 }
 
 export const actionRunnerContext = new Context<ReadableBox<ActionRunner>>('DATATABLE_ACTION_RUNNER_CONTEXT_KEY');
+
+/**
+ * Reactive row-focus state used by the keyboard-navigation layer. Drives
+ * the roving-tabindex pattern: exactly one row index has `tabindex=0` at a
+ * time, the rest have `tabindex=-1`. Always set when the dataTable mounts
+ * — only consulted when the table or one of its rows is focused.
+ */
+export const rowFocusContext = new Context<ReadableBox<RowFocusState>>('DATATABLE_ROW_FOCUS_CONTEXT_KEY');

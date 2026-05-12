@@ -4,6 +4,7 @@
     import type { CustomSnippetProps } from '$lib/dataComponent/CustomComponentTypeProperties.js';
     import type { IDataSource } from '$lib/dataSource/IDataSource.js';
     import DataTable from '$lib/internal/index.js';
+    import { RowFocusState } from '$lib/internal/rowFocusState.svelte.js';
     import { SelectionState } from '$lib/internal/selectionState.svelte.js';
     import { createPersistedState, createStores, registerNamespaceCollisions } from '$lib/persistence/index.js';
     import type { DataTableConfig, FullDataTableConfig } from '$lib/types/DataTableConfig.js';
@@ -14,6 +15,7 @@
         dataSourceContext,
         messageFormatterContext,
         rowActionsColumnEnabledContext,
+        rowFocusContext,
         selectionContext,
         selectionEnabledContext,
         type ActionRunner
@@ -264,6 +266,24 @@
     selectionEnabledContext.set(box.with(() => selectionEnabled));
     rowActionsColumnEnabledContext.set(box.with(() => rowActionsColumnEnabled));
     actionRunnerContext.set(box.with(() => actionRunner));
+
+    /** Roving-tabindex focus tracker. One instance per table, exposed via
+     * context so `DaisyUiDataRow` can read the focused index without prop
+     * drilling. Lives outside the snippet so it survives re-renders driven
+     * by data-source updates. */
+    const rowFocus = new RowFocusState();
+    rowFocusContext.set(box.with(() => rowFocus));
+
+    /** Reset the focused row whenever the visible page changes — otherwise
+     * paginating from page 3 with row 8 focused would land on page 4 with
+     * stale focus past the new items array. Reads `currentPage` and the
+     * length of the items array; `untrack` on the reset itself keeps the
+     * effect a one-way listener. */
+    $effect(() => {
+        tableState.currentPage;
+        currentPageItems.length;
+        untrack(() => rowFocus.reset());
+    });
 
     const searchQuery = $derived.by(() => {
         try {
@@ -584,6 +604,52 @@
             additionalSort: tableState.additionalSort
         })
     );
+
+    /**
+     * Roving-tabindex keyboard handler. Wired to the <table> element inside
+     * the snippet so it has access to the live items count + total page
+     * count without prop-drilling them through context. Plain rows handle
+     * arrow / Home / End / PageUp / PageDown — typing into a cell-embedded
+     * input or contenteditable falls through to the default behaviour.
+     */
+    function handleTableKeydown(event: KeyboardEvent, total: number, pageCount: number): void {
+        if (total <= 0) return;
+        const target = event.target as HTMLElement | null;
+        if (!target) return;
+        // Don't steal keys from text-entry widgets nested inside cells.
+        if (target.closest('input, textarea, select, [contenteditable="true"]')) return;
+
+        switch (event.key) {
+            case 'ArrowDown':
+                rowFocus.move(1, total);
+                event.preventDefault();
+                return;
+            case 'ArrowUp':
+                rowFocus.move(-1, total);
+                event.preventDefault();
+                return;
+            case 'Home':
+                rowFocus.setIndex(0, total);
+                event.preventDefault();
+                return;
+            case 'End':
+                rowFocus.setIndex(total - 1, total);
+                event.preventDefault();
+                return;
+            case 'PageDown':
+                if (pageCount > 0 && tableState.currentPage < pageCount) {
+                    tableState.currentPage += 1;
+                    event.preventDefault();
+                }
+                return;
+            case 'PageUp':
+                if (tableState.currentPage > 1) {
+                    tableState.currentPage -= 1;
+                    event.preventDefault();
+                }
+                return;
+        }
+    }
 </script>
 
 <DataTable.Root state={tableState} {searchQuery} {refreshNonce}>
@@ -789,6 +855,7 @@
                     },
                     classExport
                 ]}
+                onkeydown={(event) => handleTableKeydown(event, items.length, pageAmount)}
             >
                 {#if config.showTableHeader}
                     <thead>
@@ -881,7 +948,7 @@
                     {:else}
                         {#each items as item, index (item[config.dataUniquePropertyKey])}
                             <DaisyUiDataRow
-                                state={tableState}
+                                tableState={tableState}
                                 {item}
                                 {index}
                                 {open}
@@ -924,6 +991,15 @@
 <style>
     .table-container {
         width: 100%;
+    }
+
+    /* Roving-tabindex focus ring on the focused row. `outline-offset: -2px`
+       keeps the ring inside the row's bounding box so the surrounding
+       padding doesn't shift the layout when focus moves. Only applied for
+       keyboard focus to keep mouse interactions visually unchanged. */
+    .table-container :global(tr.datatable-row:focus-visible) {
+        outline: 2px solid var(--color-primary, currentColor);
+        outline-offset: -2px;
     }
 
     .table-container :global(td) {

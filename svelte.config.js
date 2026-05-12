@@ -44,7 +44,15 @@ const config = {
     },
     compilerOptions: {
         warningFilter: (warning) => {
-            return !['a11y_no_noninteractive_element_interactions'].includes(warning.code);
+            return ![
+                'a11y_no_noninteractive_element_interactions',
+                // <tr> rows participate in the roving-tabindex pattern
+                // (DaisyUiDataRow) so the focused row exposes tabindex=0;
+                // the keyboard handler that consumes it is attached to the
+                // parent <table>. The default rule treats <tr> as
+                // non-interactive and rejects nonnegative tabindex.
+                'a11y_no_noninteractive_tabindex'
+            ].includes(warning.code);
         }
     }
 };
