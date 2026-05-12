@@ -66,19 +66,20 @@
         });
     });
 
-    /** Right-click handler — opens the shared context menu at the cursor.
+    /**
+     * Open the shared context menu at the supplied viewport coordinates,
+     * applying the OS-file-explorer selection rules:
      *
-     * Selection mirrors OS file-explorer rules:
      * - If selection chrome is on and this row isn't selected, replace the
-     *   selection with this row.
+     *   selection with this row first.
      * - If it *is* selected and other rows are too (count > 1), open the
-     *   bulk variant of the menu — preserving the existing multi-selection
-     *   so the user can act on the whole set.
-     * - Otherwise the row variant opens, with this row's `item` payload. */
-    function onContextMenu(event: MouseEvent): void {
+     *   bulk variant — preserving the existing multi-selection so the
+     *   action operates on the whole set.
+     * - Otherwise the row variant opens with this row's `item` payload.
+     */
+    function openContextMenuAt(clientX: number, clientY: number): void {
         if (!item) return;
         const id = item[config.dataUniquePropertyKey] as SelectionId;
-        event.preventDefault();
         const wasInSelection = selectionEnabled && selection.has(id);
         if (selectionEnabled && !wasInSelection) {
             selection.replaceAll([id]);
@@ -96,7 +97,7 @@
             const loadedItems = pageItems.filter((row) =>
                 idSet.has(row[config.dataUniquePropertyKey] as SelectionId)
             );
-            contextMenu.show(event.clientX, event.clientY, {
+            contextMenu.show(clientX, clientY, {
                 kind: 'bulk',
                 ids,
                 loadedItems
@@ -104,7 +105,80 @@
             return;
         }
 
-        contextMenu.show(event.clientX, event.clientY, { kind: 'row', item, id });
+        contextMenu.show(clientX, clientY, { kind: 'row', item, id });
+    }
+
+    /** Right-click handler — keeps the desktop-mouse path simple. The
+     * heavy lifting lives in `openContextMenuAt`, shared with the touch
+     * long-press path below. */
+    function onContextMenu(event: MouseEvent): void {
+        event.preventDefault();
+        openContextMenuAt(event.clientX, event.clientY);
+    }
+
+    /**
+     * Touch long-press detection. Touch devices have no native right-click
+     * — a 500 ms hold opens the same context menu instead. Cancelled by:
+     *
+     * - the pointer moving more than ~10 px (a scroll/swipe gesture),
+     * - the pointer being released before the timer fires,
+     * - pointercancel from the OS (interrupted gesture, app switch, …).
+     *
+     * Suppresses the synthetic `contextmenu` event Android fires after a
+     * long-press so the row's `oncontextmenu` doesn't double-open the menu.
+     */
+    const LONG_PRESS_MS = 500;
+    const LONG_PRESS_MOVE_THRESHOLD_PX = 10;
+
+    let longPressTimer: ReturnType<typeof setTimeout> | null = null;
+    let longPressStart: { x: number; y: number; pointerId: number } | null = null;
+    let longPressFired = false;
+
+    function cancelLongPress(): void {
+        if (longPressTimer !== null) {
+            clearTimeout(longPressTimer);
+            longPressTimer = null;
+        }
+        longPressStart = null;
+    }
+
+    function onPointerDownLongPress(event: PointerEvent): void {
+        if (event.pointerType !== 'touch') return;
+        cancelLongPress();
+        longPressFired = false;
+        longPressStart = { x: event.clientX, y: event.clientY, pointerId: event.pointerId };
+        longPressTimer = setTimeout(() => {
+            longPressTimer = null;
+            if (!longPressStart) return;
+            const { x, y } = longPressStart;
+            longPressFired = true;
+            longPressStart = null;
+            openContextMenuAt(x, y);
+        }, LONG_PRESS_MS);
+    }
+
+    function onPointerMoveLongPress(event: PointerEvent): void {
+        if (!longPressStart || event.pointerId !== longPressStart.pointerId) return;
+        const dx = event.clientX - longPressStart.x;
+        const dy = event.clientY - longPressStart.y;
+        if (Math.hypot(dx, dy) > LONG_PRESS_MOVE_THRESHOLD_PX) {
+            cancelLongPress();
+        }
+    }
+
+    function onPointerEndLongPress(): void {
+        cancelLongPress();
+    }
+
+    function onContextMenuFromTouch(event: MouseEvent): boolean {
+        // After a fired long-press, swallow the synthetic contextmenu so we
+        // don't open the menu twice in a row.
+        if (longPressFired) {
+            longPressFired = false;
+            event.preventDefault();
+            return false;
+        }
+        return true;
     }
 
     /** Resolved column order (user-chosen overlaid on config order), then
@@ -163,14 +237,22 @@
             class:highlighted
             tabindex={isFocused ? 0 : -1}
             onclick={rowOnClick}
-            oncontextmenu={onContextMenu}
+            oncontextmenu={(event) => {
+                if (!onContextMenuFromTouch(event)) return;
+                onContextMenu(event);
+            }}
             onfocus={() => {
                 rowFocus.focusedIndex = index;
             }}
-            onpointerdown={() => {
+            onpointerdown={(event) => {
                 rowFocus.focusedIndex = index;
                 rowFocus.anchor = index;
+                onPointerDownLongPress(event);
             }}
+            onpointermove={onPointerMoveLongPress}
+            onpointerup={onPointerEndLongPress}
+            onpointercancel={onPointerEndLongPress}
+            onpointerleave={onPointerEndLongPress}
         >
             {#if item}
                 {#if selectionEnabled}
@@ -226,3 +308,16 @@
         {/if}
     {/snippet}
 </DataTable.Row>
+
+<style>
+    /* Suppress iOS Safari's native long-press callout (text selection /
+       link preview) so the synthetic context menu is the only thing the
+       user sees on a long-press. The touch-action rule keeps the row from
+       hijacking vertical scroll while still allowing the long-press
+       detector to fire — `pan-y` lets the browser scroll on a vertical
+       swipe but defers single-finger holds to our handler. */
+    :global(tr.datatable-row) {
+        -webkit-touch-callout: none;
+        touch-action: pan-y;
+    }
+</style>
