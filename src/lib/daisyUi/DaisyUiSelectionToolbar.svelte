@@ -8,7 +8,7 @@
         messageFormatterContext,
         selectionContext
     } from '$lib/util/context.js';
-    import { resolveActionLabel } from '$lib/util/actionLabelUtil.js';
+    import { groupActions, resolveActionLabel } from '$lib/util/actionLabelUtil.js';
     import { attachDetailsAutoClose } from '$lib/util/detailsAutoClose.svelte.js';
     import MoreVerticalIcon from '$lib/daisyUi/icons/MoreVerticalIcon.svelte';
     import XIcon from '$lib/daisyUi/icons/XIcon.svelte';
@@ -54,6 +54,8 @@
     const overflowActions = $derived(
         bulkActions.filter((action) => !primaryButtons.includes(action))
     );
+
+    const overflowSections = $derived(groupActions(overflowActions, format));
 
     /** Toolbar visibility — driven entirely by the selection count, not by
      * `selectionEnabled`, so a consumer who hides the chrome but binds
@@ -168,29 +170,38 @@
                     </span>
                 </summary>
                 <ul class="menu dropdown-content bg-base-100 rounded-box z-50 mt-1 w-52 p-2 shadow">
-                    {#each overflowActions as action (action.key)}
-                        {@const label = resolveActionLabel(config, format, action.key, action.key)}
-                        {@const Icon = action.icon}
-                        {@const disabledReason = disabledReasonFor(action)}
-                        {@const isDisabled = disabledReason !== false}
-                        <li class:disabled={isDisabled}>
-                            <button
-                                type="button"
-                                class={variantMenuClass(action.variant)}
-                                disabled={isDisabled}
-                                title={isDisabled ? disabledReason : undefined}
-                                aria-disabled={isDisabled || undefined}
-                                onclick={() => invoke(action, disabledReason)}
-                            >
-                                {#if Icon}
-                                    <span class="action-icon" aria-hidden="true"><Icon /></span>
-                                {/if}
-                                <span>{label}</span>
-                                {#if isDisabled}
-                                    <span class="sr-only">({disabledReason})</span>
-                                {/if}
-                            </button>
-                        </li>
+                    {#each overflowSections as section, sectionIndex (section.label ?? '__ungrouped__')}
+                        {#if section.label !== null}
+                            <li class="menu-title">
+                                <span>{section.label}</span>
+                            </li>
+                        {:else if sectionIndex > 0}
+                            <li><hr class="border-base-content/10 my-1" /></li>
+                        {/if}
+                        {#each section.actions as action (action.key)}
+                            {@const label = resolveActionLabel(config, format, action.key, action.key)}
+                            {@const Icon = action.icon}
+                            {@const disabledReason = disabledReasonFor(action)}
+                            {@const isDisabled = disabledReason !== false}
+                            <li class:disabled={isDisabled}>
+                                <button
+                                    type="button"
+                                    class={variantMenuClass(action.variant)}
+                                    disabled={isDisabled}
+                                    title={isDisabled ? disabledReason : undefined}
+                                    aria-disabled={isDisabled || undefined}
+                                    onclick={() => invoke(action, disabledReason)}
+                                >
+                                    {#if Icon}
+                                        <span class="action-icon" aria-hidden="true"><Icon /></span>
+                                    {/if}
+                                    <span>{label}</span>
+                                    {#if isDisabled}
+                                        <span class="sr-only">({disabledReason})</span>
+                                    {/if}
+                                </button>
+                            </li>
+                        {/each}
                     {/each}
                 </ul>
             </details>

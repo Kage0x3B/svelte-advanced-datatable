@@ -6,7 +6,7 @@
         configContext,
         messageFormatterContext
     } from '$lib/util/context.js';
-    import { resolveActionLabel } from '$lib/util/actionLabelUtil.js';
+    import { groupActions, resolveActionLabel } from '$lib/util/actionLabelUtil.js';
     import { attachDetailsAutoClose } from '$lib/util/detailsAutoClose.svelte.js';
     import MoreVerticalIcon from '$lib/daisyUi/icons/MoreVerticalIcon.svelte';
 
@@ -32,6 +32,8 @@
             .filter((action) => action.onSingle || action.onMulti)
             .filter((action) => action.rowVisible?.(item) ?? true)
     );
+
+    const rowActionSections = $derived(groupActions(rowActions, format));
 
     const triggerAriaLabel = $derived(resolveActionLabel(config, format, 'rowActions', 'Actions'));
 
@@ -84,31 +86,40 @@
                 <MoreVerticalIcon />
             </summary>
             <ul class="menu dropdown-content bg-base-100 rounded-box z-50 w-52 p-2 shadow">
-                {#each rowActions as action (action.key)}
-                    {@const label = resolveActionLabel(config, format, action.key, action.key)}
-                    {@const Icon = action.icon}
-                    {@const disabledReason = action.isDisabled?.({ kind: 'row', item }) ?? false}
-                    {@const isDisabled = disabledReason !== false}
-                    <li class:disabled={isDisabled}>
-                        <button
-                            type="button"
-                            class={variantClass(action.variant)}
-                            disabled={isDisabled}
-                            title={isDisabled ? disabledReason : undefined}
-                            aria-disabled={isDisabled || undefined}
-                            onclick={() => onActionClick(action, disabledReason)}
-                        >
-                            {#if Icon}
-                                <span class="row-action-icon" aria-hidden="true">
-                                    <Icon />
-                                </span>
-                            {/if}
-                            <span>{label}</span>
-                            {#if isDisabled}
-                                <span class="sr-only">({disabledReason})</span>
-                            {/if}
-                        </button>
-                    </li>
+                {#each rowActionSections as section, sectionIndex (section.label ?? '__ungrouped__')}
+                    {#if section.label !== null}
+                        <li class="menu-title">
+                            <span>{section.label}</span>
+                        </li>
+                    {:else if sectionIndex > 0}
+                        <li><hr class="border-base-content/10 my-1" /></li>
+                    {/if}
+                    {#each section.actions as action (action.key)}
+                        {@const label = resolveActionLabel(config, format, action.key, action.key)}
+                        {@const Icon = action.icon}
+                        {@const disabledReason = action.isDisabled?.({ kind: 'row', item }) ?? false}
+                        {@const isDisabled = disabledReason !== false}
+                        <li class:disabled={isDisabled}>
+                            <button
+                                type="button"
+                                class={variantClass(action.variant)}
+                                disabled={isDisabled}
+                                title={isDisabled ? disabledReason : undefined}
+                                aria-disabled={isDisabled || undefined}
+                                onclick={() => onActionClick(action, disabledReason)}
+                            >
+                                {#if Icon}
+                                    <span class="row-action-icon" aria-hidden="true">
+                                        <Icon />
+                                    </span>
+                                {/if}
+                                <span>{label}</span>
+                                {#if isDisabled}
+                                    <span class="sr-only">({disabledReason})</span>
+                                {/if}
+                            </button>
+                        </li>
+                    {/each}
                 {/each}
             </ul>
         </details>

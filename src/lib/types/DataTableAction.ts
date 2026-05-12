@@ -75,6 +75,22 @@ export interface DataTableAction<Data = unknown> {
     rowVisible?: (item: Data) => boolean;
 
     /**
+     * Optional grouping key. Actions sharing a `group` render together in
+     * dropdown menus (row dropdown + bulk overflow), separated from other
+     * groups by a `<li class="menu-title">` header. Ungrouped actions come
+     * first; groups follow in first-occurrence order so the consumer's
+     * array order is preserved.
+     *
+     * The header label resolves through the message formatter via
+     * `actions.groups.<group>`, falling back to the raw group string —
+     * mirroring the lookup convention used by per-action labels.
+     *
+     * Has no effect on the bulk toolbar's primary buttons (those keep flat
+     * order regardless of grouping).
+     */
+    group?: string;
+
+    /**
      * Single-item handler. Used when the action is invoked from a row's
      * three-dot dropdown and an `onSingle` is defined. Receives the full row
      * object so the handler can read any property without a refetch.
