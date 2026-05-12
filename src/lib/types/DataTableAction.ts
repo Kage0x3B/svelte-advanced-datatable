@@ -10,6 +10,19 @@ import type { SelectionId } from './SelectionId.js';
 export type DataTableActionVariant = 'default' | 'primary' | 'destructive';
 
 /**
+ * Context passed to {@link DataTableAction.isDisabled}. Mirrors the row vs
+ * bulk dispatch split so a single predicate can express both
+ * "can't delete this archived item" and "can't delete more than 100 at once".
+ *
+ * Bulk invocations only include rows that are currently loaded into memory
+ * via `loadedItems` — cross-page selections may include extra `ids` for rows
+ * the consumer hasn't fetched yet.
+ */
+export type ActionDisabledContext<Data = unknown> =
+    | { kind: 'row'; item: Data }
+    | { kind: 'bulk'; ids: SelectionId[]; loadedItems: Data[] };
+
+/**
  * A registered action invokable from the row dropdown (single-item context),
  * the bulk selection toolbar (multi-item context), or both.
  *
@@ -78,6 +91,18 @@ export interface DataTableAction<Data = unknown> {
      * handler needs the full objects.
      */
     onMulti?: (ids: SelectionId[]) => void | Promise<void>;
+
+    /**
+     * Predicate evaluated for every render. Return a string to disable the
+     * action and surface that string as the button's `title` (and as
+     * accessible text for screen readers). Return `false` to keep the action
+     * enabled — that's the default when the field is omitted.
+     *
+     * Receives an {@link ActionDisabledContext} so the same predicate can
+     * cover both row-context (single `item`) and bulk-context (selection
+     * `ids` plus the subset of `loadedItems` currently in memory).
+     */
+    isDisabled?: (context: ActionDisabledContext<Data>) => string | false;
 
     /**
      * Whether to call `dataSource.refresh()` after the handler resolves.

@@ -53,7 +53,11 @@
         }
     }
 
-    async function onActionClick(action: DataTableAction<Record<string, unknown>>): Promise<void> {
+    async function onActionClick(
+        action: DataTableAction<Record<string, unknown>>,
+        disabledReason: string | false
+    ): Promise<void> {
+        if (disabledReason !== false) return;
         detailsEl?.removeAttribute('open');
         await runner.invoke(action, { kind: 'row', item, id });
     }
@@ -83,11 +87,16 @@
                 {#each rowActions as action (action.key)}
                     {@const label = resolveActionLabel(config, format, action.key, action.key)}
                     {@const Icon = action.icon}
-                    <li>
+                    {@const disabledReason = action.isDisabled?.({ kind: 'row', item }) ?? false}
+                    {@const isDisabled = disabledReason !== false}
+                    <li class:disabled={isDisabled}>
                         <button
                             type="button"
                             class={variantClass(action.variant)}
-                            onclick={() => onActionClick(action)}
+                            disabled={isDisabled}
+                            title={isDisabled ? disabledReason : undefined}
+                            aria-disabled={isDisabled || undefined}
+                            onclick={() => onActionClick(action, disabledReason)}
                         >
                             {#if Icon}
                                 <span class="row-action-icon" aria-hidden="true">
@@ -95,6 +104,9 @@
                                 </span>
                             {/if}
                             <span>{label}</span>
+                            {#if isDisabled}
+                                <span class="sr-only">({disabledReason})</span>
+                            {/if}
                         </button>
                     </li>
                 {/each}

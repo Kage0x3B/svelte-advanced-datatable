@@ -1,8 +1,10 @@
 <script lang="ts">
     import type { DataTableAction } from '$lib/types/DataTableAction.js';
+    import type { SelectionId } from '$lib/types/SelectionId.js';
     import {
         actionRunnerContext,
         configContext,
+        dataSourceContext,
         messageFormatterContext,
         selectionContext
     } from '$lib/util/context.js';
@@ -16,6 +18,20 @@
     const config = $derived(configContext.get().current);
     const format = $derived(messageFormatterContext.get().current);
     const runner = $derived(actionRunnerContext.get().current);
+    const dataSource = $derived(dataSourceContext.get().current);
+
+    /** Subset of the current selection that is also loaded into the active
+     * page — passed to `isDisabled` so a predicate can inspect whatever rows
+     * the consumer can actually see (cross-page selections only contribute
+     * `ids`). Mirrors the shape produced by `onSelectionChange.loadedItems`. */
+    const loadedSelectedItems = $derived.by(() => {
+        const items = (dataSource.queryResult.data?.items ?? []) as Record<string, unknown>[];
+        if (selection.count === 0) return [] as Record<string, unknown>[];
+        const idSet = new Set(selection.ids);
+        return items.filter((item) =>
+            idSet.has(item[config.dataUniquePropertyKey] as SelectionId)
+        );
+    });
 
     /** Bulk-eligible actions — only those with an `onMulti` handler and not
      * hidden in bulk context. The user opted into ID-only handlers, so
@@ -82,7 +98,23 @@
         }
     }
 
-    async function invoke(action: DataTableAction<Record<string, unknown>>): Promise<void> {
+    function disabledReasonFor(
+        action: DataTableAction<Record<string, unknown>>
+    ): string | false {
+        return (
+            action.isDisabled?.({
+                kind: 'bulk',
+                ids: selection.ids,
+                loadedItems: loadedSelectedItems
+            }) ?? false
+        );
+    }
+
+    async function invoke(
+        action: DataTableAction<Record<string, unknown>>,
+        disabledReason: string | false
+    ): Promise<void> {
+        if (disabledReason !== false) return;
         overflowDetailsEl?.removeAttribute('open');
         await runner.invoke(action, { kind: 'bulk', ids: selection.ids });
     }
@@ -101,12 +133,16 @@
         {#each primaryButtons as action (action.key)}
             {@const label = resolveActionLabel(config, format, action.key, action.key)}
             {@const Icon = action.icon}
+            {@const disabledReason = disabledReasonFor(action)}
+            {@const isDisabled = disabledReason !== false}
             <button
                 type="button"
                 class={variantBtnClass(action.variant)}
-                onclick={() => invoke(action)}
-                aria-label={label}
-                title={label}
+                disabled={isDisabled}
+                aria-disabled={isDisabled || undefined}
+                onclick={() => invoke(action, disabledReason)}
+                aria-label={isDisabled ? `${label} — ${disabledReason}` : label}
+                title={isDisabled ? disabledReason : label}
             >
                 {#if Icon}
                     <span class="action-icon" aria-hidden="true"><Icon /></span>
@@ -135,16 +171,24 @@
                     {#each overflowActions as action (action.key)}
                         {@const label = resolveActionLabel(config, format, action.key, action.key)}
                         {@const Icon = action.icon}
-                        <li>
+                        {@const disabledReason = disabledReasonFor(action)}
+                        {@const isDisabled = disabledReason !== false}
+                        <li class:disabled={isDisabled}>
                             <button
                                 type="button"
                                 class={variantMenuClass(action.variant)}
-                                onclick={() => invoke(action)}
+                                disabled={isDisabled}
+                                title={isDisabled ? disabledReason : undefined}
+                                aria-disabled={isDisabled || undefined}
+                                onclick={() => invoke(action, disabledReason)}
                             >
                                 {#if Icon}
                                     <span class="action-icon" aria-hidden="true"><Icon /></span>
                                 {/if}
                                 <span>{label}</span>
+                                {#if isDisabled}
+                                    <span class="sr-only">({disabledReason})</span>
+                                {/if}
                             </button>
                         </li>
                     {/each}
