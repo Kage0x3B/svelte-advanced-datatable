@@ -75,6 +75,23 @@ export interface DataTableAction<Data = unknown> {
     rowVisible?: (item: Data) => boolean;
 
     /**
+     * Override label for the bulk-toolbar context. Lets a single action
+     * read "Delete" in the per-row dropdown but "Delete 5 users" in the
+     * toolbar without wiring two labels through the formatter.
+     *
+     * - **string**: substituted via `{count}` interpolation.
+     *   `'Delete {count} users'` → `'Delete 5 users'`.
+     * - **function**: called with the current selection count and returns
+     *   the rendered label — the right tool for ICU-style pluralisation.
+     *
+     * Resolution order (when both this field and a translation entry
+     * exist): `function` → message-formatter `actions.<key>.bulkLabel` →
+     * `string` → fallback to the regular per-action label. Has no effect
+     * outside the bulk toolbar.
+     */
+    bulkLabel?: string | ((count: number) => string);
+
+    /**
      * Optional grouping key. Actions sharing a `group` render together in
      * dropdown menus (row dropdown + bulk overflow), separated from other
      * groups by a `<li class="menu-title">` header. Ungrouped actions come

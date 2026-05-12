@@ -46,6 +46,46 @@ export function resolveActionLabel(
 }
 
 /**
+ * Resolve the bulk-context label for an action — the text shown on the
+ * primary buttons and overflow items in the selection toolbar when the
+ * user has multiple rows selected. Falls back to the regular per-row
+ * label so consumers don't have to opt in.
+ *
+ * Resolution order (first hit wins):
+ *
+ * 1. `action.bulkLabel(count)` if it's a function — full programmatic
+ *    control, the right tool for ICU pluralisation.
+ * 2. `messageConfig.actions.<key>.bulkLabel` via the formatter, with
+ *    `{count}` interpolation. The translation-friendly form.
+ * 3. `action.bulkLabel` if it's a string, with `{count}` interpolation.
+ * 4. `resolveActionLabel(...)` — the regular label.
+ */
+export function resolveBulkActionLabel<Data>(
+    config: FullDataTableConfig<unknown>,
+    format: MessageFormatter,
+    action: DataTableAction<Data>,
+    count: number
+): string {
+    if (typeof action.bulkLabel === 'function') {
+        return action.bulkLabel(count);
+    }
+
+    const fromFormatter = format(`actions.${action.key}.bulkLabel`, {
+        default: MISSING_ACTION_LABEL,
+        values: { count }
+    });
+    if (fromFormatter !== undefined && fromFormatter !== MISSING_ACTION_LABEL) {
+        return fromFormatter;
+    }
+
+    if (typeof action.bulkLabel === 'string') {
+        return action.bulkLabel.replace(/\{count\}/g, String(count));
+    }
+
+    return resolveActionLabel(config, format, action.key, action.key, { count });
+}
+
+/**
  * One section in a grouped action menu — `null` label means the bucket has
  * no header (the ungrouped actions). Non-null labels render as a
  * `<li class="menu-title">` heading above the section's items.

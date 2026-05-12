@@ -50,12 +50,17 @@ export interface ActionMessageConfig {
      * value is the human-readable label shown in menu items, buttons, and
      * tooltips. Both forms are accepted — bare string for the terse case,
      * object form for parity with the per-column message shape.
+     *
+     * The object form accepts an optional `bulkLabel` used by the bulk
+     * toolbar; the placeholder `{count}` is substituted with the current
+     * selection size (e.g. `'Delete {count} users'`).
      */
     [actionKey: string]:
         | string
         | undefined
         | {
               label: string;
+              bulkLabel?: string;
           };
 }
 

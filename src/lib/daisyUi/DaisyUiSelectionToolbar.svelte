@@ -8,7 +8,11 @@
         messageFormatterContext,
         selectionContext
     } from '$lib/util/context.js';
-    import { groupActions, resolveActionLabel } from '$lib/util/actionLabelUtil.js';
+    import {
+        groupActions,
+        resolveActionLabel,
+        resolveBulkActionLabel
+    } from '$lib/util/actionLabelUtil.js';
     import { attachDetailsAutoClose } from '$lib/util/detailsAutoClose.svelte.js';
     import MoreVerticalIcon from '$lib/daisyUi/icons/MoreVerticalIcon.svelte';
     import XIcon from '$lib/daisyUi/icons/XIcon.svelte';
@@ -133,7 +137,7 @@
         <span class="text-sm font-medium whitespace-nowrap">{selectedCountLabel}</span>
 
         {#each primaryButtons as action (action.key)}
-            {@const label = resolveActionLabel(config, format, action.key, action.key)}
+            {@const label = resolveBulkActionLabel(config, format, action, selection.count)}
             {@const Icon = action.icon}
             {@const disabledReason = disabledReasonFor(action)}
             {@const isDisabled = disabledReason !== false}
@@ -179,7 +183,7 @@
                             <li><hr class="border-base-content/10 my-1" /></li>
                         {/if}
                         {#each section.actions as action (action.key)}
-                            {@const label = resolveActionLabel(config, format, action.key, action.key)}
+                            {@const label = resolveBulkActionLabel(config, format, action, selection.count)}
                             {@const Icon = action.icon}
                             {@const disabledReason = disabledReasonFor(action)}
                             {@const isDisabled = disabledReason !== false}
