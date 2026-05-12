@@ -6,6 +6,7 @@
     import {
         configContext,
         contextMenuContext,
+        dataSourceContext,
         rowActionsColumnEnabledContext,
         rowFocusContext,
         selectionContext,
@@ -25,6 +26,7 @@
     const rowFocus = $derived(rowFocusContext.get().current);
     const selection = $derived(selectionContext.get().current);
     const contextMenu = $derived(contextMenuContext.get().current);
+    const dataSource = $derived(dataSourceContext.get().current);
 
     interface Props {
         tableState: InternalDataTableState;
@@ -65,20 +67,43 @@
     });
 
     /** Right-click handler — opens the shared context menu at the cursor.
-     * If the selection chrome is enabled and this row isn't already
-     * selected, replace the selection with this row first (matches OS
-     * file-explorer behaviour: right-click selects the target). The bulk
-     * variant of the menu lands in a follow-up commit; for now every
-     * right-click opens the row menu. */
+     *
+     * Selection mirrors OS file-explorer rules:
+     * - If selection chrome is on and this row isn't selected, replace the
+     *   selection with this row.
+     * - If it *is* selected and other rows are too (count > 1), open the
+     *   bulk variant of the menu — preserving the existing multi-selection
+     *   so the user can act on the whole set.
+     * - Otherwise the row variant opens, with this row's `item` payload. */
     function onContextMenu(event: MouseEvent): void {
         if (!item) return;
         const id = item[config.dataUniquePropertyKey] as SelectionId;
         event.preventDefault();
-        if (selectionEnabled && !selection.has(id)) {
+        const wasInSelection = selectionEnabled && selection.has(id);
+        if (selectionEnabled && !wasInSelection) {
             selection.replaceAll([id]);
             rowFocus.anchor = index;
         }
         rowFocus.focusedIndex = index;
+
+        if (wasInSelection && selection.count > 1) {
+            const ids = selection.ids;
+            const idSet = new Set(ids);
+            const pageItems = (dataSource.queryResult.data?.items ?? []) as Record<
+                string,
+                unknown
+            >[];
+            const loadedItems = pageItems.filter((row) =>
+                idSet.has(row[config.dataUniquePropertyKey] as SelectionId)
+            );
+            contextMenu.show(event.clientX, event.clientY, {
+                kind: 'bulk',
+                ids,
+                loadedItems
+            });
+            return;
+        }
+
         contextMenu.show(event.clientX, event.clientY, { kind: 'row', item, id });
     }
 
