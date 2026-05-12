@@ -4,6 +4,7 @@
     import type { CustomSnippetProps } from '$lib/dataComponent/CustomComponentTypeProperties.js';
     import type { IDataSource } from '$lib/dataSource/IDataSource.js';
     import DataTable from '$lib/internal/index.js';
+    import { ContextMenuState } from '$lib/internal/contextMenuState.svelte.js';
     import { RowFocusState } from '$lib/internal/rowFocusState.svelte.js';
     import { SelectionState } from '$lib/internal/selectionState.svelte.js';
     import { createPersistedState, createStores, registerNamespaceCollisions } from '$lib/persistence/index.js';
@@ -12,6 +13,7 @@
     import {
         actionRunnerContext,
         configContext,
+        contextMenuContext,
         dataSourceContext,
         messageFormatterContext,
         rowActionsColumnEnabledContext,
@@ -33,6 +35,7 @@
     import type { ClassValue } from 'svelte/elements';
     import { fade } from 'svelte/transition';
     import type { ThemeSize } from '../../routes/util/type/Theme.js';
+    import DaisyUiContextMenu from './DaisyUiContextMenu.svelte';
     import DaisyUiDataRow from './DaisyUiDataRow.svelte';
     import DaisyUiDataTableExport from './DaisyUiDataTableExport.svelte';
     import DaisyUiDataTablePagination from './DaisyUiDataTablePagination.svelte';
@@ -273,6 +276,14 @@
      * by data-source updates. */
     const rowFocus = new RowFocusState();
     rowFocusContext.set(box.with(() => rowFocus));
+
+    /** Single right-click / long-press context menu for this table. The
+     * `<DaisyUiContextMenu />` component below subscribes via context;
+     * rows publish open events via the same context. */
+    const contextMenu = new ContextMenuState<Record<string, unknown>>();
+    contextMenuContext.set(
+        box.with(() => contextMenu as ContextMenuState<unknown>)
+    );
 
     /** Reset the focused row whenever the visible page changes — otherwise
      * paginating from page 3 with row 8 focused would land on page 4 with
@@ -1087,6 +1098,8 @@
         {/if}
     {/snippet}
 </DataTable.Root>
+
+<DaisyUiContextMenu />
 
 <style>
     .table-container {

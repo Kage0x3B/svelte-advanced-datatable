@@ -1,3 +1,4 @@
+import type { ContextMenuState } from '$lib/internal/contextMenuState.svelte.js';
 import type { IDataSource } from '$lib/dataSource/IDataSource.js';
 import type { RowFocusState } from '$lib/internal/rowFocusState.svelte.js';
 import type { SelectionState } from '$lib/internal/selectionState.svelte.js';
@@ -64,3 +65,13 @@ export const actionRunnerContext = new Context<ReadableBox<ActionRunner>>('DATAT
  * — only consulted when the table or one of its rows is focused.
  */
 export const rowFocusContext = new Context<ReadableBox<RowFocusState>>('DATATABLE_ROW_FOCUS_CONTEXT_KEY');
+
+/**
+ * Reactive context-menu state shared between rows (which open the menu via
+ * right-click / long-press) and the single `DaisyUiContextMenu` component
+ * mounted at the table root. Always set when the dataTable mounts —
+ * dormant unless the user opens the menu.
+ */
+export const contextMenuContext = new Context<ReadableBox<ContextMenuState<unknown>>>(
+    'DATATABLE_CONTEXT_MENU_CONTEXT_KEY'
+);

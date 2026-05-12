@@ -2,10 +2,13 @@
     import type { CustomSnippetProps } from '$lib/dataComponent/CustomComponentTypeProperties.js';
     import DataTable from '$lib/internal/index.js';
     import type { InternalDataTableState } from '$lib/types/DataTableState.js';
+    import type { SelectionId } from '$lib/types/SelectionId.js';
     import {
         configContext,
+        contextMenuContext,
         rowActionsColumnEnabledContext,
         rowFocusContext,
+        selectionContext,
         selectionEnabledContext
     } from '$lib/util/context.js';
     import { tick } from 'svelte';
@@ -20,6 +23,8 @@
     const selectionEnabled = $derived(selectionEnabledContext.get().current);
     const rowActionsColumnEnabled = $derived(rowActionsColumnEnabledContext.get().current);
     const rowFocus = $derived(rowFocusContext.get().current);
+    const selection = $derived(selectionContext.get().current);
+    const contextMenu = $derived(contextMenuContext.get().current);
 
     interface Props {
         tableState: InternalDataTableState;
@@ -58,6 +63,24 @@
             }
         });
     });
+
+    /** Right-click handler — opens the shared context menu at the cursor.
+     * If the selection chrome is enabled and this row isn't already
+     * selected, replace the selection with this row first (matches OS
+     * file-explorer behaviour: right-click selects the target). The bulk
+     * variant of the menu lands in a follow-up commit; for now every
+     * right-click opens the row menu. */
+    function onContextMenu(event: MouseEvent): void {
+        if (!item) return;
+        const id = item[config.dataUniquePropertyKey] as SelectionId;
+        event.preventDefault();
+        if (selectionEnabled && !selection.has(id)) {
+            selection.replaceAll([id]);
+            rowFocus.anchor = index;
+        }
+        rowFocus.focusedIndex = index;
+        contextMenu.show(event.clientX, event.clientY, { kind: 'row', item, id });
+    }
 
     /** Resolved column order (user-chosen overlaid on config order), then
      * filtered by visibility. Mirrors the header's iteration so the cell
@@ -115,6 +138,7 @@
             class:highlighted
             tabindex={isFocused ? 0 : -1}
             onclick={rowOnClick}
+            oncontextmenu={onContextMenu}
             onfocus={() => {
                 rowFocus.focusedIndex = index;
             }}
