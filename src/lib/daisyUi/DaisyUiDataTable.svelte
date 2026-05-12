@@ -105,6 +105,34 @@
          */
         settingsExtra?: Snippet;
 
+        /**
+         * Extra menu items rendered above the auto-generated action list
+         * inside the right-click / long-press context menu. Use it to
+         * splice in app-specific entries (e.g. "Open in new tab",
+         * "Copy ID") that don't fit the `DataTableAction` shape.
+         *
+         * Receives the active invocation — `kind: 'row'` carries the row
+         * `item` plus its `id`; `kind: 'bulk'` carries the selected `ids`
+         * and the subset currently loaded into the active page. Call
+         * `close()` from a click handler to dismiss the menu after acting.
+         *
+         * Rendered with a divider between the extras and the auto list
+         * when both are present; the slot is hidden when the menu has no
+         * actions and no extras to show.
+         */
+        contextMenuExtra?: Snippet<
+            [
+                {
+                    kind: 'row' | 'bulk';
+                    item?: Record<string, unknown>;
+                    id?: SelectionId;
+                    ids: SelectionId[];
+                    loadedItems: Record<string, unknown>[];
+                    close: () => void;
+                }
+            ]
+        >;
+
         initialState?: DataTableState;
         captureState?: (state: DataTableState) => void;
 
@@ -143,6 +171,7 @@
         empty,
         errorState,
         settingsExtra,
+        contextMenuExtra,
         initialState,
         captureState,
         selectedIds = $bindable<SelectionId[]>([]),
@@ -1099,7 +1128,7 @@
     {/snippet}
 </DataTable.Root>
 
-<DaisyUiContextMenu />
+<DaisyUiContextMenu extra={contextMenuExtra} />
 
 <style>
     .table-container {

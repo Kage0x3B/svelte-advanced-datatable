@@ -1,6 +1,7 @@
 <script lang="ts">
     import type { ContextMenuInvocation, ContextMenuState } from '$lib/internal/contextMenuState.svelte.js';
     import type { DataTableAction } from '$lib/types/DataTableAction.js';
+    import type { SelectionId } from '$lib/types/SelectionId.js';
     import {
         actionRunnerContext,
         configContext,
@@ -8,14 +9,54 @@
         messageFormatterContext
     } from '$lib/util/context.js';
     import { groupActions, resolveActionLabel } from '$lib/util/actionLabelUtil.js';
+    import type { Snippet } from 'svelte';
 
     type Item = Record<string, unknown>;
+
+    interface ExtraSnippetArgs {
+        kind: 'row' | 'bulk';
+        item?: Item;
+        id?: SelectionId;
+        ids: SelectionId[];
+        loadedItems: Item[];
+        close: () => void;
+    }
+
+    interface Props {
+        extra?: Snippet<[ExtraSnippetArgs]>;
+    }
+
+    let { extra }: Props = $props();
 
     const config = $derived(configContext.get().current);
     const format = $derived(messageFormatterContext.get().current);
     const runner = $derived(actionRunnerContext.get().current);
     const menu = $derived(contextMenuContext.get().current as unknown as ContextMenuState<Item>);
     const invocation = $derived(menu.invocation as ContextMenuInvocation<Item> | null);
+
+    /** Args passed to the optional `extra` snippet. Normalises the
+     * invocation's row vs bulk shapes into one record so the consumer can
+     * destructure once regardless of which path opened the menu. */
+    const extraArgs = $derived.by<ExtraSnippetArgs | null>(() => {
+        const inv = invocation;
+        if (!inv) return null;
+        if (inv.kind === 'row') {
+            return {
+                kind: 'row',
+                item: inv.item,
+                id: inv.id,
+                ids: [inv.id],
+                loadedItems: [inv.item],
+                close: () => menu.close()
+            };
+        }
+        return {
+            kind: 'bulk',
+            ids: inv.ids,
+            loadedItems: inv.loadedItems,
+            close: () => menu.close()
+        };
+    });
 
     /** Action set for the active invocation. Row-context filters mirror
      * `DaisyUiRowActionsCell` (hideInRow / has handler / rowVisible),
@@ -133,7 +174,7 @@
     }
 </script>
 
-{#if menu.open && actions.length > 0}
+{#if menu.open && (actions.length > 0 || (extra && extraArgs))}
     <div
         bind:this={menuEl}
         class="datatable-context-menu fixed z-50"
@@ -142,6 +183,12 @@
         role="menu"
     >
         <ul class="menu bg-base-100 rounded-box w-52 p-2 shadow">
+            {#if extra && extraArgs}
+                {@render extra(extraArgs)}
+                {#if actions.length > 0}
+                    <li><hr class="border-base-content/10 my-1" /></li>
+                {/if}
+            {/if}
             {#each sections as section, sectionIndex (section.label ?? '__ungrouped__')}
                 {#if section.label !== null}
                     <li class="menu-title">
