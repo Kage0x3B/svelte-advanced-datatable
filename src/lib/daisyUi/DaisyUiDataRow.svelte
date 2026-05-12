@@ -118,6 +118,10 @@
             onfocus={() => {
                 rowFocus.focusedIndex = index;
             }}
+            onpointerdown={() => {
+                rowFocus.focusedIndex = index;
+                rowFocus.anchor = index;
+            }}
         >
             {#if item}
                 {#if selectionEnabled}

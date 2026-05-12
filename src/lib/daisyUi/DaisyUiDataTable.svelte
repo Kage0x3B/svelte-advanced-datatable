@@ -607,12 +607,21 @@
 
     /**
      * Roving-tabindex keyboard handler. Wired to the <table> element inside
-     * the snippet so it has access to the live items count + total page
-     * count without prop-drilling them through context. Plain rows handle
-     * arrow / Home / End / PageUp / PageDown — typing into a cell-embedded
-     * input or contenteditable falls through to the default behaviour.
+     * the snippet so it has access to the live items array, total page
+     * count, and modal-toggle callback without prop-drilling them through
+     * context. Plain rows handle arrow / Home / End / PageUp / PageDown
+     * navigation, plus Space (toggle selection), Shift+Space (extend
+     * selection from anchor), and Enter (default action). Typing into a
+     * cell-embedded input or contenteditable falls through to default
+     * behaviour.
      */
-    function handleTableKeydown(event: KeyboardEvent, total: number, pageCount: number): void {
+    function handleTableKeydown(
+        event: KeyboardEvent,
+        items: readonly Record<string, unknown>[],
+        pageCount: number,
+        open: (index: number) => void
+    ): void {
+        const total = items.length;
         if (total <= 0) return;
         const target = event.target as HTMLElement | null;
         if (!target) return;
@@ -648,6 +657,91 @@
                     event.preventDefault();
                 }
                 return;
+            case ' ':
+                if (!selectionEnabled) return;
+                if (event.shiftKey) {
+                    extendSelectionFromAnchor(items);
+                } else {
+                    toggleSelectionAtFocus(items);
+                }
+                event.preventDefault();
+                return;
+            case 'Enter':
+                triggerDefaultAction(items, open, target);
+                event.preventDefault();
+                return;
+        }
+    }
+
+    /** Toggle selection on the focused row + reset the Shift-anchor to it.
+     * Mirrors a plain checkbox click. No-op for rows the consumer marked
+     * non-selectable via `selection.selectableRows`. */
+    function toggleSelectionAtFocus(items: readonly Record<string, unknown>[]): void {
+        const item = items[rowFocus.focusedIndex];
+        if (!item) return;
+        if (!selection.isItemSelectable(item)) return;
+        const id = item[config.dataUniquePropertyKey] as SelectionId;
+        selection.toggle(id);
+        rowFocus.anchor = rowFocus.focusedIndex;
+    }
+
+    /** Additive range select from the Shift-anchor to the focused row. The
+     * anchor is set on plain Space (above) and on plain row clicks; if no
+     * anchor exists yet (consumer just landed via Tab/Arrow) the focused
+     * row alone is toggled instead. Off-page selections are preserved. */
+    function extendSelectionFromAnchor(items: readonly Record<string, unknown>[]): void {
+        if (rowFocus.anchor === null) {
+            toggleSelectionAtFocus(items);
+            return;
+        }
+        const start = Math.min(rowFocus.anchor, rowFocus.focusedIndex);
+        const end = Math.max(rowFocus.anchor, rowFocus.focusedIndex);
+        for (let i = start; i <= end; i++) {
+            const item = items[i];
+            if (!item) continue;
+            if (!selection.isItemSelectable(item)) continue;
+            selection.select(item[config.dataUniquePropertyKey] as SelectionId);
+        }
+    }
+
+    /** Enter on a focused row — the keyboard equivalent of a row click.
+     * Mirrors `onItemClick` > `modalComponent` > `buildItemUrl` priority
+     * used by `InternalDataRow.rowOnClick` (cases 1-2) and the cell-level
+     * `<a href>` wrapping (case 3). For the link case we click the first
+     * `<a href>` inside the row so Ctrl/Meta-Enter routes through the same
+     * browser handling as Ctrl/Meta-click. */
+    function triggerDefaultAction(
+        items: readonly Record<string, unknown>[],
+        open: (index: number) => void,
+        target: HTMLElement
+    ): void {
+        const item = items[rowFocus.focusedIndex];
+        if (!item) return;
+        // FullDataTableConfig types these as required because they hang off
+        // `Required<…>`, but `mergeDataTableConfigDefaults` actually leaves
+        // them undefined when the consumer doesn't supply them — so the
+        // truthy checks below need an explicit cast to be honest about the
+        // runtime shape.
+        const onItemClick = config.onItemClick as ((item: unknown) => void) | undefined;
+        const modalComponent = config.modalComponent as unknown;
+        const buildItemUrl = config.buildItemUrl as ((item: unknown) => string) | undefined;
+        if (onItemClick) {
+            onItemClick(item);
+            return;
+        }
+        if (modalComponent) {
+            const isCurrentlyOpen = tableState.currentOpenIndex === rowFocus.focusedIndex;
+            open(isCurrentlyOpen ? -1 : rowFocus.focusedIndex);
+            return;
+        }
+        if (buildItemUrl) {
+            const row = target.closest<HTMLTableRowElement>('tr.datatable-row');
+            const link = row?.querySelector<HTMLAnchorElement>('a[href]');
+            if (link) {
+                link.click();
+            } else {
+                window.location.assign(buildItemUrl(item));
+            }
         }
     }
 </script>
@@ -855,7 +949,13 @@
                     },
                     classExport
                 ]}
-                onkeydown={(event) => handleTableKeydown(event, items.length, pageAmount)}
+                onkeydown={(event) =>
+                    handleTableKeydown(
+                        event,
+                        items as readonly Record<string, unknown>[],
+                        pageAmount,
+                        open
+                    )}
             >
                 {#if config.showTableHeader}
                     <thead>
