@@ -2,11 +2,7 @@
     import type { CustomSnippetProps } from '$lib/dataComponent/CustomComponentTypeProperties.js';
     import DataTable from '$lib/internal/index.js';
     import type { InternalDataTableState } from '$lib/types/DataTableState.js';
-    import {
-        configContext,
-        rowActionsColumnEnabledContext,
-        selectionEnabledContext
-    } from '$lib/util/context.js';
+    import { configContext, rowActionsColumnEnabledContext, selectionEnabledContext } from '$lib/util/context.js';
     import { flip } from 'svelte/animate';
     import { slide } from 'svelte/transition';
     import DaisyUiBadgeWrapper from '$lib/daisyUi/DaisyUiBadgeWrapper.svelte';
@@ -62,9 +58,7 @@
      * open-modal margin/content rows so they stretch across the same width
      * as the data row. */
     const columnCount = $derived(
-        visibleColumnEntries.length +
-            (selectionEnabled ? 1 : 0) +
-            (rowActionsColumnEnabled ? 1 : 0)
+        visibleColumnEntries.length + (selectionEnabled ? 1 : 0) + (rowActionsColumnEnabled ? 1 : 0)
     );
 </script>
 
@@ -72,7 +66,9 @@
     {#snippet children({ isOpen, rowOnClick, toggle })}
         {#if isOpen}
             <tr class="margin-row top border-b-0">
-                <td colspan={columnCount} transition:slide|local>&nbsp;</td>
+                <td class="border-none" colspan={columnCount}>
+                    <div transition:slide|local>&nbsp;</div>
+                </td>
             </tr>
         {/if}
         <tr
@@ -126,7 +122,7 @@
         </tr>
         {#if isOpen}
             <tr class="datatable-modal-container border-0 shadow-md">
-                <td colspan={columnCount} transition:slide|local>
+                <td class="border-none" colspan={columnCount}>
                     <div
                         class="datatable-modal border-b border-l border-r border-base-content/5 rounded-b-box"
                         transition:slide|local
@@ -136,7 +132,9 @@
                 </td>
             </tr>
             <tr class="margin-row bottom border-b-0">
-                <td colspan={columnCount} transition:slide|local>&nbsp;</td>
+                <td colspan={columnCount}>
+                    <div transition:slide|local>&nbsp;</div>
+                </td>
             </tr>
         {/if}
     {/snippet}
