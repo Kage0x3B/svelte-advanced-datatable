@@ -354,6 +354,32 @@
         }
     });
 
+    /** Announce result count to assistive tech once the search input has
+     * actually changed and the data source has settled with a totalCount.
+     * Bound to `searchInput`, not to every data refresh — pagination and
+     * sort changes don't re-announce. The comparison is against the last
+     * *announced* search input (not the keystroke input) so a debounced
+     * data source only triggers one announcement per finished query. */
+    let lastAnnouncedSearch: string | null = null;
+    $effect(() => {
+        const searchInput = tableState.searchInput;
+        const total = dataSource.queryResult.data?.totalCount;
+        if (total === undefined) return;
+        if (searchInput === lastAnnouncedSearch) return;
+        if (lastAnnouncedSearch === null) {
+            lastAnnouncedSearch = searchInput;
+            return;
+        }
+        lastAnnouncedSearch = searchInput;
+        const fallback = total === 1 ? '1 result' : `${total} results`;
+        announcer.announce(
+            format('dataTable.aria.searchResults', {
+                default: fallback,
+                values: { count: total }
+            }) ?? fallback
+        );
+    });
+
     // Same page-1 reset for items-per-page changes — otherwise switching from
     // 10 to 100 items can land on a now-out-of-range page.
     let lastObservedItemsPerPage = tableState.itemsPerPage;
