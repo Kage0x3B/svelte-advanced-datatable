@@ -7,6 +7,7 @@
         messageFormatterContext
     } from '$lib/util/context.js';
     import { groupActions, resolveActionLabel } from '$lib/util/actionLabelUtil.js';
+    import { formatShortcut } from '$lib/util/actionShortcutUtil.js';
     import { attachDetailsAutoClose } from '$lib/util/detailsAutoClose.svelte.js';
     import MoreVerticalIcon from '$lib/daisyUi/icons/MoreVerticalIcon.svelte';
 
@@ -114,6 +115,11 @@
                                     </span>
                                 {/if}
                                 <span>{label}</span>
+                                {#if action.shortcut}
+                                    <kbd class="ml-auto font-mono text-xs opacity-60">
+                                        {formatShortcut(action.shortcut)}
+                                    </kbd>
+                                {/if}
                                 {#if isDisabled}
                                     <span class="sr-only">({disabledReason})</span>
                                 {/if}

@@ -9,6 +9,7 @@
         messageFormatterContext
     } from '$lib/util/context.js';
     import { groupActions, resolveActionLabel } from '$lib/util/actionLabelUtil.js';
+    import { formatShortcut } from '$lib/util/actionShortcutUtil.js';
     import type { Snippet } from 'svelte';
 
     type Item = Record<string, unknown>;
@@ -217,6 +218,11 @@
                                 </span>
                             {/if}
                             <span>{label}</span>
+                            {#if action.shortcut}
+                                <kbd class="ml-auto font-mono text-xs opacity-60">
+                                    {formatShortcut(action.shortcut)}
+                                </kbd>
+                            {/if}
                             {#if isDisabled}
                                 <span class="sr-only">({disabledReason})</span>
                             {/if}
