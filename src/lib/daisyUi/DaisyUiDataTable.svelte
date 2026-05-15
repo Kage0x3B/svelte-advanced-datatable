@@ -27,6 +27,7 @@
     import { createMessageFormatter } from '$lib/util/messageFormatterUtil.svelte.js';
     import { invokeAction, type ActionInvocation } from '$lib/util/invokeAction.js';
     import { extendSelectionRange } from '$lib/util/selectionRangeUtil.js';
+    import { matchesShortcut, parseShortcut } from '$lib/util/actionShortcutUtil.js';
     import type { DataTableAction } from '$lib/types/DataTableAction.js';
     import type { SelectionId } from '$lib/types/SelectionId.js';
     import { untrack } from 'svelte';
@@ -712,6 +713,55 @@
                 event.preventDefault();
                 return;
         }
+
+        if (dispatchActionShortcut(event, items)) return;
+    }
+
+    /** Match the keydown event against `config.actions[].shortcut`.
+     * First-match-wins (config-array order). Returns `true` when an action
+     * was dispatched (or matched-but-disabled and silently swallowed) so
+     * the caller knows the event was consumed. Run after the built-in
+     * keys above so reserved navigation keys always win. */
+    function dispatchActionShortcut(
+        event: KeyboardEvent,
+        items: readonly Record<string, unknown>[]
+    ): boolean {
+        const actions = config.actions as DataTableAction<Record<string, unknown>>[];
+        for (const action of actions) {
+            if (!action.shortcut) continue;
+            let parsed;
+            try {
+                parsed = parseShortcut(action.shortcut);
+            } catch {
+                continue;
+            }
+            if (!matchesShortcut(event, parsed)) continue;
+
+            const useBulk = selection.count > 1 && action.onMulti !== undefined;
+            if (useBulk) {
+                const ids = selection.ids;
+                const idSet = new Set(ids);
+                const loadedItems = items.filter((row) =>
+                    idSet.has(row[config.dataUniquePropertyKey] as SelectionId)
+                );
+                const reason = action.isDisabled?.({ kind: 'bulk', ids, loadedItems }) ?? false;
+                event.preventDefault();
+                if (reason !== false) return true;
+                void actionRunner.invoke(action, { kind: 'bulk', ids });
+                return true;
+            }
+
+            const item = items[rowFocus.focusedIndex];
+            if (!item) return false;
+            if (!action.onSingle && !action.onMulti) return false;
+            const id = item[config.dataUniquePropertyKey] as SelectionId;
+            const reason = action.isDisabled?.({ kind: 'row', item }) ?? false;
+            event.preventDefault();
+            if (reason !== false) return true;
+            void actionRunner.invoke(action, { kind: 'row', item, id });
+            return true;
+        }
+        return false;
     }
 
     /** Toggle selection on the focused row + reset the Shift-anchor to it.
