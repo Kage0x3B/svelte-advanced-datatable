@@ -1,5 +1,6 @@
 import type { ContextMenuState } from '$lib/internal/contextMenuState.svelte.js';
 import type { IDataSource } from '$lib/dataSource/IDataSource.js';
+import type { LiveAnnouncer } from '$lib/internal/liveAnnouncer.svelte.js';
 import type { RowFocusState } from '$lib/internal/rowFocusState.svelte.js';
 import type { SelectionState } from '$lib/internal/selectionState.svelte.js';
 import type { MessageFormatter } from '$lib/types/MessageFormatter.js';
@@ -74,4 +75,14 @@ export const rowFocusContext = new Context<ReadableBox<RowFocusState>>('DATATABL
  */
 export const contextMenuContext = new Context<ReadableBox<ContextMenuState<unknown>>>(
     'DATATABLE_CONTEXT_MENU_CONTEXT_KEY'
+);
+
+/**
+ * Polite ARIA live-region announcer shared by the table chrome (sort
+ * changes, search result counts). Always set when the dataTable mounts.
+ * One instance per table — `DaisyUiLiveRegion` reads `announcer.message`
+ * and renders it inside an sr-only `role="status" aria-live="polite"` div.
+ */
+export const liveAnnouncerContext = new Context<ReadableBox<LiveAnnouncer>>(
+    'DATATABLE_LIVE_ANNOUNCER_CONTEXT_KEY'
 );

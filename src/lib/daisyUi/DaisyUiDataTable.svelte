@@ -5,6 +5,7 @@
     import type { IDataSource } from '$lib/dataSource/IDataSource.js';
     import DataTable from '$lib/internal/index.js';
     import { ContextMenuState } from '$lib/internal/contextMenuState.svelte.js';
+    import { LiveAnnouncer } from '$lib/internal/liveAnnouncer.svelte.js';
     import { RowFocusState } from '$lib/internal/rowFocusState.svelte.js';
     import { SelectionState } from '$lib/internal/selectionState.svelte.js';
     import { createPersistedState, createStores, registerNamespaceCollisions } from '$lib/persistence/index.js';
@@ -15,6 +16,7 @@
         configContext,
         contextMenuContext,
         dataSourceContext,
+        liveAnnouncerContext,
         messageFormatterContext,
         rowActionsColumnEnabledContext,
         rowFocusContext,
@@ -42,6 +44,7 @@
     import DaisyUiDataTableExport from './DaisyUiDataTableExport.svelte';
     import DaisyUiDataTablePagination from './DaisyUiDataTablePagination.svelte';
     import DaisyUiDataTableSettings from './DaisyUiDataTableSettings.svelte';
+    import DaisyUiLiveRegion from './DaisyUiLiveRegion.svelte';
     import DaisyUiRowActionsHeaderCell from './DaisyUiRowActionsHeaderCell.svelte';
     import DaisyUiSelectionHeaderCell from './DaisyUiSelectionHeaderCell.svelte';
     import DaisyUiSelectionToolbar from './DaisyUiSelectionToolbar.svelte';
@@ -316,6 +319,12 @@
         box.with(() => contextMenu as ContextMenuState<unknown>)
     );
 
+    /** Polite ARIA live-region producer. Drives the sr-only
+     * `<DaisyUiLiveRegion />` mounted at the table root for sort + search
+     * announcements. */
+    const announcer = new LiveAnnouncer();
+    liveAnnouncerContext.set(box.with(() => announcer));
+
     /** Reset the focused row whenever the visible page changes — otherwise
      * paginating from page 3 with row 8 focused would land on page 4 with
      * stale focus past the new items array. Reads `currentPage` and the
@@ -401,6 +410,15 @@
         if (tableState.sortColumnKey === key && tableState.sortDirection) return tableState.sortDirection;
         const entry = tableState.additionalSort.find((entry) => entry.column === key);
         return entry ? entry.direction : false;
+    }
+
+    /** ARIA-sort value for a header cell. `'none'` is the default per spec
+     * — applied to every sortable header that isn't currently sorted. */
+    function ariaSortFor(key: string): 'ascending' | 'descending' | 'none' {
+        const dir = sortDirectionFor(key);
+        if (dir === 'asc') return 'ascending';
+        if (dir === 'desc') return 'descending';
+        return 'none';
     }
 
     /** Move a column up or down in the persisted order. Operates on the
@@ -786,7 +804,7 @@
             return;
         }
         extendSelectionRange(
-            selection,
+            selection as SelectionState<unknown>,
             items,
             rowFocus.anchor,
             rowFocus.focusedIndex,
@@ -1064,14 +1082,41 @@
                                 {@const sortPriority = sortPriorityFor(key)}
                                 <th
                                     scope="col"
+                                    aria-sort={colProp.sortable ? ariaSortFor(key) : undefined}
                                     class="datatable-th whitespace-normal"
                                     class:w-12={key === 'actions' && userFraction === undefined}
                                     style:width={renderedPx !== null ? `${renderedPx.toFixed(2)}px` : null}
                                     style:min-width={renderedPx !== null ? `${renderedPx.toFixed(2)}px` : null}
                                     data-column-key={key}
                                     animate:flip={{ duration: 200 }}
-                                    onclick={(event) =>
-                                        colProp.sortable && toggleSorting(key, event.shiftKey)}
+                                    onclick={(event) => {
+                                        if (!colProp.sortable) return;
+                                        toggleSorting(key, event.shiftKey);
+                                        const columnLabel =
+                                            format(`dataTable.${config.type}.${key}.label`, {
+                                                default: key
+                                            }) ?? key;
+                                        const dir = sortDirectionFor(key);
+                                        const dirLabel =
+                                            dir === 'asc'
+                                                ? (format('dataTable.aria.sortAscending', {
+                                                      default: 'ascending'
+                                                  }) ?? 'ascending')
+                                                : dir === 'desc'
+                                                  ? (format('dataTable.aria.sortDescending', {
+                                                        default: 'descending'
+                                                    }) ?? 'descending')
+                                                  : (format('dataTable.aria.sortNone', {
+                                                        default: 'unsorted'
+                                                    }) ?? 'unsorted');
+                                        const fallback = `Sorted by ${columnLabel}, ${dirLabel}`;
+                                        announcer.announce(
+                                            format('dataTable.aria.sortAnnouncement', {
+                                                default: fallback,
+                                                values: { column: columnLabel, direction: dirLabel }
+                                            }) ?? fallback
+                                        );
+                                    }}
                                 >
                                     <div class="flex flex-row items-center">
                                         <span class="mr-2">
@@ -1180,6 +1225,7 @@
 </DataTable.Root>
 
 <DaisyUiContextMenu extra={contextMenuExtra} />
+<DaisyUiLiveRegion />
 
 <style>
     .table-container {
