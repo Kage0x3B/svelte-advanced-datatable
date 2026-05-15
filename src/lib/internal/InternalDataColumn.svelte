@@ -26,6 +26,23 @@
     const columnSnippetName = $derived((key + 'Snippet') as `${string}Snippet`);
 </script>
 
+<style>
+    /* Visually hidden text alternative for icon-only renderings (boolean
+       check/cross). Inlined so the rule survives consumer setups without
+       Tailwind preflight. */
+    .datatable-sr-only {
+        position: absolute;
+        width: 1px;
+        height: 1px;
+        padding: 0;
+        margin: -1px;
+        overflow: hidden;
+        clip: rect(0, 0, 0, 0);
+        white-space: nowrap;
+        border: 0;
+    }
+</style>
+
 <!-- It's better for performance to generate some fields for easy types (string, int, enum, bool, ..) with a simple if -->
 {#if colProps.formatValue}
     {#if colProps.formatValueEnableHtml}
@@ -54,8 +71,14 @@
     <!-- Comparison with two equals intended!! -->
     {#if (!colProps.inverted && item[key] == (colProps.truthy ?? true)) || (colProps.inverted && item[key] != (colProps.truthy ?? true))}
         <IconComponent name="check" color="green" />
+        <span class="datatable-sr-only">
+            {format('dataTable.aria.boolean.true', { default: 'Yes' }) ?? 'Yes'}
+        </span>
     {:else}
         <IconComponent name="cross" color="red" />
+        <span class="datatable-sr-only">
+            {format('dataTable.aria.boolean.false', { default: 'No' }) ?? 'No'}
+        </span>
     {/if}
 {:else if colProps.type === ComponentType.ENUM}
     <BadgeComponent
