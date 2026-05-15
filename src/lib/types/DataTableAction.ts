@@ -138,6 +138,26 @@ export interface DataTableAction<Data = unknown> {
     isDisabled?: (context: ActionDisabledContext<Data>) => string | false;
 
     /**
+     * Keyboard shortcut bound while the table or one of its rows holds
+     * focus. The string is parsed as `+`-separated tokens with the last
+     * token being the key. Modifiers: `Shift`, `Alt` / `Option`, `Ctrl` /
+     * `Control`, `Cmd` / `Meta` / `Super`, and `Mod` (auto-resolves to
+     * `Cmd` on macOS and `Ctrl` everywhere else).
+     *
+     * Examples: `'Delete'`, `'Mod+E'`, `'Shift+Mod+D'`, `'/'`.
+     *
+     * Dispatch mirrors right-click: a multi-row selection fires the
+     * action's `onMulti`, otherwise the focused row is treated as a
+     * single-row invocation. Disabled actions (per {@link isDisabled})
+     * silently swallow the shortcut. Conflicts between two actions are
+     * resolved by `config.actions` order — first match wins.
+     *
+     * Shortcuts never fire while a text-entry widget inside a cell is
+     * focused (input / textarea / select / contenteditable).
+     */
+    shortcut?: string;
+
+    /**
      * Whether to call `dataSource.refresh()` after the handler resolves.
      * Defaults to `true` — the common case is a mutation that needs to
      * re-render the table.
