@@ -50,6 +50,7 @@
             {
                 key: 'edit',
                 icon: PencilIcon,
+                shortcut: 'Mod+E',
                 isDisabled: (ctx) =>
                     ctx.kind === 'row' && ctx.item.id === 1
                         ? 'Cannot edit the seed user'
@@ -73,6 +74,7 @@
                 variant: 'destructive',
                 primary: true,
                 group: 'Danger',
+                shortcut: 'Delete',
                 bulkLabel: (count) => `Delete ${count} user${count === 1 ? '' : 's'}`,
                 isDisabled: (ctx) =>
                     ctx.kind === 'bulk' && ctx.ids.length > 5
