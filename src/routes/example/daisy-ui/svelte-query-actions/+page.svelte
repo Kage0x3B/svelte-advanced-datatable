@@ -50,6 +50,10 @@
             {
                 key: 'edit',
                 icon: PencilIcon,
+                isDisabled: (ctx) =>
+                    ctx.kind === 'row' && ctx.item.id === 1
+                        ? 'Cannot edit the seed user'
+                        : false,
                 onSingle: (item) => {
                     lastAction = `Edit user #${item.id} (${item.userName})`;
                 }
@@ -58,6 +62,7 @@
                 key: 'archive',
                 icon: ArchiveIcon,
                 primary: true,
+                bulkLabel: (count) => `Archive ${count} user${count === 1 ? '' : 's'}`,
                 onMulti: (ids) => {
                     lastAction = `Archive ${ids.length} user(s): [${ids.join(', ')}]`;
                 }
@@ -67,6 +72,12 @@
                 icon: TrashIcon,
                 variant: 'destructive',
                 primary: true,
+                group: 'Danger',
+                bulkLabel: (count) => `Delete ${count} user${count === 1 ? '' : 's'}`,
+                isDisabled: (ctx) =>
+                    ctx.kind === 'bulk' && ctx.ids.length > 5
+                        ? 'Refusing to delete more than 5 at once'
+                        : false,
                 onMulti: (ids) => {
                     lastAction = `Delete ${ids.length} user(s): [${ids.join(', ')}]`;
                 }
@@ -108,5 +119,20 @@
             // real apps you'd usually pick one of the two patterns.
             console.log('selection changed', ids);
         }}
-    />
+    >
+        {#snippet contextMenuExtra({ kind, item, ids, close })}
+            <li>
+                <button
+                    type="button"
+                    onclick={() => {
+                        const payload = kind === 'row' ? String(item?.id) : ids.join(', ');
+                        lastAction = `Copy ID(s): ${payload}`;
+                        close();
+                    }}
+                >
+                    <span>Copy ID</span>
+                </button>
+            </li>
+        {/snippet}
+    </DataTable>
 </div>
