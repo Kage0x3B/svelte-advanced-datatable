@@ -31,6 +31,7 @@
 </script>
 
 <th
+    scope="col"
     class="datatable-selection-th"
     data-column-key="__selection"
     onclick={onCellClick}

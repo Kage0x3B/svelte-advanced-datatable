@@ -1063,6 +1063,7 @@
                                 {@const sortDir = sortDirectionFor(key)}
                                 {@const sortPriority = sortPriorityFor(key)}
                                 <th
+                                    scope="col"
                                     class="datatable-th whitespace-normal"
                                     class:w-12={key === 'actions' && userFraction === undefined}
                                     style:width={renderedPx !== null ? `${renderedPx.toFixed(2)}px` : null}

@@ -9,7 +9,7 @@
     );
 </script>
 
-<th class="datatable-row-actions-th" data-column-key="__rowActions">
+<th scope="col" class="datatable-row-actions-th" data-column-key="__rowActions">
     <span class="sr-only">{screenReaderLabel}</span>
 </th>
 
