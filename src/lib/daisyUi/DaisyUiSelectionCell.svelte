@@ -1,17 +1,27 @@
 <script lang="ts">
     import type { SelectionId } from '$lib/types/SelectionId.js';
-    import { configContext, messageFormatterContext, selectionContext } from '$lib/util/context.js';
+    import {
+        configContext,
+        dataSourceContext,
+        messageFormatterContext,
+        rowFocusContext,
+        selectionContext
+    } from '$lib/util/context.js';
     import { resolveActionLabel } from '$lib/util/actionLabelUtil.js';
+    import { extendSelectionRange } from '$lib/util/selectionRangeUtil.js';
 
     interface Props {
         item: Record<string, unknown>;
+        index: number;
     }
 
-    let { item }: Props = $props();
+    let { item, index }: Props = $props();
 
     const selection = $derived(selectionContext.get().current);
     const config = $derived(configContext.get().current);
     const format = $derived(messageFormatterContext.get().current);
+    const rowFocus = $derived(rowFocusContext.get().current);
+    const dataSource = $derived(dataSourceContext.get().current);
 
     const id = $derived(item[config.dataUniquePropertyKey] as SelectionId);
     const checked = $derived(selection.has(id));
@@ -19,15 +29,31 @@
     const ariaLabel = $derived(resolveActionLabel(config, format, 'selectRow', 'Select row'));
 
     /** Stop the row's onclick (open modal / `onItemClick` / navigation) from
-     * firing when the user toggles selection. The checkbox's own change
-     * handler is the only side-effect that should run. */
+     * firing when the user toggles selection. */
     function onCellClick(event: MouseEvent): void {
         event.stopPropagation();
     }
 
-    function onChange(): void {
+    /** Own the toggle decision so Shift+click can extend from the anchor
+     * instead of toggling. Native click→change is suppressed via
+     * preventDefault and the visible checked state stays in sync via the
+     * bound `checked` prop above (it reads `selection.has(id)`). */
+    function onCheckboxClick(event: MouseEvent): void {
         if (!selectable) return;
+        event.preventDefault();
+        if (event.shiftKey && rowFocus.anchor !== null && rowFocus.anchor !== index) {
+            const items = (dataSource.queryResult.data?.items ?? []) as Record<string, unknown>[];
+            extendSelectionRange(
+                selection,
+                items,
+                rowFocus.anchor,
+                index,
+                config.dataUniquePropertyKey
+            );
+            return;
+        }
         selection.toggle(id);
+        rowFocus.anchor = index;
     }
 </script>
 
@@ -38,7 +64,7 @@
             class="checkbox checkbox-sm"
             {checked}
             disabled={!selectable}
-            onchange={onChange}
+            onclick={onCheckboxClick}
             aria-label={ariaLabel}
         />
     </label>

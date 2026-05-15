@@ -246,7 +246,12 @@
             }}
             onpointerdown={(event) => {
                 rowFocus.focusedIndex = index;
-                rowFocus.anchor = index;
+                // Don't clobber the anchor when Shift is held — the
+                // checkbox cell's Shift+click handler reads it to compute
+                // the range, and pointerdown fires before click.
+                if (!event.shiftKey) {
+                    rowFocus.anchor = index;
+                }
                 onPointerDownLongPress(event);
             }}
             onpointermove={onPointerMoveLongPress}
@@ -256,7 +261,7 @@
         >
             {#if item}
                 {#if selectionEnabled}
-                    <DaisyUiSelectionCell {item} />
+                    <DaisyUiSelectionCell {item} {index} />
                 {/if}
                 {#each visibleColumnEntries as [key, _colProp] (key)}
                     <td

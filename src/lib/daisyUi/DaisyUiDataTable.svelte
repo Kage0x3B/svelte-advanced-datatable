@@ -26,6 +26,7 @@
     import { clamp } from '$lib/util/generalUtil.js';
     import { createMessageFormatter } from '$lib/util/messageFormatterUtil.svelte.js';
     import { invokeAction, type ActionInvocation } from '$lib/util/invokeAction.js';
+    import { extendSelectionRange } from '$lib/util/selectionRangeUtil.js';
     import type { DataTableAction } from '$lib/types/DataTableAction.js';
     import type { SelectionId } from '$lib/types/SelectionId.js';
     import { untrack } from 'svelte';
@@ -734,14 +735,13 @@
             toggleSelectionAtFocus(items);
             return;
         }
-        const start = Math.min(rowFocus.anchor, rowFocus.focusedIndex);
-        const end = Math.max(rowFocus.anchor, rowFocus.focusedIndex);
-        for (let i = start; i <= end; i++) {
-            const item = items[i];
-            if (!item) continue;
-            if (!selection.isItemSelectable(item)) continue;
-            selection.select(item[config.dataUniquePropertyKey] as SelectionId);
-        }
+        extendSelectionRange(
+            selection,
+            items,
+            rowFocus.anchor,
+            rowFocus.focusedIndex,
+            config.dataUniquePropertyKey
+        );
     }
 
     /** Enter on a focused row — the keyboard equivalent of a row click.
