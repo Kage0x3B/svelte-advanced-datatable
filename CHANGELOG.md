@@ -1,5 +1,35 @@
 # Changelog
 
+## [0.15.0](https://github.com/Kage0x3B/svelte-advanced-datatable/compare/v0.14.3...v0.15.0) (2026-05-18)
+
+
+### Features
+
+* **a11y:** add scope=col to header cells ([#2](https://github.com/Kage0x3B/svelte-advanced-datatable/issues/2).1) ([b212f81](https://github.com/Kage0x3B/svelte-advanced-datatable/commit/b212f813e7b8652d2c04d6c800bb3742b9c5ae28))
+* **a11y:** announce search result count after each search ([#2](https://github.com/Kage0x3B/svelte-advanced-datatable/issues/2).7) ([533e7c2](https://github.com/Kage0x3B/svelte-advanced-datatable/commit/533e7c2c233e4e9fba46929bddc25604de31e85a))
+* **a11y:** aria-label on icon-only pagination buttons ([#2](https://github.com/Kage0x3B/svelte-advanced-datatable/issues/2).5) ([4b587bb](https://github.com/Kage0x3B/svelte-advanced-datatable/commit/4b587bb515eb95ee43c302fd7fd3578404c63ede))
+* **a11y:** aria-sort on sortable headers + live sort announcement ([#2](https://github.com/Kage0x3B/svelte-advanced-datatable/issues/2).4) ([6d24b0c](https://github.com/Kage0x3B/svelte-advanced-datatable/commit/6d24b0c5d119c8f7ca9cfd4cbcd0edf2c8a15f0e))
+* **a11y:** sr-only Yes/No alongside boolean check/cross icons ([#2](https://github.com/Kage0x3B/svelte-advanced-datatable/issues/2).8) ([de7c00b](https://github.com/Kage0x3B/svelte-advanced-datatable/commit/de7c00bc90862018e55383f5826aadcb69d67454))
+* **actions:** add isDisabled predicate with reason tooltip ([1974bff](https://github.com/Kage0x3B/svelte-advanced-datatable/commit/1974bff0a850d5e035cd27a2c627e8e2300f7c71))
+* **actions:** add shortcut field with parse/match/format utils ([#9](https://github.com/Kage0x3B/svelte-advanced-datatable/issues/9).9) ([0bda5ff](https://github.com/Kage0x3B/svelte-advanced-datatable/commit/0bda5ff0ef081ea531e7aec57b94845a517636c8))
+* **actions:** contextMenuExtra snippet for app-specific items ([e02e867](https://github.com/Kage0x3B/svelte-advanced-datatable/commit/e02e8675b0e3e5f1259167065a0b608526d44f3f))
+* **actions:** long-press on touch devices opens context menu ([106fb71](https://github.com/Kage0x3B/svelte-advanced-datatable/commit/106fb710ee3ea8c4160907292dcd13f3f5ba433e))
+* **actions:** pluralised bulk labels via i18n + bulkLabel field ([da10402](https://github.com/Kage0x3B/svelte-advanced-datatable/commit/da104024cc971242e08e6df53359893796dd9cac))
+* **actions:** render shortcut hint in row dropdown + context menu ([#9](https://github.com/Kage0x3B/svelte-advanced-datatable/issues/9).9) ([3695c09](https://github.com/Kage0x3B/svelte-advanced-datatable/commit/3695c09eeb587b91380fbad0e355b5e730a1bc88))
+* **actions:** right-click on multi-selection opens bulk context menu ([d3a3563](https://github.com/Kage0x3B/svelte-advanced-datatable/commit/d3a3563ffab4c526f460e7a3bb6c968c252bf90a))
+* **actions:** right-click row opens action context menu ([1d91b89](https://github.com/Kage0x3B/svelte-advanced-datatable/commit/1d91b89b38feca0515efd3b74fb48b21dad40122))
+* **actions:** support action grouping with menu dividers ([2d167a8](https://github.com/Kage0x3B/svelte-advanced-datatable/commit/2d167a819e89b382594c899d256cd48221771901))
+* **actions:** wire shortcut into table keydown dispatcher ([#9](https://github.com/Kage0x3B/svelte-advanced-datatable/issues/9).9) ([ff10462](https://github.com/Kage0x3B/svelte-advanced-datatable/commit/ff104622a12de3c0bec11e88129992f8abbb6682))
+* **selection:** Shift+click checkbox extends selection from anchor ([#9](https://github.com/Kage0x3B/svelte-advanced-datatable/issues/9).1) ([6ed1ebf](https://github.com/Kage0x3B/svelte-advanced-datatable/commit/6ed1ebf2b3ac4a821d9e7fce3812cfe51070e5e2))
+* **table:** roving tabindex + arrow / Home / End / PageUp/Down nav ([ac8cd8c](https://github.com/Kage0x3B/svelte-advanced-datatable/commit/ac8cd8c1cb2829d81b6faea22f2a489ae378bfed))
+* **table:** Space / Shift+Space toggle + Enter default action on focus ([1726f19](https://github.com/Kage0x3B/svelte-advanced-datatable/commit/1726f197ba90fc4e535a8186114e6d4d937c30aa))
+
+
+### Documentation
+
+* **example:** demo isDisabled, group, bulkLabel, contextMenuExtra ([4b2ea70](https://github.com/Kage0x3B/svelte-advanced-datatable/commit/4b2ea70a166cd5b0d52399a3e744b34a78f87c7d))
+* **example:** demo Mod+E and Delete shortcuts on edit/delete actions ([d1b39b6](https://github.com/Kage0x3B/svelte-advanced-datatable/commit/d1b39b6e8cf0d78fa8c3864197c7742727e2dce2))
+
 ## [0.14.3](https://github.com/Kage0x3B/svelte-advanced-datatable/compare/v0.14.2...v0.14.3) (2026-05-11)
 
 
