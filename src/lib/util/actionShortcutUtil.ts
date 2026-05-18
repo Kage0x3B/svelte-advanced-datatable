@@ -40,7 +40,10 @@ export function parseShortcut(shortcut: string): ParsedShortcut {
     const cached = parseCache.get(shortcut);
     if (cached) return cached;
 
-    const tokens = shortcut.split('+').map((t) => t.trim()).filter(Boolean);
+    const tokens = shortcut
+        .split('+')
+        .map((t) => t.trim())
+        .filter(Boolean);
     if (tokens.length === 0) {
         throw new Error(`Empty shortcut: ${JSON.stringify(shortcut)}`);
     }
