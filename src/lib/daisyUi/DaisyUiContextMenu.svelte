@@ -8,7 +8,7 @@
         contextMenuContext,
         messageFormatterContext
     } from '$lib/util/context.js';
-    import { groupActions, resolveActionLabel } from '$lib/util/actionLabelUtil.js';
+    import { groupActions, resolveActionLabel, resolveBulkActionLabel } from '$lib/util/actionLabelUtil.js';
     import { formatShortcut } from '$lib/util/actionShortcutUtil.js';
     import type { Snippet } from 'svelte';
 
@@ -183,11 +183,11 @@
         style:top="{position.top}px"
         role="menu"
     >
-        <ul class="menu bg-base-100 rounded-box w-52 p-2 shadow">
+        <ul class="menu bg-base-100 rounded-box min-w-52 p-2 shadow whitespace-nowrap">
             {#if extra && extraArgs}
                 {@render extra(extraArgs)}
                 {#if actions.length > 0}
-                    <li><hr class="border-base-content/10 my-1" /></li>
+                    <hr class="border-base-content/10 my-1" />
                 {/if}
             {/if}
             {#each sections as section, sectionIndex (section.label ?? '__ungrouped__')}
@@ -196,10 +196,12 @@
                         <span>{section.label}</span>
                     </li>
                 {:else if sectionIndex > 0}
-                    <li><hr class="border-base-content/10 my-1" /></li>
+                    <hr class="border-base-content/10 my-1" />
                 {/if}
                 {#each section.actions as action (action.key)}
-                    {@const label = resolveActionLabel(config, format, action.key, action.key)}
+                    {@const label = invocation?.kind === 'bulk'
+                        ? resolveBulkActionLabel(config, format, action, invocation.ids.length)
+                        : resolveActionLabel(config, format, action.key, action.key)}
                     {@const Icon = action.icon}
                     {@const disabledReason = disabledReasonFor(action)}
                     {@const isDisabled = disabledReason !== false}
@@ -219,7 +221,7 @@
                             {/if}
                             <span>{label}</span>
                             {#if action.shortcut}
-                                <kbd class="ml-auto font-mono text-xs opacity-60">
+                                <kbd class="ml-auto pl-6 font-mono text-xs opacity-60">
                                     {formatShortcut(action.shortcut)}
                                 </kbd>
                             {/if}
