@@ -47,6 +47,19 @@
      * focused, -1 for the rest) and the focus-pull effect below. */
     const isFocused = $derived(rowFocus.focusedIndex === index);
 
+    /** Whether the open context menu targets this row (single-row variant
+     * matches by id, bulk variant matches any id in its set). Drives a
+     * persistent highlight while the menu is open so the user can see which
+     * row(s) the actions will hit — browser :focus alone is too subtle and
+     * unreliable on right-click. */
+    const isContextActive = $derived.by(() => {
+        const inv = contextMenu.invocation;
+        if (!contextMenu.open || !inv || !item) return false;
+        const rowId = item[config.dataUniquePropertyKey] as SelectionId;
+        if (inv.kind === 'row') return inv.id === rowId;
+        return inv.ids.includes(rowId);
+    });
+
     let rowEl = $state<HTMLTableRowElement | undefined>(undefined);
 
     /** When the focused index changes (arrow keys, Home/End, page change)
@@ -67,27 +80,20 @@
     });
 
     /**
-     * Open the shared context menu at the supplied viewport coordinates,
-     * applying the OS-file-explorer selection rules:
-     *
-     * - If selection chrome is on and this row isn't selected, replace the
-     *   selection with this row first.
-     * - If it *is* selected and other rows are too (count > 1), open the
-     *   bulk variant — preserving the existing multi-selection so the
-     *   action operates on the whole set.
-     * - Otherwise the row variant opens with this row's `item` payload.
+     * Open the shared context menu at the supplied viewport coordinates.
+     * Never mutates selection — right-click and long-press are read-only
+     * intents. Bulk variant opens only when the right-clicked row is
+     * already part of a multi-selection (so the existing set is the
+     * operand). Otherwise the row variant opens for this row alone,
+     * regardless of whether other rows are selected elsewhere.
      */
     function openContextMenuAt(clientX: number, clientY: number): void {
         if (!item) return;
         const id = item[config.dataUniquePropertyKey] as SelectionId;
-        const wasInSelection = selectionEnabled && selection.has(id);
-        if (selectionEnabled && !wasInSelection) {
-            selection.replaceAll([id]);
-            rowFocus.anchor = index;
-        }
         rowFocus.focusedIndex = index;
 
-        if (wasInSelection && selection.count > 1) {
+        const inSelection = selectionEnabled && selection.has(id);
+        if (inSelection && selection.count > 1) {
             const ids = selection.ids;
             const idSet = new Set(ids);
             const pageItems = (dataSource.queryResult.data?.items ?? []) as Record<
@@ -229,7 +235,8 @@
             class={[
                 'datatable-row cursor-pointer whitespace-nowrap transition-colors duration-200',
                 {
-                    'bg-base-300': highlighted,
+                    'bg-base-300': highlighted || isContextActive,
+                    'context-active': isContextActive,
                     'border-0 rounded-t-box': isOpen
                 }
             ]}
@@ -324,5 +331,22 @@
     :global(tr.datatable-row) {
         -webkit-touch-callout: none;
         touch-action: pan-y;
+        /* Single source of truth for the focus / context-active marker so
+           keyboard nav fades from transparent → primary without the
+           browser's white outline flashing first. */
+        outline: none;
+        transition:
+            background-color 200ms,
+            color 200ms,
+            box-shadow 150ms ease-out;
+    }
+
+    /* Persistent visual marker for the row(s) the open context menu targets,
+       plus the same indicator for keyboard focus so arrow-nav has a clear
+       anchor. Inset box-shadow because the `tr` cell borders eat a real
+       outline. */
+    :global(tr.datatable-row:focus-visible),
+    :global(tr.datatable-row.context-active) {
+        box-shadow: inset 2px 0 0 0 var(--color-primary, currentColor);
     }
 </style>
