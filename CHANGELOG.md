@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.14.3](https://github.com/Kage0x3B/svelte-advanced-datatable/compare/v0.14.2...v0.14.3) (2026-05-11)
+
+
+### Bug Fixes
+
+* **persistence:** read URL from window.location since $app/navigation.replaceState never updates page.url ([fd4de80](https://github.com/Kage0x3B/svelte-advanced-datatable/commit/fd4de800e8f89bb11bb3f3048613a88e4fcdb7d9))
+
 ## [0.14.2](https://github.com/Kage0x3B/svelte-advanced-datatable/compare/v0.14.1...v0.14.2) (2026-05-11)
 
 
