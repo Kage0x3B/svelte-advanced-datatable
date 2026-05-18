@@ -41,12 +41,12 @@
 </script>
 
 <InternalSearchField {inputElement} {searchInput}>
-    <div class="mr-2">
+    <div class="mr-2 w-full max-w-xs flex-1 md:max-w-sm">
         <input
             aria-label={format('search.ariaLabel')}
             bind:this={inputElement}
             bind:value={internalSearchInput}
-            class="search-box input"
+            class="search-box input w-full"
             placeholder={format('search.placeholder')}
             type="search"
         />

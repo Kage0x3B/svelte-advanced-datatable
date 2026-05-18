@@ -128,7 +128,7 @@
 
 {#if visible}
     <div
-        class="datatable-selection-toolbar bg-base-200 flex flex-wrap items-center gap-2 rounded-md px-2 py-1"
+        class="datatable-selection-toolbar bg-base-200 flex flex-nowrap items-center gap-2 rounded-md px-2 py-1 whitespace-nowrap"
         role="region"
         aria-label="Selection actions"
         in:fade|local={{ duration: 120 }}

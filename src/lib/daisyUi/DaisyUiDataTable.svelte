@@ -37,7 +37,7 @@
     import { flip } from 'svelte/animate';
     import { box } from 'svelte-toolbelt';
     import type { ClassValue } from 'svelte/elements';
-    import { fade } from 'svelte/transition';
+    import { fade, slide } from 'svelte/transition';
     import type { ThemeSize } from '../../routes/util/type/Theme.js';
     import DaisyUiContextMenu from './DaisyUiContextMenu.svelte';
     import DaisyUiDataRow from './DaisyUiDataRow.svelte';
@@ -86,9 +86,33 @@
          */
         stickyHeader?: boolean | 'page' | 'container';
 
+        /**
+         * Override class for the outer header bar (`.datatable-header`). Use
+         * this to swap the default flex layout when the built-in slots can't
+         * accommodate your filter widgets — e.g. pass `'grid grid-cols-[1fr_auto] gap-2'`
+         * to lock pagination to the right column regardless of filter width.
+         * The default layout is a row flex that wraps below `md`.
+         */
+        headerClass?: string;
+
+        /** Slot at the very start of the header's left cluster, before the
+         * search field. Use for titles, status badges, primary filters. */
         headerFirst?: Snippet;
+        /** Between the search field and any custom middle filters. */
         headerAfterSearch?: Snippet;
+        /** Centre / main filter area. Grows with the available space; wraps
+         * within the left cluster when the header is too narrow rather than
+         * pushing the right cluster (pagination, export, settings) onto a
+         * new row. */
         headerMiddle?: Snippet;
+        /** Slot inside the right cluster, before the pagination text +
+         * pagination buttons. Use for a "loading dot" or compact filter
+         * tied to the data fetch. */
+        headerBeforePagination?: Snippet;
+        /** Slot at the very end of the right cluster, after export and
+         * settings. Use for a global "primary action" button that belongs
+         * with the toolbar visually. */
+        headerEnd?: Snippet;
 
         /**
          * Slot rendered when the data source returns zero rows (and is not
@@ -170,9 +194,12 @@
         hoverable = true,
         stickyHeader = true,
         class: classExport,
+        headerClass,
         headerFirst,
         headerAfterSearch,
         headerMiddle,
+        headerBeforePagination,
+        headerEnd,
         empty,
         errorState,
         settingsExtra,
@@ -891,24 +918,31 @@
         open,
         highlightedItemId
     })}
-        <div class="mb-3 flex w-full flex-wrap items-center justify-between gap-3">
-            <div class="flex flex-row flex-wrap items-center gap-3">
+        <div
+            class={[
+                'datatable-header mb-3 flex w-full flex-row flex-wrap items-center justify-between gap-2 md:gap-3',
+                headerClass
+            ]}
+        >
+            <div
+                class="datatable-header-start flex min-w-0 flex-1 flex-row flex-wrap items-center gap-2 md:gap-3"
+            >
                 {@render headerFirst?.()}
                 {#if config.enableSearch}
                     <SearchField bind:searchInput={tableState.searchInput} />
                 {/if}
-                {#if selectionEnabled}
-                    <DaisyUiSelectionToolbar />
-                {/if}
                 {@render headerAfterSearch?.()}
                 {@render headerMiddle?.()}
             </div>
-            <div class="flex flex-row items-center justify-end gap-3">
+            <div
+                class="datatable-header-end flex flex-shrink-0 flex-row items-center justify-end gap-2 md:gap-3"
+            >
                 {#if queryResult.isLoading()}
                     <div in:fade|local={{ duration: 100 }} out:fade|local={{ duration: 300 }}>
                         <span class="loading loading-spinner"></span>
                     </div>
                 {/if}
+                {@render headerBeforePagination?.()}
                 {#if config.enablePagination && config.showTopPagination}
                     {#if itemAmount >= 0}
                         {@const startItemIndex = (tableState.currentPage - 1) * tableState.itemsPerPage + 1}
@@ -1060,11 +1094,18 @@
                         {/if}
                     </div>
                 {/if}
+                {@render headerEnd?.()}
             </div>
         </div>
 
+        {#if selectionEnabled && selection.count > 0}
+            <div class="datatable-selection-band mb-3" transition:slide|local={{ duration: 150 }}>
+                <DaisyUiSelectionToolbar />
+            </div>
+        {/if}
+
         <div
-            class={['table-container', { 'overflow-x-auto': stickyHeaderMode !== 'page' }]}
+            class={['table-container overflow-x-auto']}
             bind:clientWidth={tableContainerWidth}
         >
             <table
