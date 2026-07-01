@@ -70,14 +70,36 @@
         if (!isFocused || !rowEl) return;
         if (document.activeElement === rowEl) return;
         if (rowEl.contains(document.activeElement)) return;
+        // Only pull DOM focus during an in-table roving handoff (arrow keys,
+        // Home/End, or a keyboard page change that destroyed the previously
+        // focused row). If focus currently sits on a real element *outside*
+        // this table — most importantly the search box, whose debounced query
+        // resets `focusedIndex` to 0 on every keystroke-batch — leave it be.
+        // Otherwise typing to search yanks the caret into row 0 after each
+        // debounce. `body`/`documentElement`/null mean "no owner" (e.g. a
+        // destroyed focused row falling back to body), where pulling is right.
+        if (!tableOwnsOrReleasedFocus()) return;
         // Wait for any pending DOM mutations (e.g. a page change re-rendered
         // the tbody) before focusing — otherwise focus() can hit a stale node.
         void tick().then(() => {
-            if (rowEl && rowFocus.focusedIndex === index) {
+            if (rowEl && rowFocus.focusedIndex === index && tableOwnsOrReleasedFocus()) {
                 rowEl.focus({ preventScroll: false });
             }
         });
     });
+
+    /** True when DOM focus is safe to pull onto this row: either it already
+     * lives inside this table (roving handoff between rows) or no real element
+     * owns it (`body`/`documentElement`/null — e.g. the prior focused row was
+     * just destroyed by a page change). False when a live element outside the
+     * table holds focus (the search box, an external filter), so we don't
+     * steal it out from under the user. */
+    function tableOwnsOrReleasedFocus(): boolean {
+        const active = document.activeElement;
+        if (!active || active === document.body || active === document.documentElement) return true;
+        const table = rowEl?.closest('table');
+        return !!table && table.contains(active);
+    }
 
     /**
      * Open the shared context menu at the supplied viewport coordinates.
