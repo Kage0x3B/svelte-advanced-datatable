@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.16.1](https://github.com/Kage0x3B/svelte-advanced-datatable/compare/v0.16.0...v0.16.1) (2026-07-01)
+
+
+### Bug Fixes
+
+* **selection:** keep search-box focus on debounced data reload ([5cc0f77](https://github.com/Kage0x3B/svelte-advanced-datatable/commit/5cc0f77921edd5c04d60f4192dc03f78293b9d17))
+
 ## [0.16.0](https://github.com/Kage0x3B/svelte-advanced-datatable/compare/v0.15.0...v0.16.0) (2026-05-18)
 
 
