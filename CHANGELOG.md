@@ -1,5 +1,18 @@
 # Changelog
 
+## [0.16.0](https://github.com/Kage0x3B/svelte-advanced-datatable/compare/v0.15.0...v0.16.0) (2026-05-18)
+
+
+### Features
+
+* **actions:** pluralised context-menu labels, tighter layout ([b022774](https://github.com/Kage0x3B/svelte-advanced-datatable/commit/b022774eebcff72cf5d904627909c153c7712f57))
+* **layout:** responsive header, selection sub-row, extension snippets ([5ecbeb1](https://github.com/Kage0x3B/svelte-advanced-datatable/commit/5ecbeb1a92fabb1f6b5b1c42c5723f3af0f1802b))
+
+
+### Bug Fixes
+
+* **selection:** right-click read-only, sync checkbox visual, context-active row highlight ([f81e3e7](https://github.com/Kage0x3B/svelte-advanced-datatable/commit/f81e3e70d977aa89b1d5e0093305635fb2277e9b))
+
 ## [0.15.0](https://github.com/Kage0x3B/svelte-advanced-datatable/compare/v0.14.3...v0.15.0) (2026-05-18)
 
 
