@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.16.2](https://github.com/Kage0x3B/svelte-advanced-datatable/compare/v0.16.1...v0.16.2) (2026-09-17)
+
+
+### Bug Fixes
+
+* **persistence:** keep URL-persisted state reactive after replaceState flush ([ef498c7](https://github.com/Kage0x3B/svelte-advanced-datatable/commit/ef498c7c36fe15f102361c014c0dc3800616549f))
+
 ## [0.16.1](https://github.com/Kage0x3B/svelte-advanced-datatable/compare/v0.16.0...v0.16.1) (2026-07-01)
 
 
