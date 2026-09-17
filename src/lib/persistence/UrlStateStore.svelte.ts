@@ -17,6 +17,22 @@ const browser = typeof window !== 'undefined';
  */
 export class UrlStateStore implements StateStore {
     private pendingWrites: Record<string, string | null> = $state({});
+    /**
+     * Reactive mirror of the committed (already-flushed) URL search params.
+     * Seeded from the URL at construction and rewritten from the URL we build
+     * on every flush.
+     *
+     * A fall-through read (key not in `pendingWrites`) cannot depend on
+     * `window.location` (not reactive) or `page.url` (never updated by
+     * `replaceState` — shallow routing pins it to the last real navigation).
+     * Without a reactive source, once `pendingWrites` clears a getter latches
+     * whatever it last read and never re-runs — e.g. the pagination highlight
+     * stays on the previous page while the fetched rows move on. Tracking our
+     * own copy keeps these reads reactive, and rebuilding it from the `url` we
+     * just wrote makes it correct regardless of when `window.location` /
+     * `page.url` observe the change.
+     */
+    private committed: Record<string, string> = $state.raw(snapshotParams(currentUrl()));
     private debounceTimer: ReturnType<typeof setTimeout> | undefined;
 
     constructor(
@@ -35,8 +51,8 @@ export class UrlStateStore implements StateStore {
                 return fallback;
             }
         }
-        const raw = currentUrl().searchParams.get(scoped);
-        if (raw === null) return fallback;
+        const raw = this.committed[scoped];
+        if (raw === undefined) return fallback;
         try {
             return codec.decode(raw);
         } catch {
@@ -94,22 +110,37 @@ export class UrlStateStore implements StateStore {
             }
         }
         if (changed) replaceState(url, page.state);
-        // Safe to clear synchronously: `replaceState` updates `window.location`
-        // synchronously, and reads go through `currentUrl()` which prefers
-        // `window.location` over `page.url`. So a reactive reader re-running
-        // in the same frame as the clear sees the just-written value.
+        // Refresh the reactive mirror from the URL we just built. This is
+        // deterministic (it does not depend on when `window.location` or
+        // `page.url` observe the `replaceState`) and, being `$state`, wakes
+        // every fall-through reader so highlights/labels stay in sync with the
+        // page that was just committed.
+        this.committed = snapshotParams(url);
         this.pendingWrites = {};
     }
 }
 
 /**
- * Source of truth for URL reads.
+ * Snapshot of a URL's search params as a plain record, for the reactive
+ * committed-params mirror.
+ */
+function snapshotParams(url: URL): Record<string, string> {
+    const params: Record<string, string> = {};
+    for (const [key, value] of url.searchParams) {
+        params[key] = value;
+    }
+    return params;
+}
+
+/**
+ * Source of truth for URL reads at construction and the base URL for writes.
  *
  * `$app/navigation.replaceState` updates `window.location` and `page.state`,
  * but NOT `page.url` — it's a shallow-routing API that intentionally keeps
- * `page.url` pinned to the last real navigation. Reading `page.url` after a
- * flush returns stale data forever, so we read `window.location` in the
- * browser and fall back to `page.url` only for SSR.
+ * `page.url` pinned to the last real navigation. So we read `window.location`
+ * in the browser (freshest source, incl. edits from a prior flush) and fall
+ * back to `page.url` only for SSR. Reactive reads go through the `committed`
+ * mirror instead; this is used for the initial seed and as the write base.
  */
 function currentUrl(): URL {
     return browser ? new URL(window.location.href) : new URL(page.url);
